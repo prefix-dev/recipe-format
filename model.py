@@ -178,6 +178,7 @@ class ScriptEnv(BaseModel):
 
 JinjaExpr = constr(regex=r"\$\{\{.*\}\}")
 
+
 class Build(BaseModel):
     class Config:
         extra = Extra.forbid
