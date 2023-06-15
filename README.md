@@ -14,8 +14,11 @@ This file is generated from the `model.py` using `pydantic`.
 You can use the schema in any editor that supports JSON Schema for yaml. 
 Using the YAML extension for VSCode all you need to do is add: 
 
+```yaml
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+```
 
-
+to the top of your recipe file and you should have autocompletion and validation!
 
 ## Contributing
 
