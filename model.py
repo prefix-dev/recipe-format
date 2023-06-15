@@ -176,11 +176,13 @@ class ScriptEnv(BaseModel):
     )
 
 
+JinjaExpr = constr(regex=r"\$\{\{.*\}\}")
+
 class Build(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    number: Optional[UnsignedInt] = Field(
+    number: Optional[Union[UnsignedInt, JinjaExpr]] = Field(
         0,
         description="Build number to version current build in addition to package version",
     )

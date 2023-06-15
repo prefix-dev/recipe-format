@@ -548,8 +548,16 @@
           "title": "Number",
           "description": "Build number to version current build in addition to package version",
           "default": 0,
-          "minimum": 0,
-          "type": "integer"
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "\\$\\{\\{.*\\}\\}"
+            }
+          ]
         },
         "string": {
           "title": "String",
@@ -1834,8 +1842,16 @@
           "title": "Number",
           "description": "Build number to version current build in addition to package version",
           "default": 0,
-          "minimum": 0,
-          "type": "integer"
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "pattern": "\\$\\{\\{.*\\}\\}"
+            }
+          ]
         },
         "string": {
           "title": "String",
