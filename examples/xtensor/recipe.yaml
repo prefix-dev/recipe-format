@@ -1,0 +1,70 @@
+# yaml-language-server: $schema=./schema.json
+
+context:
+  name: xtensor
+  version: 0.24.6
+
+package:
+  name: ${{ name|lower }}
+  version: ${{ version }}
+
+source:
+  url: https://github.com/xtensor-stack/xtensor/archive/${{ version }}.tar.gz
+  sha256: f87259b51aabafdd1183947747edfff4cff75d55375334f2e81cee6dc68ef655
+
+build:
+  number: 0
+  skip:
+    # note that the value is a minijinja expression
+    - osx or win
+
+requirements:
+  build:
+    - ${{ compiler('cxx') }}
+    - cmake
+    - if: unix
+      then: make
+  host:
+    - xtl >=0.7,<0.8
+  run:
+    - xtl >=0.7,<0.8
+  run_constrained:
+    - xsimd >=8.0.3,<10
+
+test:
+  - script:
+      - if: unix
+        then:
+          - test -d ${PREFIX}/include/xtensor
+          - test -f ${PREFIX}/include/xtensor/xarray.hpp
+          - test -f ${PREFIX}/share/cmake/xtensor/xtensorConfig.cmake
+          - test -f ${PREFIX}/share/cmake/xtensor/xtensorConfigVersion.cmake
+      - if: win
+        then:
+          - if not exist %LIBRARY_PREFIX%\include\xtensor\xarray.hpp (exit 1)
+          - if not exist %LIBRARY_PREFIX%\share\cmake\xtensor\xtensorConfig.cmake (exit 1)
+          - if not exist %LIBRARY_PREFIX%\share\cmake\xtensor\xtensorConfigVersion.cmake (exit 1)
+
+  # compile a test package
+  - if: unix
+    then:
+      files:
+        source:
+          - testfiles/cmake/*
+      extra_requirements:
+        build:
+          - ${{ compiler('cxx') }}
+          - cmake
+          - ninja
+      script: |
+        cd testiles/cmake/
+        mkdir build; cd build
+        cmake -GNinja ..
+        cmake --build .
+        ./target/hello_world
+
+  - downstream: xtensor-python
+  - downstream: xtensor-blas
+  - imports:
+      - xtensor_python
+      - xtensor_python.numpy_adapter

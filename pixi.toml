@@ -1,0 +1,17 @@
+[project]
+name = "recipe-model"
+version = "0.1.0"
+description = "Add a short description here"
+authors = ["Bas Zalmstra <zalmstra.bas@gmail.com>"]
+channels = ["conda-forge"]
+platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
+
+[commands]
+generate = "python model.py"
+fmt = "black model.py"
+check = "ruff model.py --fix --ignore E501"
+
+[dependencies]
+pydantic = "1.10.9.*"
+ruff = "0.0.271.*"
+black = "23.3.0.*"

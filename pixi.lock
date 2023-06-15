@@ -1,0 +1,428 @@
+metadata:
+  content_hash:
+    win-64: '"a7f0033d9e564303d393ebf753d151abe8889dd85dea5a45cd991445822ab9ad"'
+  channels:
+  - url: https://conda.anaconda.org/conda-forge/
+    used_env_vars: []
+  platforms:
+  - win-64
+  sources: []
+  time_metadata: null
+  git_metadata: null
+  inputs_metadata: null
+  custom_metadata: null
+package:
+- name: pydantic
+  version: 1.10.9
+  manager: conda
+  platform: win-64
+  dependencies:
+    typing-extensions: '>=4.2.0'
+    python: '>=3.11,<3.12.0a0'
+    vc14_runtime: '>=14.29.30139'
+    vc: '>=14.2,<15'
+    ucrt: '>=10.0.20348.0'
+    python_abi: 3.11.* *_cp311
+  url: https://conda.anaconda.org/conda-forge/win-64/pydantic-1.10.9-py311ha68e1ae_0.conda
+  hash:
+    md5: b086521bbe799f96dcc8006869496d1a
+    sha256: b0637e383a407f04e3dadf79f18b7bac80134d0ad307cc11bab5d4652232afc1
+  optional: false
+  category: main
+  source: null
+  build: py311ha68e1ae_0
+- name: ruff
+  version: 0.0.271
+  manager: conda
+  platform: win-64
+  dependencies:
+    python: '>=3.11,<3.12.0a0'
+    ucrt: '>=10.0.20348.0'
+    vc: '>=14.2,<15'
+    python_abi: 3.11.* *_cp311
+    vc14_runtime: '>=14.29.30139'
+  url: https://conda.anaconda.org/conda-forge/win-64/ruff-0.0.271-py311hc14472d_0.conda
+  hash:
+    md5: 62de3c9d5d2804c16e81cc6d824ea5d5
+    sha256: 5e591453da312428d568f7ea2d49bba4a915606b818a7303c1d32a6af4b6edd2
+  optional: false
+  category: main
+  source: null
+  build: py311hc14472d_0
+- name: black
+  version: 23.3.0
+  manager: conda
+  platform: win-64
+  dependencies:
+    python: '>=3.11,<3.12.0a0'
+    platformdirs: '>=2'
+    packaging: '>=22.0'
+    mypy_extensions: '>=0.4.3'
+    python_abi: 3.11.* *_cp311
+    pathspec: '>=0.9'
+    click: '>=8.0.0'
+  url: https://conda.anaconda.org/conda-forge/win-64/black-23.3.0-py311h1ea47a8_1.conda
+  hash:
+    md5: cff72d53d4ea05005adc2f478447a0a1
+    sha256: 12f319748c11697ee3ea154413c7c4895db2dfcc18b44b0bdb2019da1144abdb
+  optional: false
+  category: main
+  source: null
+  build: py311h1ea47a8_1
+- name: typing-extensions
+  version: 4.6.3
+  manager: conda
+  platform: win-64
+  dependencies:
+    typing_extensions: ==4.6.3 pyha770c72_0
+  url: https://conda.anaconda.org/conda-forge/noarch/typing-extensions-4.6.3-hd8ed1ab_0.conda
+  hash:
+    md5: 3876f650ed7d0f95d70fa4b647621909
+    sha256: d2334dab270e13182403cc3a394e3da8e7acb409e94059a6d9223d2ac053f90a
+  optional: false
+  category: main
+  source: null
+  build: hd8ed1ab_0
+- name: typing_extensions
+  version: 4.6.3
+  manager: conda
+  platform: win-64
+  dependencies:
+    python: '>=3.7'
+  url: https://conda.anaconda.org/conda-forge/noarch/typing_extensions-4.6.3-pyha770c72_0.conda
+  hash:
+    md5: 4a3014a4d107d15475d106b751c4e352
+    sha256: 90a8d56c8015af1575d504d5f77d95a806cd999fc178a06ab51a349f1f744672
+  optional: false
+  category: main
+  source: null
+  build: pyha770c72_0
+- name: python
+  version: 3.11.4
+  manager: conda
+  platform: win-64
+  dependencies:
+    libsqlite: '>=3.42.0,<4.0a0'
+    vc14_runtime: '>=14.29.30139'
+    bzip2: '>=1.0.8,<2.0a0'
+    libexpat: '>=2.5.0,<3.0a0'
+    libzlib: '>=1.2.13,<1.3.0a0'
+    ucrt: '>=10.0.20348.0'
+    xz: '>=5.2.6,<6.0a0'
+    libffi: '>=3.4,<4.0a0'
+    openssl: '>=3.1.1,<4.0a0'
+    tzdata: '*'
+    vc: '>=14.2,<15'
+    tk: '>=8.6.12,<8.7.0a0'
+  url: https://conda.anaconda.org/conda-forge/win-64/python-3.11.4-h2628c8c_0_cpython.conda
+  hash:
+    md5: 3187a32fba79e835f099ecea054026f4
+    sha256: d43fa70a3549fea27d3993f79ba2584ec6d6fe2aaf6e5890847f974e89a744e0
+  optional: false
+  category: main
+  source: null
+  build: h2628c8c_0_cpython
+- name: tk
+  version: 8.6.12
+  manager: conda
+  platform: win-64
+  dependencies:
+    vc: '>=14.1,<15'
+    vs2015_runtime: '>=14.16.27033'
+  url: https://conda.anaconda.org/conda-forge/win-64/tk-8.6.12-h8ffe710_0.tar.bz2
+  hash:
+    md5: c69a5047cc9291ae40afd4a1ad6f0c0f
+    sha256: 087795090a99a1d397ef1ed80b4a01fabfb0122efb141562c168e3c0a76edba6
+  optional: false
+  category: main
+  source: null
+  build: h8ffe710_0
+- name: xz
+  version: 5.2.6
+  manager: conda
+  platform: win-64
+  dependencies:
+    vc: '>=14.1,<15'
+    vs2015_runtime: '>=14.16.27033'
+  url: https://conda.anaconda.org/conda-forge/win-64/xz-5.2.6-h8d14728_0.tar.bz2
+  hash:
+    md5: 515d77642eaa3639413c6b1bc3f94219
+    sha256: 54d9778f75a02723784dc63aff4126ff6e6749ba21d11a6d03c1f4775f269fe0
+  optional: false
+  category: main
+  source: null
+  build: h8d14728_0
+- name: libsqlite
+  version: 3.42.0
+  manager: conda
+  platform: win-64
+  dependencies:
+    vc: '>=14.2,<15'
+    vc14_runtime: '>=14.29.30139'
+    ucrt: '>=10.0.20348.0'
+  url: https://conda.anaconda.org/conda-forge/win-64/libsqlite-3.42.0-hcfcfb64_0.conda
+  hash:
+    md5: 9a71d93deb99cc09d8939d5235b5909a
+    sha256: 70bc1fdb72de847807355c13144666d4f151894f9b141ee559f5d243bdf577e2
+  optional: false
+  category: main
+  source: null
+  build: hcfcfb64_0
+- name: libexpat
+  version: 2.5.0
+  manager: conda
+  platform: win-64
+  dependencies: {}
+  url: https://conda.anaconda.org/conda-forge/win-64/libexpat-2.5.0-h63175ca_1.conda
+  hash:
+    md5: 636cc3cbbd2e28bcfd2f73b2044aac2c
+    sha256: 794b2a9be72f176a2767c299574d330ffb76b2ed75d7fd20bee3bbadce5886cf
+  optional: false
+  category: main
+  source: null
+  build: h63175ca_1
+- name: python_abi
+  version: '3.11'
+  manager: conda
+  platform: win-64
+  dependencies: {}
+  url: https://conda.anaconda.org/conda-forge/win-64/python_abi-3.11-3_cp311.conda
+  hash:
+    md5: fd1634ba85cfea9376e1fc02d6f592e9
+    sha256: e042841d13274354d651a69a4f2589e9b46fd23b416368c9821bf3c6676f19d7
+  optional: false
+  category: main
+  source: null
+  build: 3_cp311
+- name: ucrt
+  version: 10.0.22621.0
+  manager: conda
+  platform: win-64
+  dependencies: {}
+  url: https://conda.anaconda.org/conda-forge/win-64/ucrt-10.0.22621.0-h57928b3_0.tar.bz2
+  hash:
+    md5: 72608f6cd3e5898229c3ea16deb1ac43
+    sha256: f29cdaf8712008f6b419b8b1a403923b00ab2504bfe0fb2ba8eb60e72d4f14c6
+  optional: false
+  category: main
+  source: null
+  build: h57928b3_0
+- name: vc14_runtime
+  version: 14.34.31931
+  manager: conda
+  platform: win-64
+  dependencies:
+    ucrt: '>=10.0.20348.0'
+  url: https://conda.anaconda.org/conda-forge/win-64/vc14_runtime-14.34.31931-h5081d32_16.conda
+  hash:
+    md5: 22125178654c6a8a393f9743d585704b
+    sha256: 1161f4848e1c0663897a6324fbc4ff13dafd11650b42c9864428da73593dda95
+  optional: false
+  category: main
+  source: null
+  build: h5081d32_16
+- name: vs2015_runtime
+  version: 14.34.31931
+  manager: conda
+  platform: win-64
+  dependencies:
+    vc14_runtime: '>=14.34.31931'
+  url: https://conda.anaconda.org/conda-forge/win-64/vs2015_runtime-14.34.31931-hed1258a_16.conda
+  hash:
+    md5: 0374eae69b6dbfb27c3dc27167109eb4
+    sha256: 25d852887a501ca8cb6753a4f3dae1549fa49592d51aec1a230b1f0c85fe4297
+  optional: false
+  category: main
+  source: null
+  build: hed1258a_16
+- name: click
+  version: 8.1.3
+  manager: conda
+  platform: win-64
+  dependencies:
+    python: '>=3.8'
+    __win: '*'
+    colorama: '*'
+  url: https://conda.anaconda.org/conda-forge/noarch/click-8.1.3-win_pyhd8ed1ab_2.tar.bz2
+  hash:
+    md5: 6b58680207b526c42dcff68b543803dd
+    sha256: 84e80a33e9a8e5398d3e97209366b57f635462a5b894f8076ec8c95e56672c44
+  optional: false
+  category: main
+  source: null
+  build: win_pyhd8ed1ab_2
+- name: pathspec
+  version: 0.11.1
+  manager: conda
+  platform: win-64
+  dependencies:
+    python: '>=3.7'
+  url: https://conda.anaconda.org/conda-forge/noarch/pathspec-0.11.1-pyhd8ed1ab_0.conda
+  hash:
+    md5: dbb80d1e8dc2dba5c8b106dc0768ad45
+    sha256: d94463e0a140ead5c01990b565a1a21b85cb3831d56fed5955b5446bd5df33fe
+  optional: false
+  category: main
+  source: null
+  build: pyhd8ed1ab_0
+- name: mypy_extensions
+  version: 1.0.0
+  manager: conda
+  platform: win-64
+  dependencies:
+    python: '>=3.5'
+  url: https://conda.anaconda.org/conda-forge/noarch/mypy_extensions-1.0.0-pyha770c72_0.conda
+  hash:
+    md5: 4eccaeba205f0aed9ac3a9ea58568ca3
+    sha256: f240217476e148e825420c6bc3a0c0efb08c0718b7042fae960400c02af858a3
+  optional: false
+  category: main
+  source: null
+  build: pyha770c72_0
+- name: platformdirs
+  version: 3.5.3
+  manager: conda
+  platform: win-64
+  dependencies:
+    python: '>=3.7'
+    typing-extensions: '>=4.6.3'
+  url: https://conda.anaconda.org/conda-forge/noarch/platformdirs-3.5.3-pyhd8ed1ab_0.conda
+  hash:
+    md5: c085a16ba3d0c9ee282c438308b57724
+    sha256: 528dcba75c81505e911b23d9795e35c564f7be1f74c7fdf5d8ad4e231b569c2a
+  optional: false
+  category: main
+  source: null
+  build: pyhd8ed1ab_0
+- name: packaging
+  version: '23.1'
+  manager: conda
+  platform: win-64
+  dependencies:
+    python: '>=3.7'
+  url: https://conda.anaconda.org/conda-forge/noarch/packaging-23.1-pyhd8ed1ab_0.conda
+  hash:
+    md5: 91cda59e66e1e4afe9476f8ef98f5c30
+    sha256: ded536a96a00d45a693dbc2971bb688248324dadd129eddda2100e177583d768
+  optional: false
+  category: main
+  source: null
+  build: pyhd8ed1ab_0
+- name: colorama
+  version: 0.4.6
+  manager: conda
+  platform: win-64
+  dependencies:
+    python: '>=3.7'
+  url: https://conda.anaconda.org/conda-forge/noarch/colorama-0.4.6-pyhd8ed1ab_0.tar.bz2
+  hash:
+    md5: 3faab06a954c2a04039983f2c4a50d99
+    sha256: 2c1b2e9755ce3102bca8d69e8f26e4f087ece73f50418186aee7c74bef8e1698
+  optional: false
+  category: main
+  source: null
+  build: pyhd8ed1ab_0
+- name: tzdata
+  version: 2023c
+  manager: conda
+  platform: win-64
+  dependencies: {}
+  url: https://conda.anaconda.org/conda-forge/noarch/tzdata-2023c-h71feb2d_0.conda
+  hash:
+    md5: 939e3e74d8be4dac89ce83b20de2492a
+    sha256: 0449138224adfa125b220154408419ec37c06b0b49f63c5954724325903ecf55
+  optional: false
+  category: main
+  source: null
+  build: h71feb2d_0
+- name: bzip2
+  version: 1.0.8
+  manager: conda
+  platform: win-64
+  dependencies:
+    vc: '>=14.1,<15.0a0'
+    vs2015_runtime: '>=14.16.27012'
+  url: https://conda.anaconda.org/conda-forge/win-64/bzip2-1.0.8-h8ffe710_4.tar.bz2
+  hash:
+    md5: 7c03c66026944073040cb19a4f3ec3c9
+    sha256: 5389dad4e73e4865bb485f460fc60b120bae74404003d457ecb1a62eb7abf0c1
+  optional: false
+  category: main
+  source: null
+  build: h8ffe710_4
+- name: libffi
+  version: 3.4.2
+  manager: conda
+  platform: win-64
+  dependencies:
+    vs2015_runtime: '>=14.16.27012'
+    vc: '>=14.1,<15.0a0'
+  url: https://conda.anaconda.org/conda-forge/win-64/libffi-3.4.2-h8ffe710_5.tar.bz2
+  hash:
+    md5: 2c96d1b6915b408893f9472569dee135
+    sha256: 1951ab740f80660e9bc07d2ed3aefb874d78c107264fd810f24a1a6211d4b1a5
+  optional: false
+  category: main
+  source: null
+  build: h8ffe710_5
+- name: libzlib
+  version: 1.2.13
+  manager: conda
+  platform: win-64
+  dependencies:
+    vc: '>=14.2,<15'
+    vc14_runtime: '>=14.29.30139'
+    ucrt: '>=10.0.20348.0'
+  url: https://conda.anaconda.org/conda-forge/win-64/libzlib-1.2.13-hcfcfb64_5.conda
+  hash:
+    md5: 5fdb9c6a113b6b6cb5e517fd972d5f41
+    sha256: c161822ee8130b71e08b6d282b9919c1de2c5274b29921a867bca0f7d30cad26
+  optional: false
+  category: main
+  source: null
+  build: hcfcfb64_5
+- name: openssl
+  version: 3.1.1
+  manager: conda
+  platform: win-64
+  dependencies:
+    ca-certificates: '*'
+    ucrt: '>=10.0.20348.0'
+    vc14_runtime: '>=14.29.30139'
+    vc: '>=14.2,<15'
+  url: https://conda.anaconda.org/conda-forge/win-64/openssl-3.1.1-hcfcfb64_1.conda
+  hash:
+    md5: 1d913a5de46c6b2f7e4cfbd26b106b8b
+    sha256: 4424486fb9a2aeaba912a8dd8a5b5cdb6fcd65d7708fd854e3ea27449bb352a3
+  optional: false
+  category: main
+  source: null
+  build: hcfcfb64_1
+- name: ca-certificates
+  version: 2023.5.7
+  manager: conda
+  platform: win-64
+  dependencies: {}
+  url: https://conda.anaconda.org/conda-forge/win-64/ca-certificates-2023.5.7-h56e8100_0.conda
+  hash:
+    md5: 604212634bd8c4d6f20d44b946e8eedb
+    sha256: d0488a3e7a86cc11f8c847a7c12a5f1fb8567f05646faae78944807862f9d167
+  optional: false
+  category: main
+  source: null
+  build: h56e8100_0
+- name: vc
+  version: '14.3'
+  manager: conda
+  platform: win-64
+  dependencies:
+    vc14_runtime: '>=14.32.31332'
+  url: https://conda.anaconda.org/conda-forge/win-64/vc-14.3-hb25d44b_16.conda
+  hash:
+    md5: ea326b37e3bd6d2616988e09f3a9396c
+    sha256: 29bc108d66150ca75cab937f844f4ac4a836beb6ea3ee167d03c611444bb2a82
+  optional: false
+  category: main
+  source: null
+  build: hb25d44b_16
+version: 1

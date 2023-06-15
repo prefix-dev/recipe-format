@@ -1,0 +1,2739 @@
+{
+  "title": "rattler-builds schema",
+  "anyOf": [
+    {
+      "$ref": "#/definitions/SimpleRecipe"
+    },
+    {
+      "$ref": "#/definitions/ComplexRecipe"
+    }
+  ],
+  "definitions": {
+    "IfStatement_str_": {
+      "title": "IfStatement[str]",
+      "type": "object",
+      "properties": {
+        "if": {
+          "title": "If",
+          "type": "string"
+        },
+        "then": {
+          "title": "Then",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "else": {
+          "title": "Else",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "if",
+        "then"
+      ]
+    },
+    "UrlSource": {
+      "title": "UrlSource",
+      "type": "object",
+      "properties": {
+        "patches": {
+          "title": "Patches",
+          "description": "A list of patches to apply after fetching the source",
+          "default": [],
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "folder": {
+          "title": "Folder",
+          "description": "The location in the working directory to place the source",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "description": "The url that points to the source. This should be an archive that is extracted in the working directory.",
+          "type": "string"
+        },
+        "sha256": {
+          "title": "Sha256",
+          "description": "The SHA256 hash of the source archive",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "[a-fA-F0-9]{64}",
+          "type": "string"
+        },
+        "md5": {
+          "title": "Md5",
+          "description": "The MD5 hash of the source archive",
+          "minLength": 32,
+          "maxLength": 32,
+          "pattern": "[a-fA-F0-9]{32}",
+          "type": "string"
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "GitSource": {
+      "title": "GitSource",
+      "type": "object",
+      "properties": {
+        "patches": {
+          "title": "Patches",
+          "description": "A list of patches to apply after fetching the source",
+          "default": [],
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "folder": {
+          "title": "Folder",
+          "description": "The location in the working directory to place the source",
+          "type": "string"
+        },
+        "git_rev": {
+          "title": "Git Rev",
+          "description": "The git rev the checkout.",
+          "default": "HEAD",
+          "type": "string"
+        },
+        "git_url": {
+          "title": "Git Url",
+          "description": "The url that points to the git repository.",
+          "type": "string"
+        },
+        "git_depth": {
+          "title": "Git Depth",
+          "description": "A value to use when shallow cloning the repository.",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "git_url"
+      ],
+      "additionalProperties": false
+    },
+    "LocalSource": {
+      "title": "LocalSource",
+      "type": "object",
+      "properties": {
+        "patches": {
+          "title": "Patches",
+          "description": "A list of patches to apply after fetching the source",
+          "default": [],
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "folder": {
+          "title": "Folder",
+          "description": "The location in the working directory to place the source",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "description": "A path on the local machine that contains the source.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "additionalProperties": false
+    },
+    "IfStatement_Union_UrlSource__GitSource__LocalSource__": {
+      "title": "IfStatement[Union[UrlSource, GitSource, LocalSource]]",
+      "type": "object",
+      "properties": {
+        "if": {
+          "title": "If",
+          "type": "string"
+        },
+        "then": {
+          "title": "Then",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/UrlSource"
+            },
+            {
+              "$ref": "#/definitions/GitSource"
+            },
+            {
+              "$ref": "#/definitions/LocalSource"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/UrlSource"
+                  },
+                  {
+                    "$ref": "#/definitions/GitSource"
+                  },
+                  {
+                    "$ref": "#/definitions/LocalSource"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "else": {
+          "title": "Else",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/UrlSource"
+            },
+            {
+              "$ref": "#/definitions/GitSource"
+            },
+            {
+              "$ref": "#/definitions/LocalSource"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/UrlSource"
+                  },
+                  {
+                    "$ref": "#/definitions/GitSource"
+                  },
+                  {
+                    "$ref": "#/definitions/LocalSource"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "if",
+        "then"
+      ]
+    },
+    "IfStatement_ConstrainedStrValue_": {
+      "title": "IfStatement[ConstrainedStrValue]",
+      "type": "object",
+      "properties": {
+        "if": {
+          "title": "If",
+          "type": "string"
+        },
+        "then": {
+          "title": "Then",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          ]
+        },
+        "else": {
+          "title": "Else",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "if",
+        "then"
+      ]
+    },
+    "RunExports": {
+      "title": "RunExports",
+      "type": "object",
+      "properties": {
+        "weak": {
+          "title": "Weak",
+          "description": "Weak run exports apply from the host env to the run env",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "strong": {
+          "title": "Strong",
+          "description": "Strong run exports apply from the build and host env to the run env",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "noarch": {
+          "title": "Noarch",
+          "description": "Noarch run exports are the only ones looked at when building noarch packages",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "weak_constrains": {
+          "title": "Weak Constrains",
+          "description": "Weak run constrains add run_constrains from the host env",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "strong_constrains": {
+          "title": "Strong Constrains",
+          "description": "Strong run constrains add run_constrains from the build and host env",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ScriptEnv": {
+      "title": "ScriptEnv",
+      "type": "object",
+      "properties": {
+        "passthrough": {
+          "title": "Passthrough",
+          "description": "Environments variables to leak into the build environment from the host system. During build time these variables are recorded and stored in the package output. Use `secrets` for environment variables that should not be recorded.",
+          "default": [],
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "env": {
+          "title": "Env",
+          "description": "Environment variables to set in the build environment.",
+          "default": {},
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "secrets": {
+          "title": "Secrets",
+          "description": "Environment variables to leak into the build environment from the host system that contain sensitve information. Use with care because this might make recipes no longer reproducible on other machines.",
+          "default": [],
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "Build": {
+      "title": "Build",
+      "type": "object",
+      "properties": {
+        "number": {
+          "title": "Number",
+          "description": "Build number to version current build in addition to package version",
+          "default": 0,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "string": {
+          "title": "String",
+          "description": "Build string to identify build variant (if not explicitly set, computed automatically from used build variant)",
+          "type": "string"
+        },
+        "skip": {
+          "title": "Skip",
+          "description": "List of conditions under which to skip the build of the package.",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "script": {
+          "title": "Script",
+          "description": "Build script to be used. If not given, tries to find 'build.sh' on Unix or 'bld.bat' on Windows inside the recipe folder.",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "noarch": {
+          "title": "Noarch",
+          "description": "Can be either 'generic' or 'python'. A noarch 'python' package compiles .pyc files upon installation.",
+          "enum": [
+            "generic",
+            "python"
+          ],
+          "type": "string"
+        },
+        "entry_points": {
+          "title": "Entry Points",
+          "description": "Only valid if `noarch: python` - list of all entry points of the package. e.g. `bsdiff4 = bsdiff4.cli:main_bsdiff4`",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "run_exports": {
+          "title": "Run Exports",
+          "description": "Additional `run` dependencies added to a package that is build against this package.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/RunExports"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "ignore_run_exports": {
+          "title": "Ignore Run Exports",
+          "description": "Ignore specific `run` dependencies that are added by dependencies in our `host` requirements section that have`run_exports`.",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "ignore_run_exports_from": {
+          "title": "Ignore Run Exports From",
+          "description": "Ignore `run_exports` from the specified dependencies in our `host` section.`",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "track_features": {
+          "title": "Track Features",
+          "description": "deprecated, but still used to downweigh packages",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "include_recipe": {
+          "title": "Include Recipe",
+          "description": "Whether or not to include the rendered recipe in the final package.",
+          "default": true,
+          "type": "boolean"
+        },
+        "pre-link": {
+          "title": "Pre-Link",
+          "description": "Script to execute when installing - before linking. Highly discouraged!",
+          "type": "string"
+        },
+        "post-link": {
+          "title": "Post-Link",
+          "description": "Script to execute when installing - after linking.",
+          "type": "string"
+        },
+        "pre-unlink": {
+          "title": "Pre-Unlink",
+          "description": "Script to execute when removing - before unlinking.",
+          "type": "string"
+        },
+        "no_link": {
+          "title": "No Link",
+          "description": "A list of files that are included in the package but should not be installed when installing the package.",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "binary_relocation": {
+          "title": "Binary Relocation",
+          "description": "A list of files that should be excluded from binary relocation or False to ignore all binary files.",
+          "default": [],
+          "anyOf": [
+            {
+              "enum": [
+                false
+              ],
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "has_prefix_files": {
+          "title": "Has Prefix Files",
+          "description": "A list of files to force being detected as A TEXT file for prefix replacement.",
+          "default": [],
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "binary_has_prefix_files": {
+          "title": "Binary Has Prefix Files",
+          "description": "A list of files to force being detected as A BINARY file for prefix replacement.",
+          "default": [],
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "ignore_prefix_files": {
+          "title": "Ignore Prefix Files",
+          "description": "A list of files that are not considered for prefix replacement, or True to ignore all files.",
+          "default": [],
+          "anyOf": [
+            {
+              "enum": [
+                true
+              ],
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "detect_binary_files_with_prefix": {
+          "title": "Detect Binary Files With Prefix",
+          "description": "Wether to detect binary files with prefix or not. Defaults to True on Unix and False on Windows.",
+          "type": "boolean"
+        },
+        "skip_compile_pyc": {
+          "title": "Skip Compile Pyc",
+          "description": "A list of python files that should not be compiled to .pyc files at install time.",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "rpaths": {
+          "title": "Rpaths",
+          "description": "A list of rpaths (Linux only).",
+          "default": [
+            "lib/"
+          ],
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "script_env": {
+          "title": "Script Env",
+          "description": "Environment variables to either pass through to the script environment or set.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ScriptEnv"
+            }
+          ]
+        },
+        "always_include_files": {
+          "title": "Always Include Files",
+          "description": "Files to be included even if they are present in the PREFIX before building.",
+          "default": [],
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "osx_is_app": {
+          "title": "Osx Is App",
+          "default": false,
+          "type": "boolean"
+        },
+        "disable_pip": {
+          "title": "Disable Pip",
+          "default": false,
+          "type": "boolean"
+        },
+        "preserve_egg_dir": {
+          "title": "Preserve Egg Dir",
+          "default": false,
+          "type": "boolean"
+        },
+        "force_use_keys": {
+          "title": "Force Use Keys",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "force_ignore_keys": {
+          "title": "Force Ignore Keys",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "merge_build_host": {
+          "title": "Merge Build Host",
+          "default": false,
+          "type": "boolean"
+        },
+        "missing_dso_whitelist": {
+          "title": "Missing Dso Whitelist",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "runpath_whitelist": {
+          "title": "Runpath Whitelist",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "error_overdepending": {
+          "title": "Error Overdepending",
+          "description": "Error on overdepending",
+          "default": false,
+          "type": "boolean"
+        },
+        "error_overlinking": {
+          "title": "Error Overlinking",
+          "description": "Error on overlinking",
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DescriptionFile": {
+      "title": "DescriptionFile",
+      "type": "object",
+      "properties": {
+        "file": {
+          "title": "File",
+          "description": "Path in the source directory that contains the packages description. E.g. README.md",
+          "pattern": "^[^\\\\]+$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "file"
+      ],
+      "additionalProperties": false
+    },
+    "About": {
+      "title": "About",
+      "type": "object",
+      "properties": {
+        "homepage": {
+          "title": "Homepage",
+          "description": "Url of the homepage of the package.",
+          "minLength": 1,
+          "maxLength": 65536,
+          "format": "uri",
+          "type": "string"
+        },
+        "repository": {
+          "title": "Repository",
+          "description": "Url that points to where the source code is hosted e.g. (github.com)",
+          "minLength": 1,
+          "maxLength": 65536,
+          "format": "uri",
+          "type": "string"
+        },
+        "documentation": {
+          "title": "Documentation",
+          "description": "Url that points to where the documentation is hosted.",
+          "minLength": 1,
+          "maxLength": 65536,
+          "format": "uri",
+          "type": "string"
+        },
+        "license": {
+          "title": "License",
+          "description": "An license in SPDX format.",
+          "type": "string"
+        },
+        "license_file": {
+          "title": "License File",
+          "description": "Paths to the license files of this package.",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "license_url": {
+          "title": "License Url",
+          "description": "A url that points to the license file.",
+          "type": "string"
+        },
+        "summary": {
+          "title": "Summary",
+          "description": "A short description of the package.",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "description": "Extented description of the package or a file (usually a README).",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/DescriptionFile"
+            }
+          ]
+        },
+        "prelink_message": {
+          "title": "Prelink Message",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "SimplePackage": {
+      "title": "SimplePackage",
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "description": "The package name",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "description": "The package version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "TestElementRequires": {
+      "title": "TestElementRequires",
+      "type": "object",
+      "properties": {
+        "build": {
+          "title": "Build",
+          "description": "extra requirements with build_platform architecture (emulators, ...)",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "run": {
+          "title": "Run",
+          "description": "extra run dependencies",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "TestElementFiles": {
+      "title": "TestElementFiles",
+      "type": "object",
+      "properties": {
+        "source": {
+          "title": "Source",
+          "description": "extra files from $SRC_DIR",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "recipe": {
+          "title": "Recipe",
+          "description": "extra files from $RECIPE_DIR",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "CommandTestElement": {
+      "title": "CommandTestElement",
+      "type": "object",
+      "properties": {
+        "script": {
+          "title": "Script",
+          "description": "A script to run to perform the test.",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "extra_requirements": {
+          "title": "Extra Requirements",
+          "description": "Additional dependencies to install before running the test.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/TestElementRequires"
+            }
+          ]
+        },
+        "files": {
+          "title": "Files",
+          "description": "Additional files to include for the test.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/TestElementFiles"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "ImportTestElement": {
+      "title": "ImportTestElement",
+      "type": "object",
+      "properties": {
+        "imports": {
+          "title": "Imports",
+          "description": "A list of Python imports to check after having installed the built package.",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "imports"
+      ],
+      "additionalProperties": false
+    },
+    "DownstreamTestElement": {
+      "title": "DownstreamTestElement",
+      "type": "object",
+      "properties": {
+        "downstream": {
+          "title": "Downstream",
+          "description": "Install the package and use the output of this package to test if the tests in the downstream package still succeed.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "downstream"
+      ],
+      "additionalProperties": false
+    },
+    "IfStatement_Union_CommandTestElement__ImportTestElement__DownstreamTestElement__": {
+      "title": "IfStatement[Union[CommandTestElement, ImportTestElement, DownstreamTestElement]]",
+      "type": "object",
+      "properties": {
+        "if": {
+          "title": "If",
+          "type": "string"
+        },
+        "then": {
+          "title": "Then",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/CommandTestElement"
+            },
+            {
+              "$ref": "#/definitions/ImportTestElement"
+            },
+            {
+              "$ref": "#/definitions/DownstreamTestElement"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/CommandTestElement"
+                  },
+                  {
+                    "$ref": "#/definitions/ImportTestElement"
+                  },
+                  {
+                    "$ref": "#/definitions/DownstreamTestElement"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "else": {
+          "title": "Else",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/CommandTestElement"
+            },
+            {
+              "$ref": "#/definitions/ImportTestElement"
+            },
+            {
+              "$ref": "#/definitions/DownstreamTestElement"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/CommandTestElement"
+                  },
+                  {
+                    "$ref": "#/definitions/ImportTestElement"
+                  },
+                  {
+                    "$ref": "#/definitions/DownstreamTestElement"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "if",
+        "then"
+      ]
+    },
+    "Requirements": {
+      "title": "Requirements",
+      "type": "object",
+      "properties": {
+        "build": {
+          "title": "Build",
+          "description": "Dependencies to install on the build platform architecture. Compilers, CMake, everything that needs to execute at build time.",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "host": {
+          "title": "Host",
+          "description": "Dependencies to install on the host platform architecture. All the packages that your build links against.",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "run": {
+          "title": "Run",
+          "description": "Dependencies that should be installed alongside this package. Dependencies in the `host` section with `run_exports` are also automatically added here.",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "run_constrained": {
+          "title": "Run Constrained",
+          "description": "Constrained optional dependencies at runtime.",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "SimpleRecipe": {
+      "title": "SimpleRecipe",
+      "type": "object",
+      "properties": {
+        "context": {
+          "title": "Context",
+          "description": "Defines arbitrary key-value pairs for Jinja interpolation",
+          "type": "object"
+        },
+        "source": {
+          "title": "Source",
+          "description": "The source items to be downloaded and used for the build.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/UrlSource"
+            },
+            {
+              "$ref": "#/definitions/GitSource"
+            },
+            {
+              "$ref": "#/definitions/LocalSource"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_Union_UrlSource__GitSource__LocalSource__"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/UrlSource"
+                  },
+                  {
+                    "$ref": "#/definitions/GitSource"
+                  },
+                  {
+                    "$ref": "#/definitions/LocalSource"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_Union_UrlSource__GitSource__LocalSource__"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "build": {
+          "title": "Build",
+          "description": "Describes how the package should be build.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Build"
+            }
+          ]
+        },
+        "about": {
+          "title": "About",
+          "description": "A human readable description of the package information",
+          "allOf": [
+            {
+              "$ref": "#/definitions/About"
+            }
+          ]
+        },
+        "extra": {
+          "title": "Extra",
+          "description": "An set of arbitrary values that are included in the package manifest",
+          "type": "object"
+        },
+        "package": {
+          "title": "Package",
+          "description": "The package name and version.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/SimplePackage"
+            }
+          ]
+        },
+        "test": {
+          "title": "Test",
+          "description": "Tests to run after packaging",
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/CommandTestElement"
+              },
+              {
+                "$ref": "#/definitions/ImportTestElement"
+              },
+              {
+                "$ref": "#/definitions/DownstreamTestElement"
+              },
+              {
+                "$ref": "#/definitions/IfStatement_Union_CommandTestElement__ImportTestElement__DownstreamTestElement__"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/CommandTestElement"
+                    },
+                    {
+                      "$ref": "#/definitions/ImportTestElement"
+                    },
+                    {
+                      "$ref": "#/definitions/DownstreamTestElement"
+                    },
+                    {
+                      "$ref": "#/definitions/IfStatement_Union_CommandTestElement__ImportTestElement__DownstreamTestElement__"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "requirements": {
+          "title": "Requirements",
+          "description": "The package dependencies",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Requirements"
+            }
+          ]
+        }
+      },
+      "required": [
+        "package"
+      ],
+      "additionalProperties": false
+    },
+    "ComplexPackage": {
+      "title": "ComplexPackage",
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "description": "The package name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "OutputBuild": {
+      "title": "OutputBuild",
+      "type": "object",
+      "properties": {
+        "number": {
+          "title": "Number",
+          "description": "Build number to version current build in addition to package version",
+          "default": 0,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "string": {
+          "title": "String",
+          "description": "Build string to identify build variant (if not explicitly set, computed automatically from used build variant)",
+          "type": "string"
+        },
+        "skip": {
+          "title": "Skip",
+          "description": "List of conditions under which to skip the build of the package.",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "script": {
+          "title": "Script",
+          "description": "Build script to be used. If not given, tries to find 'build.sh' on Unix or 'bld.bat' on Windows inside the recipe folder.",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "noarch": {
+          "title": "Noarch",
+          "description": "Can be either 'generic' or 'python'. A noarch 'python' package compiles .pyc files upon installation.",
+          "enum": [
+            "generic",
+            "python"
+          ],
+          "type": "string"
+        },
+        "entry_points": {
+          "title": "Entry Points",
+          "description": "Only valid if `noarch: python` - list of all entry points of the package. e.g. `bsdiff4 = bsdiff4.cli:main_bsdiff4`",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "run_exports": {
+          "title": "Run Exports",
+          "description": "Additional `run` dependencies added to a package that is build against this package.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/RunExports"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "ignore_run_exports": {
+          "title": "Ignore Run Exports",
+          "description": "Ignore specific `run` dependencies that are added by dependencies in our `host` requirements section that have`run_exports`.",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "ignore_run_exports_from": {
+          "title": "Ignore Run Exports From",
+          "description": "Ignore `run_exports` from the specified dependencies in our `host` section.`",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "track_features": {
+          "title": "Track Features",
+          "description": "deprecated, but still used to downweigh packages",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "include_recipe": {
+          "title": "Include Recipe",
+          "description": "Whether or not to include the rendered recipe in the final package.",
+          "default": true,
+          "type": "boolean"
+        },
+        "pre-link": {
+          "title": "Pre-Link",
+          "description": "Script to execute when installing - before linking. Highly discouraged!",
+          "type": "string"
+        },
+        "post-link": {
+          "title": "Post-Link",
+          "description": "Script to execute when installing - after linking.",
+          "type": "string"
+        },
+        "pre-unlink": {
+          "title": "Pre-Unlink",
+          "description": "Script to execute when removing - before unlinking.",
+          "type": "string"
+        },
+        "no_link": {
+          "title": "No Link",
+          "description": "A list of files that are included in the package but should not be installed when installing the package.",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "binary_relocation": {
+          "title": "Binary Relocation",
+          "description": "A list of files that should be excluded from binary relocation or False to ignore all binary files.",
+          "default": [],
+          "anyOf": [
+            {
+              "enum": [
+                false
+              ],
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "has_prefix_files": {
+          "title": "Has Prefix Files",
+          "description": "A list of files to force being detected as A TEXT file for prefix replacement.",
+          "default": [],
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "binary_has_prefix_files": {
+          "title": "Binary Has Prefix Files",
+          "description": "A list of files to force being detected as A BINARY file for prefix replacement.",
+          "default": [],
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "ignore_prefix_files": {
+          "title": "Ignore Prefix Files",
+          "description": "A list of files that are not considered for prefix replacement, or True to ignore all files.",
+          "default": [],
+          "anyOf": [
+            {
+              "enum": [
+                true
+              ],
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "detect_binary_files_with_prefix": {
+          "title": "Detect Binary Files With Prefix",
+          "description": "Wether to detect binary files with prefix or not. Defaults to True on Unix and False on Windows.",
+          "type": "boolean"
+        },
+        "skip_compile_pyc": {
+          "title": "Skip Compile Pyc",
+          "description": "A list of python files that should not be compiled to .pyc files at install time.",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_str_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_str_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "rpaths": {
+          "title": "Rpaths",
+          "description": "A list of rpaths (Linux only).",
+          "default": [
+            "lib/"
+          ],
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "script_env": {
+          "title": "Script Env",
+          "description": "Environment variables to either pass through to the script environment or set.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ScriptEnv"
+            }
+          ]
+        },
+        "always_include_files": {
+          "title": "Always Include Files",
+          "description": "Files to be included even if they are present in the PREFIX before building.",
+          "default": [],
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "osx_is_app": {
+          "title": "Osx Is App",
+          "default": false,
+          "type": "boolean"
+        },
+        "disable_pip": {
+          "title": "Disable Pip",
+          "default": false,
+          "type": "boolean"
+        },
+        "preserve_egg_dir": {
+          "title": "Preserve Egg Dir",
+          "default": false,
+          "type": "boolean"
+        },
+        "force_use_keys": {
+          "title": "Force Use Keys",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "force_ignore_keys": {
+          "title": "Force Ignore Keys",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "merge_build_host": {
+          "title": "Merge Build Host",
+          "default": false,
+          "type": "boolean"
+        },
+        "missing_dso_whitelist": {
+          "title": "Missing Dso Whitelist",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "runpath_whitelist": {
+          "title": "Runpath Whitelist",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "error_overdepending": {
+          "title": "Error Overdepending",
+          "description": "Error on overdepending",
+          "default": false,
+          "type": "boolean"
+        },
+        "error_overlinking": {
+          "title": "Error Overlinking",
+          "description": "Error on overlinking",
+          "default": false,
+          "type": "boolean"
+        },
+        "cache_only": {
+          "title": "Cache Only",
+          "description": "Do not output a package but use this output as an input to others.",
+          "default": false,
+          "type": "boolean"
+        },
+        "cache_from": {
+          "title": "Cache From",
+          "description": "Take the output of the specified outputs and copy them in the working directory.",
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_ConstrainedStrValue_"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "Output": {
+      "title": "Output",
+      "type": "object",
+      "properties": {
+        "package": {
+          "title": "Package",
+          "description": "The package name and version.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/SimplePackage"
+            }
+          ]
+        },
+        "source": {
+          "title": "Source",
+          "description": "The source items to be downloaded and used for the build.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/UrlSource"
+            },
+            {
+              "$ref": "#/definitions/GitSource"
+            },
+            {
+              "$ref": "#/definitions/LocalSource"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_Union_UrlSource__GitSource__LocalSource__"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/UrlSource"
+                  },
+                  {
+                    "$ref": "#/definitions/GitSource"
+                  },
+                  {
+                    "$ref": "#/definitions/LocalSource"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_Union_UrlSource__GitSource__LocalSource__"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "build": {
+          "title": "Build",
+          "description": "Describes how the package should be build.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/OutputBuild"
+            }
+          ]
+        },
+        "requirements": {
+          "title": "Requirements",
+          "description": "The package dependencies",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Requirements"
+            }
+          ]
+        },
+        "test": {
+          "title": "Test",
+          "description": "Tests to run after packaging",
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/CommandTestElement"
+              },
+              {
+                "$ref": "#/definitions/ImportTestElement"
+              },
+              {
+                "$ref": "#/definitions/DownstreamTestElement"
+              },
+              {
+                "$ref": "#/definitions/IfStatement_Union_CommandTestElement__ImportTestElement__DownstreamTestElement__"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/CommandTestElement"
+                    },
+                    {
+                      "$ref": "#/definitions/ImportTestElement"
+                    },
+                    {
+                      "$ref": "#/definitions/DownstreamTestElement"
+                    },
+                    {
+                      "$ref": "#/definitions/IfStatement_Union_CommandTestElement__ImportTestElement__DownstreamTestElement__"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "about": {
+          "title": "About",
+          "description": "A human readable description of the package information. The values here are merged with the top level `about` field.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/About"
+            }
+          ]
+        },
+        "extra": {
+          "title": "Extra",
+          "description": "An set of arbitrary values that are included in the package manifest. The values here are merged with the top level `extras` field.",
+          "type": "object"
+        }
+      }
+    },
+    "IfStatement_Output_": {
+      "title": "IfStatement[Output]",
+      "type": "object",
+      "properties": {
+        "if": {
+          "title": "If",
+          "type": "string"
+        },
+        "then": {
+          "title": "Then",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Output"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Output"
+              }
+            }
+          ]
+        },
+        "else": {
+          "title": "Else",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Output"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Output"
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "if",
+        "then"
+      ]
+    },
+    "ComplexRecipe": {
+      "title": "ComplexRecipe",
+      "type": "object",
+      "properties": {
+        "context": {
+          "title": "Context",
+          "description": "Defines arbitrary key-value pairs for Jinja interpolation",
+          "type": "object"
+        },
+        "source": {
+          "title": "Source",
+          "description": "The source items to be downloaded and used for the build.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/UrlSource"
+            },
+            {
+              "$ref": "#/definitions/GitSource"
+            },
+            {
+              "$ref": "#/definitions/LocalSource"
+            },
+            {
+              "$ref": "#/definitions/IfStatement_Union_UrlSource__GitSource__LocalSource__"
+            },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/UrlSource"
+                  },
+                  {
+                    "$ref": "#/definitions/GitSource"
+                  },
+                  {
+                    "$ref": "#/definitions/LocalSource"
+                  },
+                  {
+                    "$ref": "#/definitions/IfStatement_Union_UrlSource__GitSource__LocalSource__"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "build": {
+          "title": "Build",
+          "description": "Describes how the package should be build.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Build"
+            }
+          ]
+        },
+        "about": {
+          "title": "About",
+          "description": "A human readable description of the package information",
+          "allOf": [
+            {
+              "$ref": "#/definitions/About"
+            }
+          ]
+        },
+        "extra": {
+          "title": "Extra",
+          "description": "An set of arbitrary values that are included in the package manifest",
+          "type": "object"
+        },
+        "package": {
+          "title": "Package",
+          "description": "The package version.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ComplexPackage"
+            }
+          ]
+        },
+        "outputs": {
+          "title": "Outputs",
+          "description": "A list of outputs that are generated for this recipe.",
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/Output"
+              },
+              {
+                "$ref": "#/definitions/IfStatement_Output_"
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "outputs"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

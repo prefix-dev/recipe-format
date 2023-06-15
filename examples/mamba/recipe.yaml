@@ -1,0 +1,187 @@
+# yaml-language-server: $schema=../../schema.json
+
+context:
+  name: mamba
+  libmamba_version: "1.4.2"
+  libmambapy_version: "1.4.2"
+  # can also reference previous variables here
+  mamba_version: ${{ libmamba_version }}
+  release: "2023.04.06"
+  libmamba_version_split: ${{ libmamba_version.split('.') }}
+
+# we can leave this out
+# package:
+#   name: mamba-split
+
+# this is inherited by every output
+source:
+  url: https://github.com/mamba-org/mamba/archive/refs/tags/${{ release }}.tar.gz
+  sha256: bc1ec3de0dd8398fcc6f524e6607d9d8f6dfeeedb2208ebe0f2070c8fd8fdd83
+
+build:
+  number: 0
+
+outputs:
+  - package:
+      name: libmamba
+      version: ${{ libmamba_version }}
+
+    build:
+      script: ${{ "build_mamba.sh" if unix else "build_mamba.bat" }}
+      run_exports:
+        - ${{ pin_subpackage('libmamba', max_pin='x.x') }}
+      ignore_run_exports:
+        - spdlog
+        - if: win
+          then: python
+
+    requirements:
+      build:
+        - ${{ compiler('cxx') }}
+        - cmake
+        - ninja
+        - ${{ "python" if win }}
+      host:
+        - libsolv >=0.7.19
+        - libcurl
+        - openssl
+        - libarchive
+        - nlohmann_json
+        - cpp-expected
+        - reproc-cpp >=14.2.1
+        - spdlog
+        - yaml-cpp
+        - cli11
+        - fmt
+        - if: win
+          then: winreg
+
+    test:
+      - script:
+          - if: unix
+            then:
+              - test -d ${PREFIX}/include/mamba
+              - test -f ${PREFIX}/include/mamba/version.hpp
+              - test -f ${PREFIX}/lib/cmake/libmamba/libmambaConfig.cmake
+              - test -f ${PREFIX}/lib/cmake/libmamba/libmambaConfigVersion.cmake
+              - test -e ${PREFIX}/lib/libmamba${SHLIB_EXT}
+            else:
+              - if not exist %LIBRARY_PREFIX%\include\mamba\version.hpp (exit 1)
+              - if not exist %LIBRARY_PREFIX%\lib\cmake\libmamba\libmambaConfig.cmake (exit 1)
+              - if not exist %LIBRARY_PREFIX%\lib\cmake\libmamba\libmambaConfigVersion.cmake (exit 1)
+              - if not exist %LIBRARY_PREFIX%\bin\libmamba.dll (exit 1)
+              - if not exist %LIBRARY_PREFIX%\lib\libmamba.lib (exit 1)
+          - if: unix
+            then:
+              - cat $PREFIX/include/mamba/version.hpp | grep "LIBMAMBA_VERSION_MAJOR ${{ libmamba_version_split[0] }}"
+              - cat $PREFIX/include/mamba/version.hpp | grep "LIBMAMBA_VERSION_MINOR ${{ libmamba_version_split[1] }}"
+              - cat $PREFIX/include/mamba/version.hpp | grep "LIBMAMBA_VERSION_PATCH ${{ libmamba_version_split[2] }}"
+
+  - package:
+      name: libmambapy
+      version: ${{ libmambapy_version }}
+    build:
+      script: ${{ "build_mamba.sh" if unix else "build_mamba.bat" }}
+      string: py${{ CONDA_PY }}h${{ PKG_HASH }}_${{ PKG_BUILDNUM }}
+      run_exports:
+        - ${{ pin_subpackage('libmambapy', max_pin='x.x') }}
+      ignore_run_exports:
+        - spdlog
+    requirements:
+      build:
+        - ${{ compiler('cxx') }}
+        - cmake
+        - ninja
+        - if: build_platform != target_platform
+          then:
+            - python
+            - cross-python_${{ target_platform }}
+            - pybind11
+            - pybind11-abi
+      host:
+        - python
+        - pip
+        - pybind11
+        - pybind11-abi
+        - openssl
+        - yaml-cpp
+        - cpp-expected
+        - spdlog
+        - fmt
+        - termcolor-cpp
+        - nlohmann_json
+        - ${{ pin_subpackage('libmamba', exact=True) }}
+      run:
+        - python
+        - ${{ pin_subpackage('libmamba', exact=True) }}
+
+    test:
+      - imports:
+          - libmambapy
+          - libmambapy.bindings
+      - script:
+          - python -c "import libmambapy._version; assert libmambapy._version.__version__ == '${{ libmambapy_version }}'"
+
+  - package:
+      name: mamba
+      version: ${{ mamba_version }}
+    build:
+      script: ${{ "build_mamba.sh" if unix else "build_mamba.bat" }}
+      string: py${{ CONDA_PY }}h${{ PKG_HASH }}_${{ PKG_BUILDNUM }}
+      entry_points:
+        - mamba = mamba.mamba:main
+    requirements:
+      build:
+        - if: build_platform != target_platform
+          then:
+            - python
+            - cross-python_${{ target_platform }}
+      host:
+        - python
+        - pip
+        - openssl
+        - ${{ pin_subpackage('libmambapy', exact=True) }}
+      run:
+        - python
+        - conda >=4.14,<23.4
+        - ${{ pin_subpackage('libmambapy', exact=True) }}
+
+    test:
+      - imports: [mamba]
+
+      - extra_requirements:
+          run:
+            - pip
+        script:
+          - mamba --help
+          # check dependencies with pip
+          - pip check
+          - if: win
+            then:
+              - if exist %PREFIX%\condabin\mamba.bat (exit 0) else (exit 1)
+          - if: linux
+            then:
+              - test -f ${PREFIX}/etc/profile.d/mamba.sh
+              # these tests work when run on win, but for some reason not during conda build
+              - mamba create -n test_py2 python=2.7 --dry-run
+              - mamba install xtensor xsimd -c conda-forge --dry-run
+
+          - if: unix
+            then:
+              - test -f ${PREFIX}/condabin/mamba
+
+          # for some reason tqdm doesn't have a proper colorama dependency so pip check fails
+          # but that's completely unrelated to mamba
+          - python -c "import mamba._version; assert mamba._version.__version__ == '${{ mamba_version }}'"
+
+about:
+  homepage: https://github.com/mamba-org/mamba
+  license: BSD-3-Clause
+  license_file: LICENSE
+  summary: A fast drop-in alternative to conda, using libsolv for dependency resolution
+  description: Just a package manager
+  repository: https://github.com/mamba-org/mamba
+
+extra:
+  recipe-maintainers:
+    - the_maintainer_bot
