@@ -6,12 +6,12 @@ authors = ["Bas Zalmstra <zalmstra.bas@gmail.com>"]
 channels = ["conda-forge"]
 platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
 
-[commands]
+[tasks]
 generate = "python model.py"
 fmt = "black model.py"
 check = "ruff model.py --fix --ignore E501"
 
 [dependencies]
-pydantic = "1.10.9.*"
-ruff = "0.0.271.*"
-black = "23.3.0.*"
+pydantic = "2.0.2.*"
+ruff = "0.0.276.*"
+black = "23.7.0.*"

@@ -1,8 +1,15 @@
 from __future__ import annotations
+import json
 
 from typing import Any, Dict, List, Optional, Union, TypeVar, Generic, Literal
-from pydantic import BaseModel, Extra, Field, constr, conint, schema_json_of, AnyHttpUrl
-from pydantic.generics import GenericModel
+from pydantic import (
+    BaseModel,
+    Field,
+    constr,
+    conint,
+    AnyHttpUrl,
+    TypeAdapter,
+)
 
 NonEmptyStr = constr(min_length=1)
 
@@ -10,43 +17,15 @@ NonEmptyStr = constr(min_length=1)
 # Conditional formatting  #
 ###########################
 
-# TODO: Pydantic doesnt seem to support Generic Type Aliases yet. We need these to make
-#   the typing of ConditionalList work. For now though we'll just have to manually
-#   expand the TypeAlias. So:
-#
-#  ```python
-#  ConditionalList[T]
-#  ````
-#
-#  becomes
-#
-#  ```python
-#  Union[T, IfStatement[T], List[Union[T, IfStatement[T]]]]
-#  ````
 T = TypeVar("T")
 ConditionalList = Union[T, "IfStatement[T]", List[Union[T, "IfStatement[T]"]]]
 
 
-class IfStatement(GenericModel, Generic[T]):
+class IfStatement(BaseModel, Generic[T]):
     expr: str = Field(..., alias="if")
     then: Union[T, List[T]]
     otherwise: Optional[Union[T, List[T]]] = Field(None, alias="else")
 
-
-ConditionalStringList = Union[str, IfStatement[str], List[Union[str, IfStatement[str]]]]
-NonEmptyStringList = Union[
-    NonEmptyStr,
-    IfStatement[NonEmptyStr],
-    List[Union[NonEmptyStr, IfStatement[NonEmptyStr]]],
-]
-
-
-# HACK: Pydantic doesnt support constrained typeds in combination with generic
-#  models. This means we cant use `PathNoBackslash` in if statements. `str` is
-#  supported though, so we'll just use that.
-#
-#  See: https://github.com/pydantic/pydantic/issues/4528
-ListNoBackslash = Union[str, IfStatement[str], List[Union[str, IfStatement[str]]]]
 
 ###################
 # Package section  #
@@ -55,36 +34,36 @@ ListNoBackslash = Union[str, IfStatement[str], List[Union[str, IfStatement[str]]
 
 class BasePackage(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
     name: str = Field(description="The package name")
 
 
 class SimplePackage(BasePackage):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
     version: str = Field(description="The package version")
 
 
 class ComplexPackage(BasePackage):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
 
 ###################
 # Source section  #
 ###################
 
-MD5Str = constr(min_length=32, max_length=32, regex=r"[a-fA-F0-9]{32}")
-SHA256Str = constr(min_length=64, max_length=64, regex=r"[a-fA-F0-9]{64}")
+MD5Str = constr(min_length=32, max_length=32, pattern=r"[a-fA-F0-9]{32}")
+SHA256Str = constr(min_length=64, max_length=64, pattern=r"[a-fA-F0-9]{64}")
 
 
 class BaseSource(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
-    patches: ListNoBackslash = Field(
+    patches: ConditionalList[PathNoBackslash] = Field(
         [], description="A list of patches to apply after fetching the source"
     )
     folder: Optional[str] = Field(
@@ -126,18 +105,16 @@ Source = Union[UrlSource, GitSource, LocalSource]
 ###################
 
 PythonEntryPoint = str
-PathNoBackslash = constr(regex=r"^[^\\]+$")
+PathNoBackslash = constr(pattern=r"^[^\\]+$")
 MatchSpec = str
 
-MatchSpecList = Union[
-    MatchSpec, IfStatement[MatchSpec], List[Union[MatchSpec, IfStatement[MatchSpec]]]
-]
+MatchSpecList = ConditionalList[MatchSpec]
 UnsignedInt = conint(ge=0)
 
 
 class RunExports(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
     weak: Optional[MatchSpecList] = Field(
         None, description="Weak run exports apply from the host env to the run env"
@@ -161,27 +138,27 @@ class RunExports(BaseModel):
 
 class ScriptEnv(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
-    passthrough: NonEmptyStringList = Field(
+    passthrough: ConditionalList[NonEmptyStr] = Field(
         [],
         description="Environments variables to leak into the build environment from the host system. During build time these variables are recorded and stored in the package output. Use `secrets` for environment variables that should not be recorded.",
     )
     env: Dict[str, str] = Field(
         {}, description="Environment variables to set in the build environment."
     )
-    secrets: NonEmptyStringList = Field(
+    secrets: ConditionalList[NonEmptyStr] = Field(
         [],
         description="Environment variables to leak into the build environment from the host system that contain sensitve information. Use with care because this might make recipes no longer reproducible on other machines.",
     )
 
 
-JinjaExpr = constr(regex=r"\$\{\{.*\}\}")
+JinjaExpr = constr(pattern=r"\$\{\{.*\}\}")
 
 
 class Build(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
     number: Optional[Union[UnsignedInt, JinjaExpr]] = Field(
         0,
@@ -191,11 +168,11 @@ class Build(BaseModel):
         None,
         description="Build string to identify build variant (if not explicitly set, computed automatically from used build variant)",
     )
-    skip: Optional[NonEmptyStringList] = Field(
+    skip: Optional[ConditionalList[NonEmptyStr]] = Field(
         None,
         description="List of conditions under which to skip the build of the package.",
     )
-    script: Optional[NonEmptyStringList] = Field(
+    script: Optional[ConditionalList[NonEmptyStr]] = Field(
         None,
         description="Build script to be used. If not given, tries to find 'build.sh' on Unix or 'bld.bat' on Windows inside the recipe folder.",
     )
@@ -205,13 +182,7 @@ class Build(BaseModel):
         description="Can be either 'generic' or 'python'. A noarch 'python' package compiles .pyc files upon installation.",
     )
     # Note: entry points only valid if noarch: python is used! Write custom validator?
-    entry_points: Optional[
-        Union[
-            PythonEntryPoint,
-            IfStatement[PythonEntryPoint],
-            List[Union[PythonEntryPoint, IfStatement[PythonEntryPoint]]],
-        ]
-    ] = Field(
+    entry_points: Optional[ConditionalList[PythonEntryPoint]] = Field(
         None,
         description="Only valid if `noarch: python` - list of all entry points of the package. e.g. `bsdiff4 = bsdiff4.cli:main_bsdiff4`",
     )
@@ -220,17 +191,17 @@ class Build(BaseModel):
         None,
         description="Additional `run` dependencies added to a package that is build against this package.",
     )
-    ignore_run_exports: Optional[NonEmptyStringList] = Field(
+    ignore_run_exports: Optional[ConditionalList[NonEmptyStr]] = Field(
         None,
         description="Ignore specific `run` dependencies that are added by dependencies in our `host` requirements section that have`run_exports`.",
     )
-    ignore_run_exports_from: Optional[NonEmptyStringList] = Field(
+    ignore_run_exports_from: Optional[ConditionalList[NonEmptyStr]] = Field(
         None,
         description="Ignore `run_exports` from the specified dependencies in our `host` section.`",
     )
 
     # deprecated, but still used to downweigh packages
-    track_features: Optional[NonEmptyStringList] = Field(
+    track_features: Optional[ConditionalList[NonEmptyStr]] = Field(
         None, description="deprecated, but still used to downweigh packages"
     )
 
@@ -260,24 +231,24 @@ class Build(BaseModel):
         description="Script to execute when removing - before unlinking.",
     )
 
-    no_link: Optional[ListNoBackslash] = Field(
+    no_link: Optional[ConditionalList[PathNoBackslash]] = Field(
         None,
         description="A list of files that are included in the package but should not be installed when installing the package.",
     )
-    binary_relocation: Union[Literal[False], ListNoBackslash] = Field(
+    binary_relocation: Union[Literal[False], ConditionalList[PathNoBackslash]] = Field(
         [],
         description="A list of files that should be excluded from binary relocation or False to ignore all binary files.",
     )
 
-    has_prefix_files: ListNoBackslash = Field(
+    has_prefix_files: ConditionalList[PathNoBackslash] = Field(
         [],
         description="A list of files to force being detected as A TEXT file for prefix replacement.",
     )
-    binary_has_prefix_files: ListNoBackslash = Field(
+    binary_has_prefix_files: ConditionalList[PathNoBackslash] = Field(
         [],
         description="A list of files to force being detected as A BINARY file for prefix replacement.",
     )
-    ignore_prefix_files: Union[Literal[True], ListNoBackslash] = Field(
+    ignore_prefix_files: Union[Literal[True], ConditionalList[PathNoBackslash]] = Field(
         [],
         description="A list of files that are not considered for prefix replacement, or True to ignore all files.",
     )
@@ -288,12 +259,12 @@ class Build(BaseModel):
         description="Wether to detect binary files with prefix or not. Defaults to True on Unix and False on Windows.",
     )
 
-    skip_compile_pyc: Optional[ListNoBackslash] = Field(
+    skip_compile_pyc: Optional[ConditionalList[PathNoBackslash]] = Field(
         None,
         description="A list of python files that should not be compiled to .pyc files at install time.",
     )
 
-    rpaths: NonEmptyStringList = Field(
+    rpaths: ConditionalList[NonEmptyStr] = Field(
         ["lib/"], description="A list of rpaths (Linux only)."
     )
     # rpaths_patcher: Optional[str] = None
@@ -305,7 +276,7 @@ class Build(BaseModel):
     )
 
     # Files to be included even if they are present in the PREFIX before building
-    always_include_files: NonEmptyStringList = Field(
+    always_include_files: ConditionalList[NonEmptyStr] = Field(
         [],
         description="Files to be included even if they are present in the PREFIX before building.",
     )
@@ -320,13 +291,13 @@ class Build(BaseModel):
     preserve_egg_dir: bool = False
 
     # note didnt find _any_ usage of force_use_keys in conda-forge
-    force_use_keys: Optional[NonEmptyStringList] = None
-    force_ignore_keys: Optional[NonEmptyStringList] = None
+    force_use_keys: Optional[ConditionalList[NonEmptyStr]] = None
+    force_ignore_keys: Optional[ConditionalList[NonEmptyStr]] = None
 
     merge_build_host: bool = False
 
-    missing_dso_whitelist: Optional[NonEmptyStringList] = None
-    runpath_whitelist: Optional[NonEmptyStringList] = None
+    missing_dso_whitelist: Optional[ConditionalList[NonEmptyStr]] = None
+    runpath_whitelist: Optional[ConditionalList[NonEmptyStr]] = None
 
     error_overdepending: bool = Field(False, description="Error on overdepending")
     error_overlinking: bool = Field(False, description="Error on overlinking")
@@ -339,7 +310,7 @@ class Build(BaseModel):
 
 class Requirements(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
     build: Optional[MatchSpecList] = Field(
         None,
@@ -365,7 +336,7 @@ class Requirements(BaseModel):
 
 class TestElementRequires(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
     build: Optional[MatchSpecList] = Field(
         None,
@@ -376,21 +347,21 @@ class TestElementRequires(BaseModel):
 
 class TestElementFiles(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
-    source: Optional[NonEmptyStringList] = Field(
+    source: Optional[ConditionalList[NonEmptyStr]] = Field(
         None, description="extra files from $SRC_DIR"
     )
-    recipe: Optional[NonEmptyStringList] = Field(
+    recipe: Optional[ConditionalList[NonEmptyStr]] = Field(
         None, description="extra files from $RECIPE_DIR"
     )
 
 
 class CommandTestElement(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
-    script: NonEmptyStringList = Field(
+    script: ConditionalList[NonEmptyStr] = Field(
         None, description="A script to run to perform the test."
     )
     extra_requirements: Optional[TestElementRequires] = Field(
@@ -403,9 +374,9 @@ class CommandTestElement(BaseModel):
 
 class ImportTestElement(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
-    imports: NonEmptyStringList = Field(
+    imports: ConditionalList[NonEmptyStr] = Field(
         ...,
         description="A list of Python imports to check after having installed the built package.",
     )
@@ -413,7 +384,7 @@ class ImportTestElement(BaseModel):
 
 class DownstreamTestElement(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
     downstream: MatchSpec = Field(
         ...,
@@ -430,7 +401,7 @@ TestElement = Union[CommandTestElement, ImportTestElement, DownstreamTestElement
 
 class DescriptionFile(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
     file: PathNoBackslash = Field(
         ...,
@@ -440,7 +411,7 @@ class DescriptionFile(BaseModel):
 
 class About(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
     # URLs
     homepage: Optional[AnyHttpUrl] = Field(
@@ -458,7 +429,7 @@ class About(BaseModel):
     license_: Optional[str] = Field(
         None, alias="license", description="An license in SPDX format."
     )
-    license_file: Optional[ListNoBackslash] = Field(
+    license_file: Optional[ConditionalList[PathNoBackslash]] = Field(
         None, description="Paths to the license files of this package."
     )
     license_url: Optional[str] = Field(
@@ -487,7 +458,7 @@ class OutputBuild(Build):
         False,
         description="Do not output a package but use this output as an input to others.",
     )
-    cache_from: Optional[NonEmptyStringList] = Field(
+    cache_from: Optional[ConditionalList[NonEmptyStr]] = Field(
         None,
         description="Take the output of the specified outputs and copy them in the working directory.",
     )
@@ -498,9 +469,7 @@ class Output(BaseModel):
         None, description="The package name and version."
     )
 
-    source: Union[
-        None, Source, IfStatement[Source], List[Union[Source, IfStatement[Source]]]
-    ] = Field(
+    source: Optional[ConditionalList[Source]] = Field(
         None, description="The source items to be downloaded and used for the build."
     )
     build: Optional[OutputBuild] = Field(
@@ -539,7 +508,7 @@ class Output(BaseModel):
 
 class BaseRecipe(BaseModel):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
     context: Optional[Dict[str, Any]] = Field(
         None, description="Defines arbitrary key-value pairs for Jinja interpolation"
@@ -565,38 +534,32 @@ class BaseRecipe(BaseModel):
 
 class ComplexRecipe(BaseRecipe):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
     package: Optional[ComplexPackage] = Field(None, description="The package version.")
 
-    outputs: List[Union[Output, IfStatement[Output]]] = Field(
+    outputs: ConditionalList[Output] = Field(
         ..., description="A list of outputs that are generated for this recipe."
     )
 
 
 class SimpleRecipe(BaseRecipe):
     class Config:
-        extra = Extra.forbid
+        extra = "forbid"
 
     package: SimplePackage = Field(..., description="The package name and version.")
 
-    test: Optional[
-        List[
-            Union[
-                TestElement,
-                IfStatement[TestElement],
-                List[Union[TestElement, IfStatement[TestElement]]],
-            ]
-        ]
-    ] = Field(None, description="Tests to run after packaging")
+    test: Optional[ConditionalList[TestElement]] = Field(
+        None, description="Tests to run after packaging"
+    )
 
     requirements: Optional[Requirements] = Field(
         None, description="The package dependencies"
     )
 
 
-Recipe = Union[SimpleRecipe, ComplexRecipe]
+Recipe = TypeAdapter(Union[SimpleRecipe, ComplexRecipe])
 
 
 if __name__ == "__main__":
-    print(schema_json_of(Recipe, title="rattler-builds schema", indent=2))
+    print(json.dumps(Recipe.json_schema(), indent=2))
