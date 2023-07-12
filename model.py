@@ -13,6 +13,12 @@ from pydantic import (
 
 NonEmptyStr = constr(min_length=1)
 
+
+class StrictBaseModel(BaseModel):
+    class Config:
+        extra = "forbid"
+
+
 ###########################
 # Conditional formatting  #
 ###########################
@@ -32,23 +38,16 @@ class IfStatement(BaseModel, Generic[T]):
 ###################
 
 
-class BasePackage(BaseModel):
-    class Config:
-        extra = "forbid"
-
+class BasePackage(StrictBaseModel):
     name: str = Field(description="The package name")
 
 
 class SimplePackage(BasePackage):
-    class Config:
-        extra = "forbid"
-
     version: str = Field(description="The package version")
 
 
 class ComplexPackage(BasePackage):
-    class Config:
-        extra = "forbid"
+    pass
 
 
 ###################
@@ -59,10 +58,7 @@ MD5Str = constr(min_length=32, max_length=32, pattern=r"[a-fA-F0-9]{32}")
 SHA256Str = constr(min_length=64, max_length=64, pattern=r"[a-fA-F0-9]{64}")
 
 
-class BaseSource(BaseModel):
-    class Config:
-        extra = "forbid"
-
+class BaseSource(StrictBaseModel):
     patches: ConditionalList[PathNoBackslash] = Field(
         [], description="A list of patches to apply after fetching the source"
     )
@@ -112,10 +108,7 @@ MatchSpecList = ConditionalList[MatchSpec]
 UnsignedInt = conint(ge=0)
 
 
-class RunExports(BaseModel):
-    class Config:
-        extra = "forbid"
-
+class RunExports(StrictBaseModel):
     weak: Optional[MatchSpecList] = Field(
         None, description="Weak run exports apply from the host env to the run env"
     )
@@ -136,10 +129,7 @@ class RunExports(BaseModel):
     )
 
 
-class ScriptEnv(BaseModel):
-    class Config:
-        extra = "forbid"
-
+class ScriptEnv(StrictBaseModel):
     passthrough: ConditionalList[NonEmptyStr] = Field(
         [],
         description="Environments variables to leak into the build environment from the host system. During build time these variables are recorded and stored in the package output. Use `secrets` for environment variables that should not be recorded.",
@@ -156,10 +146,7 @@ class ScriptEnv(BaseModel):
 JinjaExpr = constr(pattern=r"\$\{\{.*\}\}")
 
 
-class Build(BaseModel):
-    class Config:
-        extra = "forbid"
-
+class Build(StrictBaseModel):
     number: Optional[Union[UnsignedInt, JinjaExpr]] = Field(
         0,
         description="Build number to version current build in addition to package version",
@@ -308,10 +295,7 @@ class Build(BaseModel):
 #########################
 
 
-class Requirements(BaseModel):
-    class Config:
-        extra = "forbid"
-
+class Requirements(StrictBaseModel):
     build: Optional[MatchSpecList] = Field(
         None,
         description="Dependencies to install on the build platform architecture. Compilers, CMake, everything that needs to execute at build time.",
@@ -334,10 +318,7 @@ class Requirements(BaseModel):
 ################
 
 
-class TestElementRequires(BaseModel):
-    class Config:
-        extra = "forbid"
-
+class TestElementRequires(StrictBaseModel):
     build: Optional[MatchSpecList] = Field(
         None,
         description="extra requirements with build_platform architecture (emulators, ...)",
@@ -345,10 +326,7 @@ class TestElementRequires(BaseModel):
     run: Optional[MatchSpecList] = Field(None, description="extra run dependencies")
 
 
-class TestElementFiles(BaseModel):
-    class Config:
-        extra = "forbid"
-
+class TestElementFiles(StrictBaseModel):
     source: Optional[ConditionalList[NonEmptyStr]] = Field(
         None, description="extra files from $SRC_DIR"
     )
@@ -357,10 +335,7 @@ class TestElementFiles(BaseModel):
     )
 
 
-class CommandTestElement(BaseModel):
-    class Config:
-        extra = "forbid"
-
+class CommandTestElement(StrictBaseModel):
     script: ConditionalList[NonEmptyStr] = Field(
         None, description="A script to run to perform the test."
     )
@@ -372,20 +347,14 @@ class CommandTestElement(BaseModel):
     )
 
 
-class ImportTestElement(BaseModel):
-    class Config:
-        extra = "forbid"
-
+class ImportTestElement(StrictBaseModel):
     imports: ConditionalList[NonEmptyStr] = Field(
         ...,
         description="A list of Python imports to check after having installed the built package.",
     )
 
 
-class DownstreamTestElement(BaseModel):
-    class Config:
-        extra = "forbid"
-
+class DownstreamTestElement(StrictBaseModel):
     downstream: MatchSpec = Field(
         ...,
         description="Install the package and use the output of this package to test if the tests in the downstream package still succeed.",
@@ -399,20 +368,14 @@ TestElement = Union[CommandTestElement, ImportTestElement, DownstreamTestElement
 #########
 
 
-class DescriptionFile(BaseModel):
-    class Config:
-        extra = "forbid"
-
+class DescriptionFile(StrictBaseModel):
     file: PathNoBackslash = Field(
         ...,
         description="Path in the source directory that contains the packages description. E.g. README.md",
     )
 
 
-class About(BaseModel):
-    class Config:
-        extra = "forbid"
-
+class About(StrictBaseModel):
     # URLs
     homepage: Optional[AnyHttpUrl] = Field(
         None, description="Url of the homepage of the package."
@@ -506,10 +469,7 @@ class Output(BaseModel):
 #####################
 
 
-class BaseRecipe(BaseModel):
-    class Config:
-        extra = "forbid"
-
+class BaseRecipe(StrictBaseModel):
     context: Optional[Dict[str, Any]] = Field(
         None, description="Defines arbitrary key-value pairs for Jinja interpolation"
     )
@@ -533,9 +493,6 @@ class BaseRecipe(BaseModel):
 
 
 class ComplexRecipe(BaseRecipe):
-    class Config:
-        extra = "forbid"
-
     package: Optional[ComplexPackage] = Field(None, description="The package version.")
 
     outputs: ConditionalList[Output] = Field(
@@ -544,9 +501,6 @@ class ComplexRecipe(BaseRecipe):
 
 
 class SimpleRecipe(BaseRecipe):
-    class Config:
-        extra = "forbid"
-
     package: SimplePackage = Field(..., description="The package name and version.")
 
     test: Optional[ConditionalList[TestElement]] = Field(
