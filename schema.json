@@ -944,14 +944,32 @@
       "additionalProperties": false,
       "properties": {
         "name": {
-          "description": "The package name",
-          "title": "Name",
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The package name, this can be overwritten per output",
+          "title": "Name"
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The package version, this can be overwritten per output",
+          "title": "Version"
         }
       },
-      "required": [
-        "name"
-      ],
       "title": "ComplexPackage",
       "type": "object"
     },
@@ -1491,14 +1509,14 @@
         "package": {
           "anyOf": [
             {
-              "$ref": "#/$defs/SimplePackage"
+              "$ref": "#/$defs/ComplexPackage"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "description": "The package name and version."
+          "description": "The package name and version, this overwrites any top-level fields."
         },
         "source": {
           "anyOf": [

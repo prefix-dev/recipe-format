@@ -38,16 +38,14 @@ class IfStatement(BaseModel, Generic[T]):
 ###################
 
 
-class BasePackage(StrictBaseModel):
+class SimplePackage(StrictBaseModel):
     name: str = Field(description="The package name")
-
-
-class SimplePackage(BasePackage):
     version: str = Field(description="The package version")
 
 
-class ComplexPackage(BasePackage):
-    pass
+class ComplexPackage(StrictBaseModel):
+    name: Optional[str] = Field(None, description="The package name, this can be overwritten per output")
+    version: Optional[str] = Field(None, description="The package version, this can be overwritten per output")
 
 
 ###################
@@ -428,8 +426,8 @@ class OutputBuild(Build):
 
 
 class Output(BaseModel):
-    package: Optional[SimplePackage] = Field(
-        None, description="The package name and version."
+    package: Optional[ComplexPackage] = Field(
+        None, description="The package name and version, this overwrites any top-level fields."
     )
 
     source: Optional[ConditionalList[Source]] = Field(
