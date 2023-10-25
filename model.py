@@ -44,8 +44,8 @@ class SimplePackage(StrictBaseModel):
 
 
 class ComplexPackage(StrictBaseModel):
-    name: Optional[str] = Field(None, description="The package name, this can be overwritten per output")
-    version: Optional[str] = Field(None, description="The package version, this can be overwritten per output")
+    name: str = Field(description="The recipe name, this is only used to identify the name of the recipe.")
+    version: Optional[str] = Field(None, description="The version of each output, this can be overwritten per output")
 
 
 ###################
@@ -491,7 +491,7 @@ class BaseRecipe(StrictBaseModel):
 
 
 class ComplexRecipe(BaseRecipe):
-    package: Optional[ComplexPackage] = Field(None, description="The package version.")
+    recipe: Optional[ComplexPackage] = Field(None, description="The package version.")
 
     outputs: ConditionalList[Output] = Field(
         ..., description="A list of outputs that are generated for this recipe."

@@ -944,17 +944,9 @@
       "additionalProperties": false,
       "properties": {
         "name": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "The package name, this can be overwritten per output",
-          "title": "Name"
+          "description": "The recipe name, this is only used to identify the name of the recipe.",
+          "title": "Name",
+          "type": "string"
         },
         "version": {
           "anyOf": [
@@ -966,10 +958,13 @@
             }
           ],
           "default": null,
-          "description": "The package version, this can be overwritten per output",
+          "description": "The version of each output, this can be overwritten per output",
           "title": "Version"
         }
       },
+      "required": [
+        "name"
+      ],
       "title": "ComplexPackage",
       "type": "object"
     },
@@ -1067,7 +1062,7 @@
           "description": "An set of arbitrary values that are included in the package manifest",
           "title": "Extra"
         },
-        "package": {
+        "recipe": {
           "anyOf": [
             {
               "$ref": "#/$defs/ComplexPackage"

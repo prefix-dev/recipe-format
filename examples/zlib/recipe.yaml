@@ -4,7 +4,7 @@ context:
   version: 1.2.13
   build_number: 5
 
-package:
+recipe:
   name: zlib-split
   version: ${{version}}
 
