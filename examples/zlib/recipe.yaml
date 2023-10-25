@@ -1,0 +1,104 @@
+# yaml-language-server: $schema=../../schema.json
+
+context:
+  version: 1.2.13
+  build_number: 5
+
+recipe:
+  name: zlib-split
+  version: ${{version}}
+
+source:
+  url: http://zlib.net/zlib-${{ version }}.tar.gz
+  sha256: b3a24de97a8fdbc835b9833169501030b8977031bcb54b3b3ac13740f846ab30
+
+outputs:
+  - package:
+      name: libzlib
+    build:
+      run_exports:
+        - ${{ pin_subpackage('libzlib', max_pin='x.x') }}
+      script:
+        - echo "build libzlib"
+    requirements:
+      build:
+        - ${{ compiler('c') }}
+      host:
+      run:
+      run_constrained:
+        - zlib ${{ version }} *_${{ build_num }}
+
+    test:
+      - script:
+        - if: unix
+          then:
+          - test ! -f ${PREFIX}/lib/libz.a            
+          - test ! -f ${PREFIX}/lib/libz${SHLIB_EXT}  
+          - test ! -f ${PREFIX}/include/zlib.h        
+        - if: win
+          then:
+          - if not exist %LIBRARY_BIN%\zlib.dll exit 1 
+          - if not exist %PREFIX%\zlib.dll exit 1 
+
+  - package:
+      name: libzlib-wapi
+    build:
+      skip: 
+        - not win
+      run_exports:
+        - ${{ pin_subpackage('libzlib-wapi', max_pin='x.x') }}
+    requirements:
+      build:
+        - ${{ compiler('c') }}
+      host:
+      run:
+      run_constrained:
+        - zlib ${{ version }} *_${{ build_num }}
+        - zlib-wapi ${{ version }} *_${{ build_num }}
+    files:
+      - Library/bin/zlibwapi.dll   # [win]
+    test:
+      - script:
+        - if not exist "%LIBRARY_BIN%\zlibwapi.dll" exit 1
+
+  - package:
+      name: zlib
+    build:
+      run_exports:
+        - ${{ pin_subpackage('libzlib', max_pin='x.x') }}
+      script:
+        - echo "build zlib"
+    requirements:
+      build:
+        - ${{ compiler('c') }}
+      host:
+        - ${{ pin_subpackage('libzlib', exact=True) }}
+      run:
+        - ${{ pin_subpackage('libzlib', exact=True) }}
+
+    test:
+      - extra_requirements: 
+          build:
+            - ${{ compiler('c') }}
+        files:
+          recipe:
+            - test_compile_flags.bat
+            - test_compile_flags.c
+        script:
+          - test -f ${PREFIX}/lib/libz.a
+
+about:
+  homepage: http://zlib.net/
+  # http://zlib.net/zlib_license.html
+  license: Zlib
+  summary: Massively spiffy yet delicately unobtrusive compression library
+  license_file: license.txt
+  description: |
+    zlib is designed to be a free, general-purpose, lossless data-compression
+    library for use on virtually any computer hardware and operating system.
+  repository: https://github.com/madler/zlib
+
+extra:
+  recipe-maintainers:
+    - github_name
+  feedstock-name: zlib
