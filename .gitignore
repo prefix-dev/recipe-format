@@ -1,3 +1,4 @@
 # pixi environments
 .pixi
 .ruff_cache
+__pycache__
