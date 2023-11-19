@@ -1,6 +1,9 @@
 name: CI
 on:
   push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   ci:
@@ -17,6 +20,9 @@ jobs:
       - name: Generate schema
         run: |
           pixi run generate
+      - name: Test recipe schema
+        run: |
+          pixi run test
       - name: Assert no changes
         run: |
           git diff --exit-code
