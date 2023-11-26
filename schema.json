@@ -1204,6 +1204,32 @@
           "default": null,
           "description": "A value to use when shallow cloning the repository.",
           "title": "Git Depth"
+        },
+        "lfs": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Whether or not to use git-lfs when cloning the repository.",
+          "title": "Lfs"
+        },
+        "use_gitignore": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": false,
+          "description": "Whether or not to use the .gitignore file when cloning the repository.",
+          "title": "Use Gitignore"
         }
       },
       "required": [
@@ -1491,6 +1517,12 @@
           "description": "A path on the local machine that contains the source.",
           "title": "Path",
           "type": "string"
+        },
+        "use_gitignore": {
+          "default": true,
+          "description": "Whether or not to use the .gitignore file when copying the source.",
+          "title": "Use Gitignore",
+          "type": "boolean"
         }
       },
       "required": [
@@ -3167,6 +3199,19 @@
           "default": null,
           "description": "The MD5 hash of the source archive",
           "title": "Md5"
+        },
+        "file_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "A file name to rename the downloaded file (does not apply to archives).",
+          "title": "File Name"
         }
       },
       "required": [

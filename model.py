@@ -86,6 +86,10 @@ class UrlSource(BaseSource):
         None,
         description="The MD5 hash of the source archive",
     )
+    file_name: str | None = Field(
+        None,
+        description="A file name to rename the downloaded file (does not apply to archives).",
+    )
 
 
 class GitSource(BaseSource):
@@ -95,12 +99,24 @@ class GitSource(BaseSource):
         None,
         description="A value to use when shallow cloning the repository.",
     )
+    lfs: bool | None = Field(
+        None,
+        description="Whether or not to use git-lfs when cloning the repository.",
+    )
+    use_gitignore: bool | None = Field(
+        default=False,
+        description="Whether or not to use the .gitignore file when cloning the repository.",
+    )
 
 
 class LocalSource(BaseSource):
     path: str = Field(
         ...,
         description="A path on the local machine that contains the source.",
+    )
+    use_gitignore: bool = Field(
+        default=True,
+        description="Whether or not to use the .gitignore file when copying the source.",
     )
 
 
