@@ -1217,19 +1217,6 @@
           "default": null,
           "description": "Whether or not to use git-lfs when cloning the repository.",
           "title": "Lfs"
-        },
-        "use_gitignore": {
-          "anyOf": [
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": false,
-          "description": "Whether or not to use the .gitignore file when cloning the repository.",
-          "title": "Use Gitignore"
         }
       },
       "required": [

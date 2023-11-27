@@ -103,10 +103,6 @@ class GitSource(BaseSource):
         None,
         description="Whether or not to use git-lfs when cloning the repository.",
     )
-    use_gitignore: bool | None = Field(
-        default=False,
-        description="Whether or not to use the .gitignore file when cloning the repository.",
-    )
 
 
 class LocalSource(BaseSource):
