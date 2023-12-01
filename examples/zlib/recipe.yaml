@@ -6,20 +6,19 @@ context:
 
 recipe:
   name: zlib-split
-  version: ${{version}}
+  version: 1.2.13
 
 source:
-  url: http://zlib.net/zlib-${{ version }}.tar.gz
+  url: http://zlib.net/zlib-${{ recipe.version }}.tar.gz
   sha256: b3a24de97a8fdbc835b9833169501030b8977031bcb54b3b3ac13740f846ab30
 
 outputs:
   - package:
       name: libzlib
     build:
-      run_exports:
-        - ${{ pin_subpackage('libzlib', max_pin='x.x') }}
       script:
         - echo "build libzlib"
+    
     requirements:
       build:
         - ${{ compiler('c') }}
@@ -27,6 +26,8 @@ outputs:
       run:
       run_constrained:
         - zlib ${{ version }} *_${{ build_num }}
+      run_exports:
+        - ${{ pin_subpackage('libzlib', max_pin='x.x') }}
 
     test:
       - script:
@@ -45,8 +46,6 @@ outputs:
     build:
       skip: 
         - not win
-      run_exports:
-        - ${{ pin_subpackage('libzlib-wapi', max_pin='x.x') }}
     requirements:
       build:
         - ${{ compiler('c') }}
@@ -55,6 +54,8 @@ outputs:
       run_constrained:
         - zlib ${{ version }} *_${{ build_num }}
         - zlib-wapi ${{ version }} *_${{ build_num }}
+      run_exports:
+        - ${{ pin_subpackage('libzlib-wapi', max_pin='x.x') }}
     files:
       - Library/bin/zlibwapi.dll   # [win]
     test:
@@ -64,8 +65,6 @@ outputs:
   - package:
       name: zlib
     build:
-      run_exports:
-        - ${{ pin_subpackage('libzlib', max_pin='x.x') }}
       script:
         - echo "build zlib"
     requirements:
@@ -75,6 +74,8 @@ outputs:
         - ${{ pin_subpackage('libzlib', exact=True) }}
       run:
         - ${{ pin_subpackage('libzlib', exact=True) }}
+      run_exports:
+        - ${{ pin_subpackage('libzlib', max_pin='x.x') }}
 
     test:
       - extra_requirements: 

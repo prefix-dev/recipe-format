@@ -177,31 +177,27 @@
               "type": "string"
             },
             {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            },
+            {
               "type": "null"
             }
           ],
           "default": null,
-          "description": "Build string to identify build variant (if not explicitly set, computed automatically from used build variant)",
+          "description": "The build string to identify build variant. This is usually omitted (can use `${{ hash }}`) variable here)",
           "title": "String"
         },
         "skip": {
           "anyOf": [
             {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
               "items": {
                 "anyOf": [
                   {
-                    "minLength": 1,
                     "type": "string"
                   },
                   {
-                    "$ref": "#/$defs/IfStatement"
+                    "type": "boolean"
                   }
                 ]
               },
@@ -212,39 +208,8 @@
             }
           ],
           "default": null,
-          "description": "List of conditions under which to skip the build of the package.",
+          "description": "List of conditions under which to skip the build of the package. If any of these condition returns true the build is skipped.",
           "title": "Skip"
-        },
-        "script": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Build script to be used. If not given, tries to find 'build.sh' on Unix or 'bld.bat' on Windows inside the recipe folder.",
-          "title": "Script"
         },
         "noarch": {
           "anyOf": [
@@ -263,69 +228,17 @@
           "description": "Can be either 'generic' or 'python'. A noarch 'python' package compiles .pyc files upon installation.",
           "title": "Noarch"
         },
-        "entry_points": {
+        "script": {
           "anyOf": [
             {
               "type": "string"
             },
             {
-              "$ref": "#/$defs/IfStatement"
+              "$ref": "#/$defs/FileScript"
             },
             {
-              "items": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
+              "$ref": "#/$defs/ContentScript"
             },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Only valid if `noarch: python` - list of all entry points of the package. e.g. `bsdiff4 = bsdiff4.cli:main_bsdiff4`",
-          "title": "Entry Points"
-        },
-        "run_exports": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/RunExports"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Additional `run` dependencies added to a package that is build against this package.",
-          "title": "Run Exports"
-        },
-        "ignore_run_exports": {
-          "anyOf": [
             {
               "minLength": 1,
               "type": "string"
@@ -352,350 +265,25 @@
             }
           ],
           "default": null,
-          "description": "Ignore specific `run` dependencies that are added by dependencies in our `host` requirements section that have`run_exports`.",
-          "title": "Ignore Run Exports"
+          "description": "The script to execute to invoke the build. If the string is a single line and ends with `.sh` or `.bat`, then we interpret it as a file.",
+          "title": "Script"
         },
-        "ignore_run_exports_from": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Ignore `run_exports` from the specified dependencies in our `host` section.`",
-          "title": "Ignore Run Exports From"
-        },
-        "track_features": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "deprecated, but still used to downweigh packages",
-          "title": "Track Features"
-        },
-        "include_recipe": {
-          "default": true,
-          "description": "Whether or not to include the rendered recipe in the final package.",
-          "title": "Include Recipe",
-          "type": "boolean"
-        },
-        "pre-link": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Script to execute when installing - before linking. Highly discouraged!",
-          "title": "Pre-Link"
-        },
-        "post-link": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Script to execute when installing - after linking.",
-          "title": "Post-Link"
-        },
-        "pre-unlink": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Script to execute when removing - before unlinking.",
-          "title": "Pre-Unlink"
-        },
-        "no_link": {
-          "anyOf": [
-            {
-              "pattern": "^[^\\\\]+$",
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "pattern": "^[^\\\\]+$",
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "A list of files that are included in the package but should not be installed when installing the package.",
-          "title": "No Link"
-        },
-        "binary_relocation": {
-          "anyOf": [
-            {
-              "const": false
-            },
-            {
-              "pattern": "^[^\\\\]+$",
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "pattern": "^[^\\\\]+$",
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": [],
-          "description": "A list of files that should be excluded from binary relocation or False to ignore all binary files.",
-          "title": "Binary Relocation"
-        },
-        "has_prefix_files": {
-          "anyOf": [
-            {
-              "pattern": "^[^\\\\]+$",
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "pattern": "^[^\\\\]+$",
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": [],
-          "description": "A list of files to force being detected as A TEXT file for prefix replacement.",
-          "title": "Has Prefix Files"
-        },
-        "binary_has_prefix_files": {
-          "anyOf": [
-            {
-              "pattern": "^[^\\\\]+$",
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "pattern": "^[^\\\\]+$",
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": [],
-          "description": "A list of files to force being detected as A BINARY file for prefix replacement.",
-          "title": "Binary Has Prefix Files"
-        },
-        "ignore_prefix_files": {
-          "anyOf": [
-            {
-              "const": true
-            },
-            {
-              "pattern": "^[^\\\\]+$",
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "pattern": "^[^\\\\]+$",
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": [],
-          "description": "A list of files that are not considered for prefix replacement, or True to ignore all files.",
-          "title": "Ignore Prefix Files"
-        },
-        "detect_binary_files_with_prefix": {
+        "merge_build_and_host_envs": {
           "anyOf": [
             {
               "type": "boolean"
             },
             {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Wether to detect binary files with prefix or not. Defaults to True on Unix and False on Windows.",
-          "title": "Detect Binary Files With Prefix"
-        },
-        "skip_compile_pyc": {
-          "anyOf": [
-            {
-              "pattern": "^[^\\\\]+$",
+              "pattern": "\\$\\{\\{.*\\}\\}",
               "type": "string"
             },
             {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "pattern": "^[^\\\\]+$",
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
               "type": "null"
             }
           ],
-          "default": null,
-          "description": "A list of python files that should not be compiled to .pyc files at install time.",
-          "title": "Skip Compile Pyc"
-        },
-        "rpaths": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": [
-            "lib/"
-          ],
-          "description": "A list of rpaths (Linux only).",
-          "title": "Rpaths"
-        },
-        "script_env": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/ScriptEnv"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Environment variables to either pass through to the script environment or set."
+          "default": false,
+          "description": "Merge the build and host environments (used in many R packages on Windows)",
+          "title": "Merge Build And Host Envs"
         },
         "always_include_files": {
           "anyOf": [
@@ -725,157 +313,65 @@
           "description": "Files to be included even if they are present in the PREFIX before building.",
           "title": "Always Include Files"
         },
-        "osx_is_app": {
-          "default": false,
-          "title": "Osx Is App",
-          "type": "boolean"
-        },
-        "disable_pip": {
-          "default": false,
-          "title": "Disable Pip",
-          "type": "boolean"
-        },
-        "preserve_egg_dir": {
-          "default": false,
-          "title": "Preserve Egg Dir",
-          "type": "boolean"
-        },
-        "force_use_keys": {
+        "variant": {
           "anyOf": [
             {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
+              "$ref": "#/$defs/Variant"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Force Use Keys"
+          "description": "Options that influence how the different variants are computed."
         },
-        "force_ignore_keys": {
+        "python": {
           "anyOf": [
             {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
+              "$ref": "#/$defs/Python"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Force Ignore Keys"
+          "description": "Python specific build configuration"
         },
-        "merge_build_host": {
-          "default": false,
-          "title": "Merge Build Host",
-          "type": "boolean"
-        },
-        "missing_dso_whitelist": {
+        "shared_libraries": {
           "anyOf": [
             {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
+              "$ref": "#/$defs/SharedLibraries"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Missing Dso Whitelist"
+          "description": "Shared library specific build configuration"
         },
-        "runpath_whitelist": {
+        "ignore_run_exports": {
           "anyOf": [
             {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
+              "$ref": "#/$defs/IgnoreRunExports"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Runpath Whitelist"
+          "description": "Ignore run-exports by name or from certain packages"
         },
-        "error_overdepending": {
-          "default": false,
-          "description": "Error on overdepending",
-          "title": "Error Overdepending",
-          "type": "boolean"
-        },
-        "error_overlinking": {
-          "default": false,
-          "description": "Error on overlinking",
-          "title": "Error Overlinking",
-          "type": "boolean"
+        "link_options": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LinkOptions"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Options that influence how a package behaves when it is installed or uninstalled."
         }
       },
       "title": "Build",
@@ -971,6 +467,14 @@
     "ComplexRecipe": {
       "additionalProperties": false,
       "properties": {
+        "schema_version": {
+          "default": 1,
+          "description": "The version of the YAML schema for a recipe. If the version is omitted it is assumed to be 1.",
+          "maximum": 1,
+          "minimum": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
         "context": {
           "anyOf": [
             {
@@ -990,13 +494,19 @@
               "$ref": "#/$defs/UrlSource"
             },
             {
-              "$ref": "#/$defs/GitSource"
+              "$ref": "#/$defs/GitRev"
+            },
+            {
+              "$ref": "#/$defs/GitTag"
+            },
+            {
+              "$ref": "#/$defs/GitBranch"
             },
             {
               "$ref": "#/$defs/LocalSource"
             },
             {
-              "$ref": "#/$defs/IfStatement_Union_UrlSource__GitSource__LocalSource__"
+              "$ref": "#/$defs/IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__LocalSource__"
             },
             {
               "items": {
@@ -1005,13 +515,19 @@
                     "$ref": "#/$defs/UrlSource"
                   },
                   {
-                    "$ref": "#/$defs/GitSource"
+                    "$ref": "#/$defs/GitRev"
+                  },
+                  {
+                    "$ref": "#/$defs/GitTag"
+                  },
+                  {
+                    "$ref": "#/$defs/GitBranch"
                   },
                   {
                     "$ref": "#/$defs/LocalSource"
                   },
                   {
-                    "$ref": "#/$defs/IfStatement_Union_UrlSource__GitSource__LocalSource__"
+                    "$ref": "#/$defs/IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__LocalSource__"
                   }
                 ]
               },
@@ -1106,6 +622,92 @@
       "title": "ComplexRecipe",
       "type": "object"
     },
+    "ContentScript": {
+      "additionalProperties": false,
+      "properties": {
+        "interpreter": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The interpreter to use for the script.\n\nDefaults to `bash` on unix and `cmd.exe` on Windows.",
+          "title": "Interpreter"
+        },
+        "env": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "description": "the script environment.\n\nYou can use Jinja to pass through environments variables with the `env` object (e.g. `${{ env.get(\"MYVAR\") }}`)",
+          "title": "Env",
+          "type": "object"
+        },
+        "secrets": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "Secrets that are set as environment variables but never shown in the logs or the environment.",
+          "title": "Secrets"
+        },
+        "content": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "description": "A string or list of strings that is the scripts contents",
+          "title": "Content"
+        }
+      },
+      "required": [
+        "content"
+      ],
+      "title": "ContentScript",
+      "type": "object"
+    },
     "DescriptionFile": {
       "additionalProperties": false,
       "properties": {
@@ -1137,7 +739,82 @@
       "title": "DownstreamTestElement",
       "type": "object"
     },
-    "GitSource": {
+    "FileScript": {
+      "additionalProperties": false,
+      "properties": {
+        "interpreter": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The interpreter to use for the script.\n\nDefaults to `bash` on unix and `cmd.exe` on Windows.",
+          "title": "Interpreter"
+        },
+        "env": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "description": "the script environment.\n\nYou can use Jinja to pass through environments variables with the `env` object (e.g. `${{ env.get(\"MYVAR\") }}`)",
+          "title": "Env",
+          "type": "object"
+        },
+        "secrets": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "Secrets that are set as environment variables but never shown in the logs or the environment.",
+          "title": "Secrets"
+        },
+        "file": {
+          "anyOf": [
+            {
+              "pattern": "^[^\\\\]+$",
+              "type": "string"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            }
+          ],
+          "description": "The file to use as the script. Automatically adds the `bat` or `sh` to the filename on Windows or Unix respectively (if no file extension is given).",
+          "title": "File"
+        }
+      },
+      "required": [
+        "file"
+      ],
+      "title": "FileScript",
+      "type": "object"
+    },
+    "GitBranch": {
       "additionalProperties": false,
       "properties": {
         "patches": {
@@ -1168,9 +845,10 @@
           "description": "A list of patches to apply after fetching the source",
           "title": "Patches"
         },
-        "folder": {
+        "target_directory": {
           "anyOf": [
             {
+              "minLength": 1,
               "type": "string"
             },
             {
@@ -1179,22 +857,26 @@
           ],
           "default": null,
           "description": "The location in the working directory to place the source",
-          "title": "Folder"
+          "title": "Target Directory"
         },
-        "git_rev": {
-          "default": "HEAD",
-          "description": "The git rev the checkout.",
-          "title": "Git Rev",
-          "type": "string"
-        },
-        "git_url": {
-          "description": "The url that points to the git repository.",
-          "title": "Git Url",
-          "type": "string"
-        },
-        "git_depth": {
+        "git": {
           "anyOf": [
             {
+              "pattern": "/((git|ssh|http(s)?)|(git@[\\w\\.]+))(:(\\/\\/)?)([\\w\\.@\\:\\/\\-~]+)(\\.git)(\\/)?/igm",
+              "type": "string"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            }
+          ],
+          "description": "The url that points to the git repository.",
+          "title": "Git"
+        },
+        "depth": {
+          "anyOf": [
+            {
+              "minimum": 0,
               "type": "integer"
             },
             {
@@ -1203,13 +885,212 @@
           ],
           "default": null,
           "description": "A value to use when shallow cloning the repository.",
-          "title": "Git Depth"
+          "title": "Depth"
+        },
+        "lfs": {
+          "default": false,
+          "description": "Should we LFS files be checked out as well",
+          "title": "Lfs",
+          "type": "boolean"
+        },
+        "branch": {
+          "description": "Branch to check out",
+          "minLength": 1,
+          "title": "Branch",
+          "type": "string"
         }
       },
       "required": [
-        "git_url"
+        "git",
+        "branch"
       ],
-      "title": "GitSource",
+      "title": "GitBranch",
+      "type": "object"
+    },
+    "GitRev": {
+      "additionalProperties": false,
+      "properties": {
+        "patches": {
+          "anyOf": [
+            {
+              "pattern": "^[^\\\\]+$",
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "pattern": "^[^\\\\]+$",
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "A list of patches to apply after fetching the source",
+          "title": "Patches"
+        },
+        "target_directory": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The location in the working directory to place the source",
+          "title": "Target Directory"
+        },
+        "git": {
+          "anyOf": [
+            {
+              "pattern": "/((git|ssh|http(s)?)|(git@[\\w\\.]+))(:(\\/\\/)?)([\\w\\.@\\:\\/\\-~]+)(\\.git)(\\/)?/igm",
+              "type": "string"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            }
+          ],
+          "description": "The url that points to the git repository.",
+          "title": "Git"
+        },
+        "depth": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "A value to use when shallow cloning the repository.",
+          "title": "Depth"
+        },
+        "lfs": {
+          "default": false,
+          "description": "Should we LFS files be checked out as well",
+          "title": "Lfs",
+          "type": "boolean"
+        },
+        "rev": {
+          "description": "Revision to checkout to (hash or ref)",
+          "minLength": 1,
+          "title": "Rev",
+          "type": "string"
+        }
+      },
+      "required": [
+        "git",
+        "rev"
+      ],
+      "title": "GitRev",
+      "type": "object"
+    },
+    "GitTag": {
+      "additionalProperties": false,
+      "properties": {
+        "patches": {
+          "anyOf": [
+            {
+              "pattern": "^[^\\\\]+$",
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "pattern": "^[^\\\\]+$",
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "A list of patches to apply after fetching the source",
+          "title": "Patches"
+        },
+        "target_directory": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The location in the working directory to place the source",
+          "title": "Target Directory"
+        },
+        "git": {
+          "anyOf": [
+            {
+              "pattern": "/((git|ssh|http(s)?)|(git@[\\w\\.]+))(:(\\/\\/)?)([\\w\\.@\\:\\/\\-~]+)(\\.git)(\\/)?/igm",
+              "type": "string"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            }
+          ],
+          "description": "The url that points to the git repository.",
+          "title": "Git"
+        },
+        "depth": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "A value to use when shallow cloning the repository.",
+          "title": "Depth"
+        },
+        "lfs": {
+          "default": false,
+          "description": "Should we LFS files be checked out as well",
+          "title": "Lfs",
+          "type": "boolean"
+        },
+        "tag": {
+          "description": "Tag to checkout",
+          "minLength": 1,
+          "title": "Tag",
+          "type": "string"
+        }
+      },
+      "required": [
+        "git",
+        "tag"
+      ],
+      "title": "GitTag",
       "type": "object"
     },
     "IfStatement": {
@@ -1328,7 +1209,7 @@
       "title": "IfStatement[Union[CommandTestElement, ImportTestElement, DownstreamTestElement]]",
       "type": "object"
     },
-    "IfStatement_Union_UrlSource__GitSource__LocalSource__": {
+    "IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__LocalSource__": {
       "properties": {
         "if": {
           "title": "If",
@@ -1340,7 +1221,13 @@
               "$ref": "#/$defs/UrlSource"
             },
             {
-              "$ref": "#/$defs/GitSource"
+              "$ref": "#/$defs/GitRev"
+            },
+            {
+              "$ref": "#/$defs/GitTag"
+            },
+            {
+              "$ref": "#/$defs/GitBranch"
             },
             {
               "$ref": "#/$defs/LocalSource"
@@ -1352,7 +1239,13 @@
                     "$ref": "#/$defs/UrlSource"
                   },
                   {
-                    "$ref": "#/$defs/GitSource"
+                    "$ref": "#/$defs/GitRev"
+                  },
+                  {
+                    "$ref": "#/$defs/GitTag"
+                  },
+                  {
+                    "$ref": "#/$defs/GitBranch"
                   },
                   {
                     "$ref": "#/$defs/LocalSource"
@@ -1370,7 +1263,13 @@
               "$ref": "#/$defs/UrlSource"
             },
             {
-              "$ref": "#/$defs/GitSource"
+              "$ref": "#/$defs/GitRev"
+            },
+            {
+              "$ref": "#/$defs/GitTag"
+            },
+            {
+              "$ref": "#/$defs/GitBranch"
             },
             {
               "$ref": "#/$defs/LocalSource"
@@ -1382,7 +1281,13 @@
                     "$ref": "#/$defs/UrlSource"
                   },
                   {
-                    "$ref": "#/$defs/GitSource"
+                    "$ref": "#/$defs/GitRev"
+                  },
+                  {
+                    "$ref": "#/$defs/GitTag"
+                  },
+                  {
+                    "$ref": "#/$defs/GitBranch"
                   },
                   {
                     "$ref": "#/$defs/LocalSource"
@@ -1403,7 +1308,70 @@
         "if",
         "then"
       ],
-      "title": "IfStatement[Union[UrlSource, GitSource, LocalSource]]",
+      "title": "IfStatement[Union[UrlSource, GitRev, GitTag, GitBranch, LocalSource]]",
+      "type": "object"
+    },
+    "IgnoreRunExports": {
+      "additionalProperties": false,
+      "properties": {
+        "by_name": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "ignore run exports by name (e.g. `libgcc-ng`)",
+          "title": "By Name"
+        },
+        "from_package": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "ignore run exports that come from the specified packages",
+          "title": "From Package"
+        }
+      },
+      "title": "IgnoreRunExports",
       "type": "object"
     },
     "ImportTestElement": {
@@ -1443,6 +1411,83 @@
       "title": "ImportTestElement",
       "type": "object"
     },
+    "LinkOptions": {
+      "additionalProperties": false,
+      "properties": {
+        "post_link_script": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Script to execute after the package has been linked into an environment",
+          "title": "Post Link Script"
+        },
+        "pre_unlink_script": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Script to execute before uninstalling the package from an environment",
+          "title": "Pre Unlink Script"
+        },
+        "pre_link_message": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Message to show before linking",
+          "title": "Pre Link Message"
+        },
+        "always_copy_files": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "Do not soft- or hard-link these files but instead always copy them into the environment",
+          "title": "Always Copy Files"
+        }
+      },
+      "title": "LinkOptions",
+      "type": "object"
+    },
     "LocalSource": {
       "additionalProperties": false,
       "properties": {
@@ -1474,9 +1519,10 @@
           "description": "A list of patches to apply after fetching the source",
           "title": "Patches"
         },
-        "folder": {
+        "target_directory": {
           "anyOf": [
             {
+              "minLength": 1,
               "type": "string"
             },
             {
@@ -1485,12 +1531,32 @@
           ],
           "default": null,
           "description": "The location in the working directory to place the source",
-          "title": "Folder"
+          "title": "Target Directory"
         },
         "path": {
           "description": "A path on the local machine that contains the source.",
           "title": "Path",
           "type": "string"
+        },
+        "use_gitignore": {
+          "default": true,
+          "description": "Whether or not to use the .gitignore file when copying the source.",
+          "title": "Use Gitignore",
+          "type": "boolean"
+        },
+        "file_name": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "A file name to rename the file to (does not apply to archives).",
+          "title": "File Name"
         }
       },
       "required": [
@@ -1519,7 +1585,13 @@
               "$ref": "#/$defs/UrlSource"
             },
             {
-              "$ref": "#/$defs/GitSource"
+              "$ref": "#/$defs/GitRev"
+            },
+            {
+              "$ref": "#/$defs/GitTag"
+            },
+            {
+              "$ref": "#/$defs/GitBranch"
             },
             {
               "$ref": "#/$defs/LocalSource"
@@ -1534,7 +1606,13 @@
                     "$ref": "#/$defs/UrlSource"
                   },
                   {
-                    "$ref": "#/$defs/GitSource"
+                    "$ref": "#/$defs/GitRev"
+                  },
+                  {
+                    "$ref": "#/$defs/GitTag"
+                  },
+                  {
+                    "$ref": "#/$defs/GitBranch"
                   },
                   {
                     "$ref": "#/$defs/LocalSource"
@@ -1682,31 +1760,27 @@
               "type": "string"
             },
             {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            },
+            {
               "type": "null"
             }
           ],
           "default": null,
-          "description": "Build string to identify build variant (if not explicitly set, computed automatically from used build variant)",
+          "description": "The build string to identify build variant. This is usually omitted (can use `${{ hash }}`) variable here)",
           "title": "String"
         },
         "skip": {
           "anyOf": [
             {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
               "items": {
                 "anyOf": [
                   {
-                    "minLength": 1,
                     "type": "string"
                   },
                   {
-                    "$ref": "#/$defs/IfStatement"
+                    "type": "boolean"
                   }
                 ]
               },
@@ -1717,39 +1791,8 @@
             }
           ],
           "default": null,
-          "description": "List of conditions under which to skip the build of the package.",
+          "description": "List of conditions under which to skip the build of the package. If any of these condition returns true the build is skipped.",
           "title": "Skip"
-        },
-        "script": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Build script to be used. If not given, tries to find 'build.sh' on Unix or 'bld.bat' on Windows inside the recipe folder.",
-          "title": "Script"
         },
         "noarch": {
           "anyOf": [
@@ -1768,69 +1811,17 @@
           "description": "Can be either 'generic' or 'python'. A noarch 'python' package compiles .pyc files upon installation.",
           "title": "Noarch"
         },
-        "entry_points": {
+        "script": {
           "anyOf": [
             {
               "type": "string"
             },
             {
-              "$ref": "#/$defs/IfStatement"
+              "$ref": "#/$defs/FileScript"
             },
             {
-              "items": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
+              "$ref": "#/$defs/ContentScript"
             },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Only valid if `noarch: python` - list of all entry points of the package. e.g. `bsdiff4 = bsdiff4.cli:main_bsdiff4`",
-          "title": "Entry Points"
-        },
-        "run_exports": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/RunExports"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Additional `run` dependencies added to a package that is build against this package.",
-          "title": "Run Exports"
-        },
-        "ignore_run_exports": {
-          "anyOf": [
             {
               "minLength": 1,
               "type": "string"
@@ -1857,350 +1848,25 @@
             }
           ],
           "default": null,
-          "description": "Ignore specific `run` dependencies that are added by dependencies in our `host` requirements section that have`run_exports`.",
-          "title": "Ignore Run Exports"
+          "description": "The script to execute to invoke the build. If the string is a single line and ends with `.sh` or `.bat`, then we interpret it as a file.",
+          "title": "Script"
         },
-        "ignore_run_exports_from": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Ignore `run_exports` from the specified dependencies in our `host` section.`",
-          "title": "Ignore Run Exports From"
-        },
-        "track_features": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "deprecated, but still used to downweigh packages",
-          "title": "Track Features"
-        },
-        "include_recipe": {
-          "default": true,
-          "description": "Whether or not to include the rendered recipe in the final package.",
-          "title": "Include Recipe",
-          "type": "boolean"
-        },
-        "pre-link": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Script to execute when installing - before linking. Highly discouraged!",
-          "title": "Pre-Link"
-        },
-        "post-link": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Script to execute when installing - after linking.",
-          "title": "Post-Link"
-        },
-        "pre-unlink": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Script to execute when removing - before unlinking.",
-          "title": "Pre-Unlink"
-        },
-        "no_link": {
-          "anyOf": [
-            {
-              "pattern": "^[^\\\\]+$",
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "pattern": "^[^\\\\]+$",
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "A list of files that are included in the package but should not be installed when installing the package.",
-          "title": "No Link"
-        },
-        "binary_relocation": {
-          "anyOf": [
-            {
-              "const": false
-            },
-            {
-              "pattern": "^[^\\\\]+$",
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "pattern": "^[^\\\\]+$",
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": [],
-          "description": "A list of files that should be excluded from binary relocation or False to ignore all binary files.",
-          "title": "Binary Relocation"
-        },
-        "has_prefix_files": {
-          "anyOf": [
-            {
-              "pattern": "^[^\\\\]+$",
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "pattern": "^[^\\\\]+$",
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": [],
-          "description": "A list of files to force being detected as A TEXT file for prefix replacement.",
-          "title": "Has Prefix Files"
-        },
-        "binary_has_prefix_files": {
-          "anyOf": [
-            {
-              "pattern": "^[^\\\\]+$",
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "pattern": "^[^\\\\]+$",
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": [],
-          "description": "A list of files to force being detected as A BINARY file for prefix replacement.",
-          "title": "Binary Has Prefix Files"
-        },
-        "ignore_prefix_files": {
-          "anyOf": [
-            {
-              "const": true
-            },
-            {
-              "pattern": "^[^\\\\]+$",
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "pattern": "^[^\\\\]+$",
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": [],
-          "description": "A list of files that are not considered for prefix replacement, or True to ignore all files.",
-          "title": "Ignore Prefix Files"
-        },
-        "detect_binary_files_with_prefix": {
+        "merge_build_and_host_envs": {
           "anyOf": [
             {
               "type": "boolean"
             },
             {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Wether to detect binary files with prefix or not. Defaults to True on Unix and False on Windows.",
-          "title": "Detect Binary Files With Prefix"
-        },
-        "skip_compile_pyc": {
-          "anyOf": [
-            {
-              "pattern": "^[^\\\\]+$",
+              "pattern": "\\$\\{\\{.*\\}\\}",
               "type": "string"
             },
             {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "pattern": "^[^\\\\]+$",
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
               "type": "null"
             }
           ],
-          "default": null,
-          "description": "A list of python files that should not be compiled to .pyc files at install time.",
-          "title": "Skip Compile Pyc"
-        },
-        "rpaths": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": [
-            "lib/"
-          ],
-          "description": "A list of rpaths (Linux only).",
-          "title": "Rpaths"
-        },
-        "script_env": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/ScriptEnv"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Environment variables to either pass through to the script environment or set."
+          "default": false,
+          "description": "Merge the build and host environments (used in many R packages on Windows)",
+          "title": "Merge Build And Host Envs"
         },
         "always_include_files": {
           "anyOf": [
@@ -2230,157 +1896,65 @@
           "description": "Files to be included even if they are present in the PREFIX before building.",
           "title": "Always Include Files"
         },
-        "osx_is_app": {
-          "default": false,
-          "title": "Osx Is App",
-          "type": "boolean"
-        },
-        "disable_pip": {
-          "default": false,
-          "title": "Disable Pip",
-          "type": "boolean"
-        },
-        "preserve_egg_dir": {
-          "default": false,
-          "title": "Preserve Egg Dir",
-          "type": "boolean"
-        },
-        "force_use_keys": {
+        "variant": {
           "anyOf": [
             {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
+              "$ref": "#/$defs/Variant"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Force Use Keys"
+          "description": "Options that influence how the different variants are computed."
         },
-        "force_ignore_keys": {
+        "python": {
           "anyOf": [
             {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
+              "$ref": "#/$defs/Python"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Force Ignore Keys"
+          "description": "Python specific build configuration"
         },
-        "merge_build_host": {
-          "default": false,
-          "title": "Merge Build Host",
-          "type": "boolean"
-        },
-        "missing_dso_whitelist": {
+        "shared_libraries": {
           "anyOf": [
             {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
+              "$ref": "#/$defs/SharedLibraries"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Missing Dso Whitelist"
+          "description": "Shared library specific build configuration"
         },
-        "runpath_whitelist": {
+        "ignore_run_exports": {
           "anyOf": [
             {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
+              "$ref": "#/$defs/IgnoreRunExports"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "title": "Runpath Whitelist"
+          "description": "Ignore run-exports by name or from certain packages"
         },
-        "error_overdepending": {
-          "default": false,
-          "description": "Error on overdepending",
-          "title": "Error Overdepending",
-          "type": "boolean"
-        },
-        "error_overlinking": {
-          "default": false,
-          "description": "Error on overlinking",
-          "title": "Error Overlinking",
-          "type": "boolean"
+        "link_options": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LinkOptions"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Options that influence how a package behaves when it is installed or uninstalled."
         },
         "cache_only": {
           "default": false,
@@ -2421,6 +1995,106 @@
         }
       },
       "title": "OutputBuild",
+      "type": "object"
+    },
+    "Python": {
+      "additionalProperties": false,
+      "properties": {
+        "entry_points": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "title": "Entry Points"
+        },
+        "use_python_app_entrypoint": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            }
+          ],
+          "default": false,
+          "description": "Specifies if python.app should be used as the entrypoint on macOS. (macOS only)",
+          "title": "Use Python App Entrypoint"
+        },
+        "preserve_egg_dir": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            }
+          ],
+          "default": false,
+          "title": "Preserve Egg Dir"
+        },
+        "skip_pyc_compilation": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "Skip compiling pyc for some files",
+          "title": "Skip Pyc Compilation"
+        },
+        "disable_pip": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            }
+          ],
+          "default": false,
+          "title": "Disable Pip"
+        }
+      },
+      "title": "Python",
       "type": "object"
     },
     "Requirements": {
@@ -2541,6 +2215,35 @@
           "default": null,
           "description": "Constrained optional dependencies at runtime.",
           "title": "Run Constrained"
+        },
+        "run_exports": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "$ref": "#/$defs/RunExports"
+            }
+          ],
+          "default": null,
+          "description": "The run exports of this package",
+          "title": "Run Exports"
         }
       },
       "title": "Requirements",
@@ -2698,10 +2401,75 @@
       "title": "RunExports",
       "type": "object"
     },
-    "ScriptEnv": {
+    "SharedLibraries": {
       "additionalProperties": false,
       "properties": {
-        "passthrough": {
+        "rpaths": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [
+            "lib/"
+          ],
+          "description": "linux only, list of rpaths (was rpath)",
+          "title": "Rpaths"
+        },
+        "binary_relocation": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            },
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": true,
+          "description": "Wether to relocate binaries or not. If this is a list of paths then only the listed paths are relocated",
+          "title": "Binary Relocation"
+        },
+        "missing_dso_allowlist": {
           "anyOf": [
             {
               "minLength": 1,
@@ -2726,19 +2494,10 @@
             }
           ],
           "default": [],
-          "description": "Environments variables to leak into the build environment from the host system. During build time these variables are recorded and stored in the package output. Use `secrets` for environment variables that should not be recorded.",
-          "title": "Passthrough"
+          "description": "Allow linking against libraries that are not in the run requirements",
+          "title": "Missing Dso Allowlist"
         },
-        "env": {
-          "additionalProperties": {
-            "type": "string"
-          },
-          "default": {},
-          "description": "Environment variables to set in the build environment.",
-          "title": "Env",
-          "type": "object"
-        },
-        "secrets": {
+        "rpath_allowlist": {
           "anyOf": [
             {
               "minLength": 1,
@@ -2763,11 +2522,31 @@
             }
           ],
           "default": [],
-          "description": "Environment variables to leak into the build environment from the host system that contain sensitve information. Use with care because this might make recipes no longer reproducible on other machines.",
-          "title": "Secrets"
+          "description": "Allow runpath/rpath to point to these locations outside of the environment",
+          "title": "Rpath Allowlist"
+        },
+        "overdepending_behavior": {
+          "default": "error",
+          "description": "What to do when detecting overdepending. Overdepending means that a requirement a run requirement is specified but none of the artifacts from the build link against any of the shared libraries of the requirement.",
+          "enum": [
+            "ignore",
+            "error"
+          ],
+          "title": "Overdepending Behavior",
+          "type": "string"
+        },
+        "overlinking_behavior": {
+          "default": "error",
+          "description": "What to do when detecting overdepending. Overlinking occurs when an artifact links against a library that was not specified in the run requirements.",
+          "enum": [
+            "ignore",
+            "error"
+          ],
+          "title": "Overlinking Behavior",
+          "type": "string"
         }
       },
-      "title": "ScriptEnv",
+      "title": "SharedLibraries",
       "type": "object"
     },
     "SimplePackage": {
@@ -2794,6 +2573,14 @@
     "SimpleRecipe": {
       "additionalProperties": false,
       "properties": {
+        "schema_version": {
+          "default": 1,
+          "description": "The version of the YAML schema for a recipe. If the version is omitted it is assumed to be 1.",
+          "maximum": 1,
+          "minimum": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
         "context": {
           "anyOf": [
             {
@@ -2813,13 +2600,19 @@
               "$ref": "#/$defs/UrlSource"
             },
             {
-              "$ref": "#/$defs/GitSource"
+              "$ref": "#/$defs/GitRev"
+            },
+            {
+              "$ref": "#/$defs/GitTag"
+            },
+            {
+              "$ref": "#/$defs/GitBranch"
             },
             {
               "$ref": "#/$defs/LocalSource"
             },
             {
-              "$ref": "#/$defs/IfStatement_Union_UrlSource__GitSource__LocalSource__"
+              "$ref": "#/$defs/IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__LocalSource__"
             },
             {
               "items": {
@@ -2828,13 +2621,19 @@
                     "$ref": "#/$defs/UrlSource"
                   },
                   {
-                    "$ref": "#/$defs/GitSource"
+                    "$ref": "#/$defs/GitRev"
+                  },
+                  {
+                    "$ref": "#/$defs/GitTag"
+                  },
+                  {
+                    "$ref": "#/$defs/GitBranch"
                   },
                   {
                     "$ref": "#/$defs/LocalSource"
                   },
                   {
-                    "$ref": "#/$defs/IfStatement_Union_UrlSource__GitSource__LocalSource__"
+                    "$ref": "#/$defs/IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__LocalSource__"
                   }
                 ]
               },
@@ -3118,9 +2917,10 @@
           "description": "A list of patches to apply after fetching the source",
           "title": "Patches"
         },
-        "folder": {
+        "target_directory": {
           "anyOf": [
             {
+              "minLength": 1,
               "type": "string"
             },
             {
@@ -3129,12 +2929,24 @@
           ],
           "default": null,
           "description": "The location in the working directory to place the source",
-          "title": "Folder"
+          "title": "Target Directory"
         },
         "url": {
-          "description": "The url that points to the source. This should be an archive that is extracted in the working directory.",
-          "title": "Url",
-          "type": "string"
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "description": "Rrl pointing to the source tar.gz|zip|tar.bz2|... (this can be a list of mirrors that point to the same file)",
+          "title": "Url"
         },
         "sha256": {
           "anyOf": [
@@ -3167,12 +2979,103 @@
           "default": null,
           "description": "The MD5 hash of the source archive",
           "title": "Md5"
+        },
+        "file_name": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "A file name to rename the downloaded file to (does not apply to archives).",
+          "title": "File Name"
         }
       },
       "required": [
         "url"
       ],
       "title": "UrlSource",
+      "type": "object"
+    },
+    "Variant": {
+      "additionalProperties": false,
+      "properties": {
+        "use_keys": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "Keys to forcibly use for the variant computation (even if they are not in the dependencies)",
+          "title": "Use Keys"
+        },
+        "ignore_keys": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "Keys to forcibly ignore for the variant computation (even if they are in the dependencies)",
+          "title": "Ignore Keys"
+        },
+        "down_prioritize_variant": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            }
+          ],
+          "default": 0,
+          "description": "used to prefer this variant less over other variants",
+          "title": "Down Prioritize Variant"
+        }
+      },
+      "title": "Variant",
       "type": "object"
     }
   },
