@@ -2163,7 +2163,7 @@
           "description": "Dependencies that should be installed alongside this package. Dependencies in the `host` section with `run_exports` are also automatically added here.",
           "title": "Run"
         },
-        "run_constrained": {
+        "run_constraints": {
           "anyOf": [
             {
               "type": "string"
@@ -2189,8 +2189,8 @@
             }
           ],
           "default": null,
-          "description": "Constrained optional dependencies at runtime.",
-          "title": "Run Constrained"
+          "description": "constraints optional dependencies at runtime.",
+          "title": "Run Constraints"
         },
         "run_exports": {
           "anyOf": [
@@ -2327,7 +2327,7 @@
           "description": "Noarch run exports are the only ones looked at when building noarch packages",
           "title": "Noarch"
         },
-        "weak_constrains": {
+        "weak_constraints": {
           "anyOf": [
             {
               "type": "string"
@@ -2353,10 +2353,10 @@
             }
           ],
           "default": null,
-          "description": "Weak run constrains add run_constrains from the host env",
-          "title": "Weak Constrains"
+          "description": "Weak run constraints add run_constraints from the host env",
+          "title": "Weak Constraints"
         },
-        "strong_constrains": {
+        "strong_constraints": {
           "anyOf": [
             {
               "type": "string"
@@ -2382,8 +2382,8 @@
             }
           ],
           "default": null,
-          "description": "Strong run constrains add run_constrains from the build and host env",
-          "title": "Strong Constrains"
+          "description": "Strong run constraints add run_constraints from the build and host env",
+          "title": "Strong Constraints"
         }
       },
       "title": "RunExports",

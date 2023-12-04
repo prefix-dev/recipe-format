@@ -146,12 +146,12 @@ class RunExports(StrictBaseModel):
         None,
         description="Noarch run exports are the only ones looked at when building noarch packages",
     )
-    weak_constrains: ConditionalList[MatchSpec] | None = Field(
-        None, description="Weak run constrains add run_constrains from the host env"
+    weak_constraints: ConditionalList[MatchSpec] | None = Field(
+        None, description="Weak run constraints add run_constraints from the host env"
     )
-    strong_constrains: ConditionalList[MatchSpec] | None = Field(
+    strong_constraints: ConditionalList[MatchSpec] | None = Field(
         None,
-        description="Strong run constrains add run_constrains from the build and host env",
+        description="Strong run constraints add run_constraints from the build and host env",
     )
 
 
@@ -369,8 +369,8 @@ class Requirements(StrictBaseModel):
         None,
         description="Dependencies that should be installed alongside this package. Dependencies in the `host` section with `run_exports` are also automatically added here.",
     )
-    run_constrained: ConditionalList[MatchSpec] | None = Field(
-        None, description="Constrained optional dependencies at runtime."
+    run_constraints: ConditionalList[MatchSpec] | None = Field(
+        None, description="constraints optional dependencies at runtime."
     )
     run_exports: ConditionalList[MatchSpec] | RunExports = Field(
         None, description="The run exports of this package"
