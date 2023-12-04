@@ -349,18 +349,6 @@
           "default": null,
           "description": "Shared library specific build configuration"
         },
-        "ignore_run_exports": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/IgnoreRunExports"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Ignore run-exports by name or from certain packages"
-        },
         "link_options": {
           "anyOf": [
             {
@@ -1932,18 +1920,6 @@
           "default": null,
           "description": "Shared library specific build configuration"
         },
-        "ignore_run_exports": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/IgnoreRunExports"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Ignore run-exports by name or from certain packages"
-        },
         "link_options": {
           "anyOf": [
             {
@@ -2244,6 +2220,18 @@
           "default": null,
           "description": "The run exports of this package",
           "title": "Run Exports"
+        },
+        "ignore_run_exports": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IgnoreRunExports"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Ignore run-exports by name or from certain packages"
         }
       },
       "title": "Requirements",

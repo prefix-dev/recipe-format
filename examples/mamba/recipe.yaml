@@ -30,11 +30,6 @@ outputs:
 
     build:
       script: ${{ "build_mamba.sh" if unix else "build_mamba.bat" }}
-      ignore_run_exports:
-        from_package:
-          - spdlog
-          - if: win
-            then: python
 
     requirements:
       build:
@@ -58,6 +53,11 @@ outputs:
           then: winreg
       run_exports:
         - ${{ pin_subpackage('libmamba', max_pin='x.x') }}
+      ignore_run_exports:
+        from_package:
+          - spdlog
+          - if: win
+            then: python
 
     test:
       - script:
@@ -86,9 +86,6 @@ outputs:
     build:
       script: ${{ "build_mamba.sh" if unix else "build_mamba.bat" }}
       string: py${{ CONDA_PY }}h${{ PKG_HASH }}_${{ PKG_BUILDNUM }}
-      ignore_run_exports:
-        from_package: 
-        - spdlog
     requirements:
       build:
         - ${{ compiler('cxx') }}
@@ -118,6 +115,9 @@ outputs:
         - ${{ pin_subpackage('libmamba', exact=True) }}
       run_exports:
         - ${{ pin_subpackage('libmambapy', max_pin='x.x') }}
+      ignore_run_exports:
+        from_package: 
+        - spdlog
 
     test:
       - imports:

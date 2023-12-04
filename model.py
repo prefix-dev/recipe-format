@@ -211,9 +211,6 @@ class Build(StrictBaseModel):
     shared_libraries: SharedLibraries | None = Field(
         None, description="Shared library specific build configuration"
     )
-    ignore_run_exports: IgnoreRunExports | None = Field(
-        None, description="Ignore run-exports by name or from certain packages"
-    )
 
     link_options: LinkOptions | None = Field(
         None,
@@ -377,6 +374,9 @@ class Requirements(StrictBaseModel):
     )
     run_exports: ConditionalList[MatchSpec] | RunExports = Field(
         None, description="The run exports of this package"
+    )
+    ignore_run_exports: IgnoreRunExports | None = Field(
+        None, description="Ignore run-exports by name or from certain packages"
     )
 
 
