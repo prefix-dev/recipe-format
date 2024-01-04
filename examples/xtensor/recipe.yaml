@@ -65,6 +65,8 @@ test:
 
   - downstream: xtensor-python
   - downstream: xtensor-blas
-  - imports:
-      - xtensor_python
-      - xtensor_python.numpy_adapter
+  - python:
+      imports:
+        - xtensor_python
+        - xtensor_python.numpy_adapter
+      pip_check: true

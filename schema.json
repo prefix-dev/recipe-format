@@ -1119,7 +1119,7 @@
       "title": "IfStatement",
       "type": "object"
     },
-    "IfStatement_Union_CommandTestElement__ImportTestElement__DownstreamTestElement__": {
+    "IfStatement_Union_CommandTestElement__PythonTestElement__DownstreamTestElement__": {
       "properties": {
         "if": {
           "title": "If",
@@ -1131,7 +1131,7 @@
               "$ref": "#/$defs/CommandTestElement"
             },
             {
-              "$ref": "#/$defs/ImportTestElement"
+              "$ref": "#/$defs/PythonTestElement"
             },
             {
               "$ref": "#/$defs/DownstreamTestElement"
@@ -1143,7 +1143,7 @@
                     "$ref": "#/$defs/CommandTestElement"
                   },
                   {
-                    "$ref": "#/$defs/ImportTestElement"
+                    "$ref": "#/$defs/PythonTestElement"
                   },
                   {
                     "$ref": "#/$defs/DownstreamTestElement"
@@ -1161,7 +1161,7 @@
               "$ref": "#/$defs/CommandTestElement"
             },
             {
-              "$ref": "#/$defs/ImportTestElement"
+              "$ref": "#/$defs/PythonTestElement"
             },
             {
               "$ref": "#/$defs/DownstreamTestElement"
@@ -1173,7 +1173,7 @@
                     "$ref": "#/$defs/CommandTestElement"
                   },
                   {
-                    "$ref": "#/$defs/ImportTestElement"
+                    "$ref": "#/$defs/PythonTestElement"
                   },
                   {
                     "$ref": "#/$defs/DownstreamTestElement"
@@ -1194,7 +1194,7 @@
         "if",
         "then"
       ],
-      "title": "IfStatement[Union[CommandTestElement, ImportTestElement, DownstreamTestElement]]",
+      "title": "IfStatement[Union[CommandTestElement, PythonTestElement, DownstreamTestElement]]",
       "type": "object"
     },
     "IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__LocalSource__": {
@@ -1360,43 +1360,6 @@
         }
       },
       "title": "IgnoreRunExports",
-      "type": "object"
-    },
-    "ImportTestElement": {
-      "additionalProperties": false,
-      "properties": {
-        "imports": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "description": "A list of Python imports to check after having installed the built package.",
-          "title": "Imports"
-        }
-      },
-      "required": [
-        "imports"
-      ],
-      "title": "ImportTestElement",
       "type": "object"
     },
     "LinkOptions": {
@@ -1644,7 +1607,7 @@
           "default": null,
           "description": "The package dependencies"
         },
-        "test": {
+        "tests": {
           "anyOf": [
             {
               "items": {
@@ -1653,13 +1616,13 @@
                     "$ref": "#/$defs/CommandTestElement"
                   },
                   {
-                    "$ref": "#/$defs/ImportTestElement"
+                    "$ref": "#/$defs/PythonTestElement"
                   },
                   {
                     "$ref": "#/$defs/DownstreamTestElement"
                   },
                   {
-                    "$ref": "#/$defs/IfStatement_Union_CommandTestElement__ImportTestElement__DownstreamTestElement__"
+                    "$ref": "#/$defs/IfStatement_Union_CommandTestElement__PythonTestElement__DownstreamTestElement__"
                   },
                   {
                     "items": {
@@ -1668,13 +1631,13 @@
                           "$ref": "#/$defs/CommandTestElement"
                         },
                         {
-                          "$ref": "#/$defs/ImportTestElement"
+                          "$ref": "#/$defs/PythonTestElement"
                         },
                         {
                           "$ref": "#/$defs/DownstreamTestElement"
                         },
                         {
-                          "$ref": "#/$defs/IfStatement_Union_CommandTestElement__ImportTestElement__DownstreamTestElement__"
+                          "$ref": "#/$defs/IfStatement_Union_CommandTestElement__PythonTestElement__DownstreamTestElement__"
                         }
                       ]
                     },
@@ -1690,7 +1653,7 @@
           ],
           "default": null,
           "description": "Tests to run after packaging",
-          "title": "Test"
+          "title": "Tests"
         },
         "about": {
           "anyOf": [
@@ -2071,6 +2034,67 @@
         }
       },
       "title": "Python",
+      "type": "object"
+    },
+    "PythonTestElement": {
+      "additionalProperties": false,
+      "properties": {
+        "python": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/PythonTestElementInner"
+            }
+          ],
+          "description": "Python specific test configuration"
+        }
+      },
+      "required": [
+        "python"
+      ],
+      "title": "PythonTestElement",
+      "type": "object"
+    },
+    "PythonTestElementInner": {
+      "additionalProperties": false,
+      "properties": {
+        "imports": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "description": "A list of Python imports to check after having installed the built package.",
+          "title": "Imports"
+        },
+        "pip_check": {
+          "default": true,
+          "description": "Whether or not to run `pip check` during the Python tests.",
+          "title": "Pip Check",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "imports"
+      ],
+      "title": "PythonTestElementInner",
       "type": "object"
     },
     "Requirements": {
@@ -2686,7 +2710,7 @@
               "$ref": "#/$defs/CommandTestElement"
             },
             {
-              "$ref": "#/$defs/ImportTestElement"
+              "$ref": "#/$defs/PythonTestElement"
             },
             {
               "$ref": "#/$defs/DownstreamTestElement"
@@ -2701,7 +2725,7 @@
                     "$ref": "#/$defs/CommandTestElement"
                   },
                   {
-                    "$ref": "#/$defs/ImportTestElement"
+                    "$ref": "#/$defs/PythonTestElement"
                   },
                   {
                     "$ref": "#/$defs/DownstreamTestElement"

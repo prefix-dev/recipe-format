@@ -414,11 +414,19 @@ class CommandTestElement(StrictBaseModel):
     )
 
 
-class ImportTestElement(StrictBaseModel):
+class PythonTestElementInner(StrictBaseModel):
     imports: ConditionalList[NonEmptyStr] = Field(
         ...,
         description="A list of Python imports to check after having installed the built package.",
     )
+    pip_check: bool = Field(
+        default=True,
+        description="Whether or not to run `pip check` during the Python tests.",
+    )
+
+
+class PythonTestElement(StrictBaseModel):
+    python: PythonTestElementInner = Field(..., description="Python specific test configuration")
 
 
 class DownstreamTestElement(StrictBaseModel):
@@ -428,7 +436,7 @@ class DownstreamTestElement(StrictBaseModel):
     )
 
 
-TestElement = CommandTestElement | ImportTestElement | DownstreamTestElement
+TestElement = CommandTestElement | PythonTestElement | DownstreamTestElement
 
 #########
 # About #
@@ -500,7 +508,7 @@ class Output(BaseModel):
 
     requirements: Requirements | None = Field(None, description="The package dependencies")
 
-    test: list[
+    tests: list[
         TestElement | IfStatement[TestElement] | list[TestElement | IfStatement[TestElement]]
     ] | None = Field(None, description="Tests to run after packaging")
 
