@@ -17,7 +17,7 @@ PathNoBackslash = constr(pattern=r"^[^\\]+$")
 Glob = NonEmptyStr
 UnsignedInt = conint(ge=0)
 GitUrl = constr(
-    pattern=r"/((git|ssh|http(s)?)|(git@[\w\.]+))(:(//)?)([\\w\.@\:/\\-~]+)/igm"
+    pattern=r"/((git|ssh|http(s)?)|(git@[\w\.]+))(:(\/\/)?)([\\w\.@:\/\\-~]+)/igm"
 )
 
 
