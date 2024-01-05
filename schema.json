@@ -150,6 +150,92 @@
       "title": "About",
       "type": "object"
     },
+    "BaseGitSource": {
+      "additionalProperties": false,
+      "properties": {
+        "patches": {
+          "anyOf": [
+            {
+              "pattern": "^[^\\\\]+$",
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "pattern": "^[^\\\\]+$",
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "A list of patches to apply after fetching the source",
+          "title": "Patches"
+        },
+        "target_directory": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The location in the working directory to place the source",
+          "title": "Target Directory"
+        },
+        "git": {
+          "anyOf": [
+            {
+              "pattern": "((git|ssh|http(s)?)|(git@[\\w\\.]+))(:(\\/\\/)?)([\\w\\.@:\\/\\\\-~]+)",
+              "type": "string"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            }
+          ],
+          "description": "The url that points to the git repository.",
+          "title": "Git"
+        },
+        "depth": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "A value to use when shallow cloning the repository.",
+          "title": "Depth"
+        },
+        "lfs": {
+          "default": false,
+          "description": "Should we LFS files be checked out as well",
+          "title": "Lfs",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "git"
+      ],
+      "title": "BaseGitSource",
+      "type": "object"
+    },
     "Build": {
       "additionalProperties": false,
       "properties": {
@@ -491,10 +577,13 @@
               "$ref": "#/$defs/GitBranch"
             },
             {
+              "$ref": "#/$defs/BaseGitSource"
+            },
+            {
               "$ref": "#/$defs/LocalSource"
             },
             {
-              "$ref": "#/$defs/IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__LocalSource__"
+              "$ref": "#/$defs/IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__BaseGitSource__LocalSource__"
             },
             {
               "items": {
@@ -512,10 +601,13 @@
                     "$ref": "#/$defs/GitBranch"
                   },
                   {
+                    "$ref": "#/$defs/BaseGitSource"
+                  },
+                  {
                     "$ref": "#/$defs/LocalSource"
                   },
                   {
-                    "$ref": "#/$defs/IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__LocalSource__"
+                    "$ref": "#/$defs/IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__BaseGitSource__LocalSource__"
                   }
                 ]
               },
@@ -850,7 +942,7 @@
         "git": {
           "anyOf": [
             {
-              "pattern": "/((git|ssh|http(s)?)|(git@[\\w\\.]+))(:(\\/\\/)?)([\\w\\.@\\:\\/\\-~]+)(\\.git)(\\/)?/igm",
+              "pattern": "((git|ssh|http(s)?)|(git@[\\w\\.]+))(:(\\/\\/)?)([\\w\\.@:\\/\\\\-~]+)",
               "type": "string"
             },
             {
@@ -943,7 +1035,7 @@
         "git": {
           "anyOf": [
             {
-              "pattern": "/((git|ssh|http(s)?)|(git@[\\w\\.]+))(:(\\/\\/)?)([\\w\\.@\\:\\/\\-~]+)(\\.git)(\\/)?/igm",
+              "pattern": "((git|ssh|http(s)?)|(git@[\\w\\.]+))(:(\\/\\/)?)([\\w\\.@:\\/\\\\-~]+)",
               "type": "string"
             },
             {
@@ -1036,7 +1128,7 @@
         "git": {
           "anyOf": [
             {
-              "pattern": "/((git|ssh|http(s)?)|(git@[\\w\\.]+))(:(\\/\\/)?)([\\w\\.@\\:\\/\\-~]+)(\\.git)(\\/)?/igm",
+              "pattern": "((git|ssh|http(s)?)|(git@[\\w\\.]+))(:(\\/\\/)?)([\\w\\.@:\\/\\\\-~]+)",
               "type": "string"
             },
             {
@@ -1197,7 +1289,7 @@
       "title": "IfStatement[Union[CommandTestElement, PythonTestElement, DownstreamTestElement]]",
       "type": "object"
     },
-    "IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__LocalSource__": {
+    "IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__BaseGitSource__LocalSource__": {
       "properties": {
         "if": {
           "title": "If",
@@ -1218,6 +1310,9 @@
               "$ref": "#/$defs/GitBranch"
             },
             {
+              "$ref": "#/$defs/BaseGitSource"
+            },
+            {
               "$ref": "#/$defs/LocalSource"
             },
             {
@@ -1234,6 +1329,9 @@
                   },
                   {
                     "$ref": "#/$defs/GitBranch"
+                  },
+                  {
+                    "$ref": "#/$defs/BaseGitSource"
                   },
                   {
                     "$ref": "#/$defs/LocalSource"
@@ -1260,6 +1358,9 @@
               "$ref": "#/$defs/GitBranch"
             },
             {
+              "$ref": "#/$defs/BaseGitSource"
+            },
+            {
               "$ref": "#/$defs/LocalSource"
             },
             {
@@ -1276,6 +1377,9 @@
                   },
                   {
                     "$ref": "#/$defs/GitBranch"
+                  },
+                  {
+                    "$ref": "#/$defs/BaseGitSource"
                   },
                   {
                     "$ref": "#/$defs/LocalSource"
@@ -1296,7 +1400,7 @@
         "if",
         "then"
       ],
-      "title": "IfStatement[Union[UrlSource, GitRev, GitTag, GitBranch, LocalSource]]",
+      "title": "IfStatement[Union[UrlSource, GitRev, GitTag, GitBranch, BaseGitSource, LocalSource]]",
       "type": "object"
     },
     "IgnoreRunExports": {
@@ -1545,6 +1649,9 @@
               "$ref": "#/$defs/GitBranch"
             },
             {
+              "$ref": "#/$defs/BaseGitSource"
+            },
+            {
               "$ref": "#/$defs/LocalSource"
             },
             {
@@ -1564,6 +1671,9 @@
                   },
                   {
                     "$ref": "#/$defs/GitBranch"
+                  },
+                  {
+                    "$ref": "#/$defs/BaseGitSource"
                   },
                   {
                     "$ref": "#/$defs/LocalSource"
@@ -2621,10 +2731,13 @@
               "$ref": "#/$defs/GitBranch"
             },
             {
+              "$ref": "#/$defs/BaseGitSource"
+            },
+            {
               "$ref": "#/$defs/LocalSource"
             },
             {
-              "$ref": "#/$defs/IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__LocalSource__"
+              "$ref": "#/$defs/IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__BaseGitSource__LocalSource__"
             },
             {
               "items": {
@@ -2642,10 +2755,13 @@
                     "$ref": "#/$defs/GitBranch"
                   },
                   {
+                    "$ref": "#/$defs/BaseGitSource"
+                  },
+                  {
                     "$ref": "#/$defs/LocalSource"
                   },
                   {
-                    "$ref": "#/$defs/IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__LocalSource__"
+                    "$ref": "#/$defs/IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__BaseGitSource__LocalSource__"
                   }
                 ]
               },
