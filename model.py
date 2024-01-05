@@ -109,7 +109,7 @@ class GitBranch(BaseGitSource):
     branch: NonEmptyStr = Field(..., description="Branch to check out")
 
 
-GitSource = GitRev | GitTag | GitBranch | None
+GitSource = GitRev | GitTag | GitBranch | BaseGitSource
 
 
 class LocalSource(BaseSource):
