@@ -16,9 +16,7 @@ NonEmptyStr = constr(min_length=1)
 PathNoBackslash = constr(pattern=r"^[^\\]+$")
 Glob = NonEmptyStr
 UnsignedInt = conint(ge=0)
-GitUrl = constr(
-    pattern=r"/((git|ssh|http(s)?)|(git@[\w\.]+))(:(\/\/)?)([\\w\.@:\/\\-~]+)/igm"
-)
+GitUrl = constr(pattern=r"/((git|ssh|http(s)?)|(git@[\w\.]+))(:(\/\/)?)([\\w\.@:\/\\-~]+)/igm")
 
 
 class StrictBaseModel(BaseModel):
