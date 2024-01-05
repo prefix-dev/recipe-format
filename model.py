@@ -17,7 +17,7 @@ PathNoBackslash = constr(pattern=r"^[^\\]+$")
 Glob = NonEmptyStr
 UnsignedInt = conint(ge=0)
 GitUrl = constr(
-    pattern=r"/((git|ssh|http(s)?)|(git@[\w\.]+))(:(\/\/)?)([\w\.@\:\/\-~]+)(\.git)(\/)?/igm"
+    pattern=r"/((git|ssh|http(s)?)|(git@[\\w\\.]+))(:(//)?)([\\w\.@\:/\\-~]+)/igm"
 )
 
 
@@ -109,7 +109,7 @@ class GitBranch(BaseGitSource):
     branch: NonEmptyStr = Field(..., description="Branch to check out")
 
 
-GitSource = GitRev | GitTag | GitBranch
+GitSource = GitRev | GitTag | GitBranch | None
 
 
 class LocalSource(BaseSource):
