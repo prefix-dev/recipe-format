@@ -28,7 +28,7 @@ requirements:
     - xtl >=0.7,<0.8
   run:
     - xtl >=0.7,<0.8
-  run_constrained:
+  run_constraints:
     - xsimd >=8.0.3,<10
 
 test:
@@ -65,6 +65,8 @@ test:
 
   - downstream: xtensor-python
   - downstream: xtensor-blas
-  - imports:
-      - xtensor_python
-      - xtensor_python.numpy_adapter
+  - python:
+      imports:
+        - xtensor_python
+        - xtensor_python.numpy_adapter
+      pip_check: true
