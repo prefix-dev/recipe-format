@@ -22,7 +22,17 @@ to the top of your recipe file and you should have autocompletion and validation
 
 ## Contributing
 
-The project is using [`pixi`](https://github.com/prefix.dev/pixi) to be able to quickly format, validate and generate the schema.
+The project is using [`pixi`](https://github.com/prefix-dev/pixi) to be able to quickly format, validate and generate the schema.
+
+Note: When submitting changes to `model.py` make sure to run following commands locally first.(inorder)
+
+```sh
+pixi run fmt
+pixi run lint
+pixi run generate > schema.json
+pixi run test 
+```
+
 
 
 

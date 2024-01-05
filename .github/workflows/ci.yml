@@ -16,10 +16,12 @@ jobs:
       - name: Format and lint
         run: |
           pixi run fmt
-          pixi run check
+          pixi run lint 
       - name: Generate schema
         run: |
-          pixi run generate
+          # Generate schema.json from model.py
+          # Note: generate command outputs to stdout, so we redirect to a file
+          pixi run generate > schema.json
       - name: Test recipe schema
         run: |
           pixi run test
