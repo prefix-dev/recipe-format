@@ -119,10 +119,12 @@ outputs:
         from_package: 
         - spdlog
 
-    test:
-      - imports:
-          - libmambapy
-          - libmambapy.bindings
+    tests:
+      - python:
+          imports:
+            - libmambapy
+            - libmambapy.bindings
+          pip_check: true
       - script:
           - python -c "import libmambapy._version; assert libmambapy._version.__version__ == '${{ libmambapy_version }}'"
 
@@ -151,10 +153,11 @@ outputs:
         - conda >=4.14,<23.4
         - ${{ pin_subpackage('libmambapy', exact=True) }}
 
-    test:
-      - imports: [mamba]
+    tests:
+      - python:
+          imports: [mamba]
 
-      - extra_requirements:
+      - requirements:
           run:
             - pip
         script:

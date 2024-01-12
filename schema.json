@@ -451,65 +451,6 @@
       "title": "Build",
       "type": "object"
     },
-    "CommandTestElement": {
-      "additionalProperties": false,
-      "properties": {
-        "script": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": null,
-          "description": "A script to run to perform the test.",
-          "title": "Script"
-        },
-        "extra_requirements": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/TestElementRequires"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Additional dependencies to install before running the test."
-        },
-        "files": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/TestElementFiles"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Additional files to include for the test."
-        }
-      },
-      "title": "CommandTestElement",
-      "type": "object"
-    },
     "ComplexPackage": {
       "additionalProperties": false,
       "properties": {
@@ -1211,7 +1152,7 @@
       "title": "IfStatement",
       "type": "object"
     },
-    "IfStatement_Union_CommandTestElement__PythonTestElement__DownstreamTestElement__": {
+    "IfStatement_Union_ScriptTestElement__PythonTestElement__DownstreamTestElement__": {
       "properties": {
         "if": {
           "title": "If",
@@ -1220,7 +1161,7 @@
         "then": {
           "anyOf": [
             {
-              "$ref": "#/$defs/CommandTestElement"
+              "$ref": "#/$defs/ScriptTestElement"
             },
             {
               "$ref": "#/$defs/PythonTestElement"
@@ -1232,7 +1173,7 @@
               "items": {
                 "anyOf": [
                   {
-                    "$ref": "#/$defs/CommandTestElement"
+                    "$ref": "#/$defs/ScriptTestElement"
                   },
                   {
                     "$ref": "#/$defs/PythonTestElement"
@@ -1250,7 +1191,7 @@
         "else": {
           "anyOf": [
             {
-              "$ref": "#/$defs/CommandTestElement"
+              "$ref": "#/$defs/ScriptTestElement"
             },
             {
               "$ref": "#/$defs/PythonTestElement"
@@ -1262,7 +1203,7 @@
               "items": {
                 "anyOf": [
                   {
-                    "$ref": "#/$defs/CommandTestElement"
+                    "$ref": "#/$defs/ScriptTestElement"
                   },
                   {
                     "$ref": "#/$defs/PythonTestElement"
@@ -1286,7 +1227,7 @@
         "if",
         "then"
       ],
-      "title": "IfStatement[Union[CommandTestElement, PythonTestElement, DownstreamTestElement]]",
+      "title": "IfStatement[Union[ScriptTestElement, PythonTestElement, DownstreamTestElement]]",
       "type": "object"
     },
     "IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__BaseGitSource__LocalSource__": {
@@ -1723,7 +1664,7 @@
               "items": {
                 "anyOf": [
                   {
-                    "$ref": "#/$defs/CommandTestElement"
+                    "$ref": "#/$defs/ScriptTestElement"
                   },
                   {
                     "$ref": "#/$defs/PythonTestElement"
@@ -1732,13 +1673,13 @@
                     "$ref": "#/$defs/DownstreamTestElement"
                   },
                   {
-                    "$ref": "#/$defs/IfStatement_Union_CommandTestElement__PythonTestElement__DownstreamTestElement__"
+                    "$ref": "#/$defs/IfStatement_Union_ScriptTestElement__PythonTestElement__DownstreamTestElement__"
                   },
                   {
                     "items": {
                       "anyOf": [
                         {
-                          "$ref": "#/$defs/CommandTestElement"
+                          "$ref": "#/$defs/ScriptTestElement"
                         },
                         {
                           "$ref": "#/$defs/PythonTestElement"
@@ -1747,7 +1688,7 @@
                           "$ref": "#/$defs/DownstreamTestElement"
                         },
                         {
-                          "$ref": "#/$defs/IfStatement_Union_CommandTestElement__PythonTestElement__DownstreamTestElement__"
+                          "$ref": "#/$defs/IfStatement_Union_ScriptTestElement__PythonTestElement__DownstreamTestElement__"
                         }
                       ]
                     },
@@ -2523,6 +2464,74 @@
       "title": "RunExports",
       "type": "object"
     },
+    "ScriptTestElement": {
+      "additionalProperties": false,
+      "properties": {
+        "script": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/FileScript"
+            },
+            {
+              "$ref": "#/$defs/ContentScript"
+            },
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": null,
+          "description": "A script to run to perform the test.",
+          "title": "Script"
+        },
+        "requirements": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TestElementRequires"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Additional dependencies to install before running the test."
+        },
+        "files": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TestElementFiles"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Additional files to include for the test."
+        }
+      },
+      "title": "ScriptTestElement",
+      "type": "object"
+    },
     "SharedLibraries": {
       "additionalProperties": false,
       "properties": {
@@ -2820,10 +2829,10 @@
           ],
           "description": "The package name and version."
         },
-        "test": {
+        "tests": {
           "anyOf": [
             {
-              "$ref": "#/$defs/CommandTestElement"
+              "$ref": "#/$defs/ScriptTestElement"
             },
             {
               "$ref": "#/$defs/PythonTestElement"
@@ -2838,7 +2847,7 @@
               "items": {
                 "anyOf": [
                   {
-                    "$ref": "#/$defs/CommandTestElement"
+                    "$ref": "#/$defs/ScriptTestElement"
                   },
                   {
                     "$ref": "#/$defs/PythonTestElement"
@@ -2859,7 +2868,7 @@
           ],
           "default": null,
           "description": "Tests to run after packaging",
-          "title": "Test"
+          "title": "Tests"
         },
         "requirements": {
           "anyOf": [
