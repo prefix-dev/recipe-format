@@ -400,11 +400,11 @@ class TestElementFiles(StrictBaseModel):
     )
 
 
-class CommandTestElement(StrictBaseModel):
-    script: ConditionalList[NonEmptyStr] = Field(
+class ScriptTestElement(StrictBaseModel):
+    script: str | Script | ConditionalList[NonEmptyStr] = Field(
         None, description="A script to run to perform the test."
     )
-    extra_requirements: TestElementRequires | None = Field(
+    requirements: TestElementRequires | None = Field(
         None, description="Additional dependencies to install before running the test."
     )
     files: TestElementFiles | None = Field(
@@ -434,7 +434,7 @@ class DownstreamTestElement(StrictBaseModel):
     )
 
 
-TestElement = CommandTestElement | PythonTestElement | DownstreamTestElement
+TestElement = ScriptTestElement | PythonTestElement | DownstreamTestElement
 
 #########
 # About #
@@ -563,7 +563,7 @@ class ComplexRecipe(BaseRecipe):
 class SimpleRecipe(BaseRecipe):
     package: SimplePackage = Field(..., description="The package name and version.")
 
-    test: ConditionalList[TestElement] | None = Field(
+    tests: ConditionalList[TestElement] | None = Field(
         None, description="Tests to run after packaging"
     )
 
