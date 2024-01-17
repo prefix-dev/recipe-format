@@ -1,0 +1,80 @@
+{
+  "$defs": {
+    "Pin": {
+      "properties": {
+        "min_pin": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Min Pin"
+        },
+        "max_pin": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Pin"
+        }
+      },
+      "title": "Pin",
+      "type": "object"
+    }
+  },
+  "additionalProperties": {
+    "anyOf": [
+      {
+        "type": "string"
+      },
+      {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      }
+    ]
+  },
+  "properties": {
+    "zip_keys": {
+      "default": [],
+      "items": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "Zip Keys",
+      "type": "array"
+    },
+    "pin_run_as_build": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/Pin"
+          },
+          {
+            "items": {
+              "$ref": "#/$defs/Pin"
+            },
+            "type": "array"
+          }
+        ]
+      },
+      "default": {},
+      "title": "Pin Run As Build",
+      "type": "object"
+    }
+  },
+  "title": "VariantConfig",
+  "type": "object"
+}

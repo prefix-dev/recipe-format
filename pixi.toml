@@ -8,8 +8,9 @@ platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
 
 [tasks]
 generate = "python model.py"
-fmt = "ruff format model.py"
-lint = "ruff model.py --fix"
+genvariant = "python variant_model.py"
+fmt = "ruff format model.py variant_model.py"
+lint = "ruff model.py variant_model.py --fix"
 test = "pytest"
 
 [dependencies]
