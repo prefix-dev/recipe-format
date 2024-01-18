@@ -433,16 +433,34 @@ class DownstreamTestElement(StrictBaseModel):
         description="Install the package and use the output of this package to test if the tests in the downstream package still succeed.",
     )
 
+
 class PackageContentTestInner(StrictBaseModel):
-    files: ConditionalList[NonEmptyStr] | None = Field(default=[], description="Files that should be in the package")
-    include: ConditionalList[NonEmptyStr] | None = Field(default=[], description="Files that should be in the `include/` folder of the package. This folder is found under `$PREFIX/include` on Unix and `$PREFIX/Library/include` on Windows.")
-    site_packages: ConditionalList[NonEmptyStr] | None = Field(default=[], description="Files that should be in the `site-packages/` folder of the package. This folder is found under `$PREFIX/lib/pythonX.Y/site-packages` on Unix and `$PREFIX/Lib/site-packages` on Windows.")
-    bin: ConditionalList[NonEmptyStr] | None = Field(default=[], description="Files that should be in the `bin/` folder of the package. This folder is found under `$PREFIX/bin` on Unix. On Windows this searches for files in `%PREFIX`, `%PREFIX%/bin`, `%PREFIX%/Scripts`, `%PREFIX%/Library/bin`, `%PREFIX/Library/usr/bin` and  `%PREFIX/Library/mingw-w64/bin`.")
-    lib: ConditionalList[NonEmptyStr] | None = Field(default=[], description="Files that should be in the `lib/` folder of the package. This folder is found under `$PREFIX/lib` on Unix and %PREFIX%/Library/lib on Windows.")
+    files: ConditionalList[NonEmptyStr] | None = Field(
+        default=[], description="Files that should be in the package"
+    )
+    include: ConditionalList[NonEmptyStr] | None = Field(
+        default=[],
+        description="Files that should be in the `include/` folder of the package. This folder is found under `$PREFIX/include` on Unix and `$PREFIX/Library/include` on Windows.",
+    )
+    site_packages: ConditionalList[NonEmptyStr] | None = Field(
+        default=[],
+        description="Files that should be in the `site-packages/` folder of the package. This folder is found under `$PREFIX/lib/pythonX.Y/site-packages` on Unix and `$PREFIX/Lib/site-packages` on Windows.",
+    )
+    bin: ConditionalList[NonEmptyStr] | None = Field(
+        default=[],
+        description="Files that should be in the `bin/` folder of the package. This folder is found under `$PREFIX/bin` on Unix. On Windows this searches for files in `%PREFIX`, `%PREFIX%/bin`, `%PREFIX%/Scripts`, `%PREFIX%/Library/bin`, `%PREFIX/Library/usr/bin` and  `%PREFIX/Library/mingw-w64/bin`.",
+    )
+    lib: ConditionalList[NonEmptyStr] | None = Field(
+        default=[],
+        description="Files that should be in the `lib/` folder of the package. This folder is found under `$PREFIX/lib` on Unix and %PREFIX%/Library/lib on Windows.",
+    )
 
 
 class PackageContentTest(StrictBaseModel):
-    package_contents: PackageContentTestInner = Field(..., description="Test if the package contains the specified files.")
+    package_contents: PackageContentTestInner = Field(
+        ..., description="Test if the package contains the specified files."
+    )
+
 
 TestElement = ScriptTestElement | PythonTestElement | DownstreamTestElement | PackageContentTest
 
