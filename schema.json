@@ -1152,7 +1152,7 @@
       "title": "IfStatement",
       "type": "object"
     },
-    "IfStatement_Union_ScriptTestElement__PythonTestElement__DownstreamTestElement__": {
+    "IfStatement_Union_ScriptTestElement__PythonTestElement__DownstreamTestElement__PackageContentTest__": {
       "properties": {
         "if": {
           "title": "If",
@@ -1170,6 +1170,9 @@
               "$ref": "#/$defs/DownstreamTestElement"
             },
             {
+              "$ref": "#/$defs/PackageContentTest"
+            },
+            {
               "items": {
                 "anyOf": [
                   {
@@ -1180,6 +1183,9 @@
                   },
                   {
                     "$ref": "#/$defs/DownstreamTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/PackageContentTest"
                   }
                 ]
               },
@@ -1200,6 +1206,9 @@
               "$ref": "#/$defs/DownstreamTestElement"
             },
             {
+              "$ref": "#/$defs/PackageContentTest"
+            },
+            {
               "items": {
                 "anyOf": [
                   {
@@ -1210,6 +1219,9 @@
                   },
                   {
                     "$ref": "#/$defs/DownstreamTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/PackageContentTest"
                   }
                 ]
               },
@@ -1227,7 +1239,7 @@
         "if",
         "then"
       ],
-      "title": "IfStatement[Union[ScriptTestElement, PythonTestElement, DownstreamTestElement]]",
+      "title": "IfStatement[Union[ScriptTestElement, PythonTestElement, DownstreamTestElement, PackageContentTest]]",
       "type": "object"
     },
     "IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__BaseGitSource__LocalSource__": {
@@ -1673,7 +1685,10 @@
                     "$ref": "#/$defs/DownstreamTestElement"
                   },
                   {
-                    "$ref": "#/$defs/IfStatement_Union_ScriptTestElement__PythonTestElement__DownstreamTestElement__"
+                    "$ref": "#/$defs/PackageContentTest"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement_Union_ScriptTestElement__PythonTestElement__DownstreamTestElement__PackageContentTest__"
                   },
                   {
                     "items": {
@@ -1688,7 +1703,10 @@
                           "$ref": "#/$defs/DownstreamTestElement"
                         },
                         {
-                          "$ref": "#/$defs/IfStatement_Union_ScriptTestElement__PythonTestElement__DownstreamTestElement__"
+                          "$ref": "#/$defs/PackageContentTest"
+                        },
+                        {
+                          "$ref": "#/$defs/IfStatement_Union_ScriptTestElement__PythonTestElement__DownstreamTestElement__PackageContentTest__"
                         }
                       ]
                     },
@@ -1985,6 +2003,186 @@
         }
       },
       "title": "OutputBuild",
+      "type": "object"
+    },
+    "PackageContentTest": {
+      "additionalProperties": false,
+      "properties": {
+        "package_contents": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/PackageContentTestInner"
+            }
+          ],
+          "description": "Test if the package contains the specified files."
+        }
+      },
+      "required": [
+        "package_contents"
+      ],
+      "title": "PackageContentTest",
+      "type": "object"
+    },
+    "PackageContentTestInner": {
+      "additionalProperties": false,
+      "properties": {
+        "files": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": [],
+          "description": "Files that should be in the package",
+          "title": "Files"
+        },
+        "include": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": [],
+          "description": "Files that should be in the `include/` folder of the package. This folder is found under `$PREFIX/include` on Unix and `$PREFIX/Library/include` on Windows.",
+          "title": "Include"
+        },
+        "site_packages": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": [],
+          "description": "Files that should be in the `site-packages/` folder of the package. This folder is found under `$PREFIX/lib/pythonX.Y/site-packages` on Unix and `$PREFIX/Lib/site-packages` on Windows.",
+          "title": "Site Packages"
+        },
+        "bin": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": [],
+          "description": "Files that should be in the `bin/` folder of the package. This folder is found under `$PREFIX/bin` on Unix. On Windows this searches for files in `%PREFIX`, `%PREFIX%/bin`, `%PREFIX%/Scripts`, `%PREFIX%/Library/bin`, `%PREFIX/Library/usr/bin` and  `%PREFIX/Library/mingw-w64/bin`.",
+          "title": "Bin"
+        },
+        "lib": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": [],
+          "description": "Files that should be in the `lib/` folder of the package. This folder is found under `$PREFIX/lib` on Unix and %PREFIX%/Library/lib on Windows.",
+          "title": "Lib"
+        }
+      },
+      "title": "PackageContentTestInner",
       "type": "object"
     },
     "Python": {
@@ -2841,6 +3039,9 @@
               "$ref": "#/$defs/DownstreamTestElement"
             },
             {
+              "$ref": "#/$defs/PackageContentTest"
+            },
+            {
               "$ref": "#/$defs/IfStatement"
             },
             {
@@ -2854,6 +3055,9 @@
                   },
                   {
                     "$ref": "#/$defs/DownstreamTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/PackageContentTest"
                   },
                   {
                     "$ref": "#/$defs/IfStatement"

@@ -70,3 +70,6 @@ tests:
         - xtensor_python
         - xtensor_python.numpy_adapter
       pip_check: true
+  - package_contents:
+      include:
+        - xtensor/xarray.hpp
