@@ -116,8 +116,8 @@ outputs:
       run_exports:
         - ${{ pin_subpackage('libmambapy', max_pin='x.x') }}
       ignore_run_exports:
-        from_package: 
-        - spdlog
+        from_package:
+          - spdlog
 
     tests:
       - python:
@@ -154,6 +154,14 @@ outputs:
         - ${{ pin_subpackage('libmambapy', exact=True) }}
 
     tests:
+      - package_contents:
+          bin:
+            - mamba
+            - if: win
+              then: mamba.bat
+          site_packages:
+            - mamba
+
       - python:
           imports: [mamba]
 

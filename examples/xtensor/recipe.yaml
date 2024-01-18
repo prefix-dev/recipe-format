@@ -73,5 +73,3 @@ tests:
   - package_contents:
       include:
         - xtensor/xarray.hpp
-      bin:
-        - xtensor-config
