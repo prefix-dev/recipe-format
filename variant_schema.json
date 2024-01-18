@@ -1,6 +1,6 @@
 {
   "$defs": {
-    "Pin": {
+    "BothPin": {
       "properties": {
         "min_pin": {
           "anyOf": [
@@ -27,7 +27,43 @@
           "title": "Max Pin"
         }
       },
-      "title": "Pin",
+      "title": "BothPin",
+      "type": "object"
+    },
+    "MaxPin": {
+      "properties": {
+        "max_pin": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Pin"
+        }
+      },
+      "title": "MaxPin",
+      "type": "object"
+    },
+    "MinPin": {
+      "properties": {
+        "min_pin": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Min Pin"
+        }
+      },
+      "title": "MinPin",
       "type": "object"
     }
   },
@@ -44,9 +80,11 @@
       }
     ]
   },
+  "description": "Usage docs: https://prefix-dev.github.io/rattler-build/variants\n\nSchema for variant configuration file for specifying recipe variants\nfor automating builds.",
   "properties": {
     "zip_keys": {
-      "default": [],
+      "default": null,
+      "description": "Zip keys have variant key that has multiple entries which is expanded to a build matrix for variants.",
       "items": {
         "items": {
           "type": "string"
@@ -60,17 +98,18 @@
       "additionalProperties": {
         "anyOf": [
           {
-            "$ref": "#/$defs/Pin"
+            "$ref": "#/$defs/MaxPin"
           },
           {
-            "items": {
-              "$ref": "#/$defs/Pin"
-            },
-            "type": "array"
+            "$ref": "#/$defs/MinPin"
+          },
+          {
+            "$ref": "#/$defs/BothPin"
           }
         ]
       },
-      "default": {},
+      "default": null,
+      "description": "Pinning package versions.",
       "title": "Pin Run As Build",
       "type": "object"
     }

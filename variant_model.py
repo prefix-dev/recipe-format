@@ -1,16 +1,35 @@
 import json
 
-from pydantic import BaseModel, TypeAdapter
+from pydantic import BaseModel, Field, TypeAdapter
 
 
-class Pin(BaseModel):
+class MinPin(BaseModel):
+    min_pin: str | None = None
+
+
+class MaxPin(BaseModel):
+    max_pin: str | None = None
+
+
+class BothPin(BaseModel):
     min_pin: str | None = None
     max_pin: str | None = None
 
 
 class VariantConfig(BaseModel, extra="allow"):
-    zip_keys: list[list[str]] = []
-    pin_run_as_build: dict[str, Pin | list[Pin]] = {}
+    """Usage docs: https://prefix-dev.github.io/rattler-build/variants
+
+    Schema for variant configuration file for specifying recipe variants
+    for automating builds.
+    """
+
+    zip_keys: list[list[str]] = Field(
+        default=None,
+        description="Zip keys have variant key that has multiple entries which is expanded to a build matrix for variants.",
+    )
+    pin_run_as_build: dict[str, MaxPin | MinPin | BothPin] = Field(
+        default=None, description="Pinning package versions."
+    )
     model_config = {
         "json_schema_extra": {
             "additionalProperties": {
