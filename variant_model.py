@@ -1,6 +1,15 @@
 import json
+from typing import Generic, TypeVar, Union
 
 from pydantic import BaseModel, Field, TypeAdapter
+
+T = TypeVar("T")
+ConditionalList = Union[T, "IfStatement[T]", list[Union[T, "IfStatement[T]"]]]
+
+class IfStatement(BaseModel, Generic[T]):
+    expr: str = Field(..., alias="if")
+    then: T | list[T]
+    otherwise: T | list[T] | None = Field(None, alias="else")
 
 
 class MinPin(BaseModel):
@@ -23,7 +32,7 @@ class VariantConfig(BaseModel, extra="allow"):
     for automating builds.
     """
 
-    zip_keys: list[list[str]] = Field(
+    zip_keys: ConditionalList[ConditionalList[str]] = Field(
         default=None,
         description="Zip keys have variant key that has multiple entries which is expanded to a build matrix for variants.",
     )
