@@ -22,6 +22,7 @@ jobs:
           # Generate schema.json from model.py
           # Note: generate command outputs to stdout, so we redirect to a file
           pixi run generate > schema.json
+          pixi run genvariant > variant_schema.json
       - name: Test recipe schema
         run: |
           pixi run test

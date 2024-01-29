@@ -12,6 +12,7 @@
             }
           ],
           "default": null,
+          "description": "Defaults to x.x.x.x.x for pin, change to make less specific",
           "title": "Min Pin"
         },
         "max_pin": {
@@ -24,10 +25,49 @@
             }
           ],
           "default": null,
+          "description": "Defaults to x for pin, change to make more specific",
           "title": "Max Pin"
         }
       },
       "title": "BothPin",
+      "type": "object"
+    },
+    "IfStatement": {
+      "properties": {
+        "if": {
+          "title": "If",
+          "type": "string"
+        },
+        "then": {
+          "anyOf": [
+            {},
+            {
+              "items": {},
+              "type": "array"
+            }
+          ],
+          "title": "Then"
+        },
+        "else": {
+          "anyOf": [
+            {},
+            {
+              "items": {},
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Else"
+        }
+      },
+      "required": [
+        "if",
+        "then"
+      ],
+      "title": "IfStatement",
       "type": "object"
     },
     "MaxPin": {
@@ -42,6 +82,7 @@
             }
           ],
           "default": null,
+          "description": "Defaults to x for pin, change to make more specific",
           "title": "Max Pin"
         }
       },
@@ -60,6 +101,7 @@
             }
           ],
           "default": null,
+          "description": "Defaults to x.x.x.x.x for pin, change to make less specific",
           "title": "Min Pin"
         }
       },
@@ -83,16 +125,56 @@
   "description": "Usage docs: https://prefix-dev.github.io/rattler-build/variants\n\nSchema for variant configuration file for specifying recipe variants\nfor automating builds.",
   "properties": {
     "zip_keys": {
-      "default": null,
-      "description": "Zip keys have variant key that has multiple entries which is expanded to a build matrix for variants.",
-      "items": {
-        "items": {
+      "anyOf": [
+        {
           "type": "string"
         },
-        "type": "array"
-      },
-      "title": "Zip Keys",
-      "type": "array"
+        {
+          "$ref": "#/$defs/IfStatement"
+        },
+        {
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/$defs/IfStatement"
+              }
+            ]
+          },
+          "type": "array"
+        },
+        {
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/$defs/IfStatement"
+              },
+              {
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/$defs/IfStatement"
+                    }
+                  ]
+                },
+                "type": "array"
+              }
+            ]
+          },
+          "type": "array"
+        }
+      ],
+      "default": null,
+      "description": "Zip keys have variant key that has multiple entries which is expanded to a build matrix for variants.",
+      "title": "Zip Keys"
     },
     "pin_run_as_build": {
       "additionalProperties": {
@@ -109,7 +191,7 @@
         ]
       },
       "default": null,
-      "description": "Pinning package versions.",
+      "description": "Pinning package versions for variant",
       "title": "Pin Run As Build",
       "type": "object"
     }

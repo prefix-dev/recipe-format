@@ -13,16 +13,22 @@ class IfStatement(BaseModel, Generic[T]):
 
 
 class MinPin(BaseModel):
-    min_pin: str | None = None
-
+    min_pin: str | None = Field(
+        default=None, description="Defaults to x.x.x.x.x for pin, change to make less specific"
+    )
 
 class MaxPin(BaseModel):
-    max_pin: str | None = None
-
+    max_pin: str | None = Field(
+        default=None, description="Defaults to x for pin, change to make more specific"
+    )
 
 class BothPin(BaseModel):
-    min_pin: str | None = None
-    max_pin: str | None = None
+    min_pin: str | None = Field(
+        default=None, description="Defaults to x.x.x.x.x for pin, change to make less specific"
+    )
+    max_pin: str | None = Field(
+        default=None, description="Defaults to x for pin, change to make more specific"
+    )
 
 
 class VariantConfig(BaseModel, extra="allow"):
@@ -37,7 +43,7 @@ class VariantConfig(BaseModel, extra="allow"):
         description="Zip keys have variant key that has multiple entries which is expanded to a build matrix for variants.",
     )
     pin_run_as_build: dict[str, MaxPin | MinPin | BothPin] = Field(
-        default=None, description="Pinning package versions."
+        default=None, description="Pinning package versions for variant"
     )
     model_config = {
         "json_schema_extra": {
@@ -51,4 +57,5 @@ class VariantConfig(BaseModel, extra="allow"):
     }
 
 
-print(json.dumps(TypeAdapter(VariantConfig).json_schema()))
+if __name__ == "__main__":
+    print(json.dumps(TypeAdapter(VariantConfig).json_schema(), indent=2))
