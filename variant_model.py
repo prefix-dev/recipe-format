@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, TypeAdapter
 T = TypeVar("T")
 ConditionalList = Union[T, "IfStatement[T]", list[Union[T, "IfStatement[T]"]]]
 
+
 class IfStatement(BaseModel, Generic[T]):
     expr: str = Field(..., alias="if")
     then: T | list[T]
@@ -17,10 +18,12 @@ class MinPin(BaseModel):
         default=None, description="Defaults to x.x.x.x.x for pin, change to make less specific"
     )
 
+
 class MaxPin(BaseModel):
     max_pin: str | None = Field(
         default=None, description="Defaults to x for pin, change to make more specific"
     )
+
 
 class BothPin(BaseModel):
     min_pin: str | None = Field(
