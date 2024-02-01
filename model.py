@@ -202,6 +202,10 @@ class Build(StrictBaseModel):
         [],
         description="Files to be included even if they are present in the PREFIX before building.",
     )
+    always_copy_files: ConditionalList[Glob] = Field(
+        [],
+        description="Do not soft- or hard-link these files but instead always copy them into the environment",
+    )
     variant: Variant | None = Field(
         None, description="Options that influence how the different variants are computed."
     )
@@ -344,10 +348,6 @@ class LinkOptions(StrictBaseModel):
         description="Script to execute before uninstalling the package from an environment",
     )
     pre_link_message: NonEmptyStr | None = Field(None, description="Message to show before linking")
-    always_copy_files: ConditionalList[Glob] = Field(
-        [],
-        description="Do not soft- or hard-link these files but instead always copy them into the environment",
-    )
 
 
 #########################

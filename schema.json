@@ -399,6 +399,34 @@
           "description": "Files to be included even if they are present in the PREFIX before building.",
           "title": "Always Include Files"
         },
+        "always_copy_files": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "Do not soft- or hard-link these files but instead always copy them into the environment",
+          "title": "Always Copy Files"
+        },
         "variant": {
           "anyOf": [
             {
@@ -1611,34 +1639,6 @@
           "default": null,
           "description": "Message to show before linking",
           "title": "Pre Link Message"
-        },
-        "always_copy_files": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": [],
-          "description": "Do not soft- or hard-link these files but instead always copy them into the environment",
-          "title": "Always Copy Files"
         }
       },
       "title": "LinkOptions",
@@ -2063,6 +2063,34 @@
           "default": [],
           "description": "Files to be included even if they are present in the PREFIX before building.",
           "title": "Always Include Files"
+        },
+        "always_copy_files": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "Do not soft- or hard-link these files but instead always copy them into the environment",
+          "title": "Always Copy Files"
         },
         "variant": {
           "anyOf": [
