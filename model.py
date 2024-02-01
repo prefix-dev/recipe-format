@@ -206,8 +206,9 @@ class Build(StrictBaseModel):
         None, description="Options that influence how the different variants are computed."
     )
     python: Python | None = Field(None, description="Python specific build configuration")
-    shared_libraries: SharedLibraries | None = Field(
-        None, description="Shared library specific build configuration"
+    dynamic_linking: DynamicLinking | None = Field(
+        None,
+        description="Configuration to post-process dynamically linked libraries and executables",
     )
 
     link_options: LinkOptions | None = Field(
@@ -298,7 +299,7 @@ class ForceFileType(StrictBaseModel):
     binary: ConditionalList[Glob] = Field(default=[], description="force BINARY file type")
 
 
-class SharedLibraries(StrictBaseModel):
+class DynamicLinking(StrictBaseModel):
     rpaths: ConditionalList[NonEmptyStr] = Field(
         default=["lib/"], description="linux only, list of rpaths (was rpath)"
     )

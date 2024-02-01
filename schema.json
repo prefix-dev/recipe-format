@@ -423,17 +423,17 @@
           "default": null,
           "description": "Python specific build configuration"
         },
-        "shared_libraries": {
+        "dynamic_linking": {
           "anyOf": [
             {
-              "$ref": "#/$defs/SharedLibraries"
+              "$ref": "#/$defs/DynamicLinking"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "description": "Shared library specific build configuration"
+          "description": "Configuration to post-process dynamically linked libraries and executables"
         },
         "link_options": {
           "anyOf": [
@@ -758,6 +758,154 @@
         "downstream"
       ],
       "title": "DownstreamTestElement",
+      "type": "object"
+    },
+    "DynamicLinking": {
+      "additionalProperties": false,
+      "properties": {
+        "rpaths": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [
+            "lib/"
+          ],
+          "description": "linux only, list of rpaths (was rpath)",
+          "title": "Rpaths"
+        },
+        "binary_relocation": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            },
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": true,
+          "description": "Wether to relocate binaries or not. If this is a list of paths then only the listed paths are relocated",
+          "title": "Binary Relocation"
+        },
+        "missing_dso_allowlist": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "Allow linking against libraries that are not in the run requirements",
+          "title": "Missing Dso Allowlist"
+        },
+        "rpath_allowlist": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "Allow runpath/rpath to point to these locations outside of the environment",
+          "title": "Rpath Allowlist"
+        },
+        "overdepending_behavior": {
+          "default": "error",
+          "description": "What to do when detecting overdepending. Overdepending means that a requirement a run requirement is specified but none of the artifacts from the build link against any of the shared libraries of the requirement.",
+          "enum": [
+            "ignore",
+            "error"
+          ],
+          "title": "Overdepending Behavior",
+          "type": "string"
+        },
+        "overlinking_behavior": {
+          "default": "error",
+          "description": "What to do when detecting overdepending. Overlinking occurs when an artifact links against a library that was not specified in the run requirements.",
+          "enum": [
+            "ignore",
+            "error"
+          ],
+          "title": "Overlinking Behavior",
+          "type": "string"
+        }
+      },
+      "title": "DynamicLinking",
       "type": "object"
     },
     "FileScript": {
@@ -1940,17 +2088,17 @@
           "default": null,
           "description": "Python specific build configuration"
         },
-        "shared_libraries": {
+        "dynamic_linking": {
           "anyOf": [
             {
-              "$ref": "#/$defs/SharedLibraries"
+              "$ref": "#/$defs/DynamicLinking"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "description": "Shared library specific build configuration"
+          "description": "Configuration to post-process dynamically linked libraries and executables"
         },
         "link_options": {
           "anyOf": [
@@ -2728,154 +2876,6 @@
         }
       },
       "title": "ScriptTestElement",
-      "type": "object"
-    },
-    "SharedLibraries": {
-      "additionalProperties": false,
-      "properties": {
-        "rpaths": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": [
-            "lib/"
-          ],
-          "description": "linux only, list of rpaths (was rpath)",
-          "title": "Rpaths"
-        },
-        "binary_relocation": {
-          "anyOf": [
-            {
-              "type": "boolean"
-            },
-            {
-              "pattern": "\\$\\{\\{.*\\}\\}",
-              "type": "string"
-            },
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": true,
-          "description": "Wether to relocate binaries or not. If this is a list of paths then only the listed paths are relocated",
-          "title": "Binary Relocation"
-        },
-        "missing_dso_allowlist": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": [],
-          "description": "Allow linking against libraries that are not in the run requirements",
-          "title": "Missing Dso Allowlist"
-        },
-        "rpath_allowlist": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": [],
-          "description": "Allow runpath/rpath to point to these locations outside of the environment",
-          "title": "Rpath Allowlist"
-        },
-        "overdepending_behavior": {
-          "default": "error",
-          "description": "What to do when detecting overdepending. Overdepending means that a requirement a run requirement is specified but none of the artifacts from the build link against any of the shared libraries of the requirement.",
-          "enum": [
-            "ignore",
-            "error"
-          ],
-          "title": "Overdepending Behavior",
-          "type": "string"
-        },
-        "overlinking_behavior": {
-          "default": "error",
-          "description": "What to do when detecting overdepending. Overlinking occurs when an artifact links against a library that was not specified in the run requirements.",
-          "enum": [
-            "ignore",
-            "error"
-          ],
-          "title": "Overlinking Behavior",
-          "type": "string"
-        }
-      },
-      "title": "SharedLibraries",
       "type": "object"
     },
     "SimplePackage": {
