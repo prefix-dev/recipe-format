@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=../../variant_schema.json
+
+python:
+  - "3.11.* *cpython"
+  # - "3.12.* *cpython"
+  # - "3.9.* *cpython"

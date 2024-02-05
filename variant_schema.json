@@ -1,0 +1,201 @@
+{
+  "$defs": {
+    "BothPin": {
+      "properties": {
+        "min_pin": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Defaults to x.x.x.x.x for pin, change to make less specific",
+          "title": "Min Pin"
+        },
+        "max_pin": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Defaults to x for pin, change to make more specific",
+          "title": "Max Pin"
+        }
+      },
+      "title": "BothPin",
+      "type": "object"
+    },
+    "IfStatement": {
+      "properties": {
+        "if": {
+          "title": "If",
+          "type": "string"
+        },
+        "then": {
+          "anyOf": [
+            {},
+            {
+              "items": {},
+              "type": "array"
+            }
+          ],
+          "title": "Then"
+        },
+        "else": {
+          "anyOf": [
+            {},
+            {
+              "items": {},
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Else"
+        }
+      },
+      "required": [
+        "if",
+        "then"
+      ],
+      "title": "IfStatement",
+      "type": "object"
+    },
+    "MaxPin": {
+      "properties": {
+        "max_pin": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Defaults to x for pin, change to make more specific",
+          "title": "Max Pin"
+        }
+      },
+      "title": "MaxPin",
+      "type": "object"
+    },
+    "MinPin": {
+      "properties": {
+        "min_pin": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Defaults to x.x.x.x.x for pin, change to make less specific",
+          "title": "Min Pin"
+        }
+      },
+      "title": "MinPin",
+      "type": "object"
+    }
+  },
+  "additionalProperties": {
+    "anyOf": [
+      {
+        "type": "string"
+      },
+      {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      }
+    ]
+  },
+  "description": "Usage docs: https://prefix-dev.github.io/rattler-build/variants\n\nSchema for variant configuration file for specifying recipe variants\nfor automating builds.",
+  "properties": {
+    "zip_keys": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/$defs/IfStatement"
+        },
+        {
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/$defs/IfStatement"
+              }
+            ]
+          },
+          "type": "array"
+        },
+        {
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/$defs/IfStatement"
+              },
+              {
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/$defs/IfStatement"
+                    }
+                  ]
+                },
+                "type": "array"
+              }
+            ]
+          },
+          "type": "array"
+        }
+      ],
+      "default": null,
+      "description": "Zip keys have variant key that has multiple entries which is expanded to a build matrix for variants.",
+      "title": "Zip Keys"
+    },
+    "pin_run_as_build": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/MaxPin"
+          },
+          {
+            "$ref": "#/$defs/MinPin"
+          },
+          {
+            "$ref": "#/$defs/BothPin"
+          }
+        ]
+      },
+      "default": null,
+      "description": "Pinning package versions for variant",
+      "title": "Pin Run As Build",
+      "type": "object"
+    }
+  },
+  "title": "VariantConfig",
+  "type": "object"
+}
