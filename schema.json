@@ -474,6 +474,18 @@
           ],
           "default": null,
           "description": "Options that influence how a package behaves when it is installed or uninstalled."
+        },
+        "prefix_detection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PrefixDetection"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Options that influence how the prefix replacement is done."
         }
       },
       "title": "Build",
@@ -1009,6 +1021,69 @@
         "file"
       ],
       "title": "FileScript",
+      "type": "object"
+    },
+    "ForceFileType": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "force TEXT file type",
+          "title": "Text"
+        },
+        "binary": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "force BINARY file type",
+          "title": "Binary"
+        }
+      },
+      "title": "ForceFileType",
       "type": "object"
     },
     "GitBranch": {
@@ -2140,6 +2215,18 @@
           "default": null,
           "description": "Options that influence how a package behaves when it is installed or uninstalled."
         },
+        "prefix_detection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PrefixDetection"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Options that influence how the prefix replacement is done."
+        },
         "cache_only": {
           "default": false,
           "description": "Do not output a package but use this output as an input to others.",
@@ -2359,6 +2446,95 @@
         }
       },
       "title": "PackageContentTestInner",
+      "type": "object"
+    },
+    "PrefixDetection": {
+      "additionalProperties": false,
+      "properties": {
+        "force_file_type": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ForceFileType"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "force the file type of the given files to be TEXT or BINARY"
+        },
+        "ignore": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            },
+            {
+              "pattern": "^[^\\\\]+$",
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "pattern": "^[^\\\\]+$",
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": false,
+          "description": "Ignore all or specific files for prefix replacement",
+          "title": "Ignore"
+        },
+        "ignore_binary_files": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            },
+            {
+              "pattern": "^[^\\\\]+$",
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "pattern": "^[^\\\\]+$",
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": false,
+          "description": "Wether to detect binary files with prefix or not",
+          "title": "Ignore Binary Files"
+        }
+      },
+      "title": "PrefixDetection",
       "type": "object"
     },
     "Python": {
