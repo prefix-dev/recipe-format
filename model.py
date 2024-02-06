@@ -220,6 +220,11 @@ class Build(StrictBaseModel):
         description="Options that influence how a package behaves when it is installed or uninstalled.",
     )
 
+    prefix_detection: PrefixDetection | None = Field(
+        None,
+        description="Options that influence how the prefix replacement is done.",
+    )
+
 
 class BaseScript(StrictBaseModel):
     interpreter: NonEmptyStr | None = Field(
