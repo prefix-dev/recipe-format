@@ -1797,6 +1797,7 @@
       "type": "object"
     },
     "Output": {
+      "additionalProperties": false,
       "properties": {
         "package": {
           "anyOf": [

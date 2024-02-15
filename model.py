@@ -526,7 +526,7 @@ class OutputBuild(Build):
     )
 
 
-class Output(BaseModel):
+class Output(StrictBaseModel):
     package: ComplexPackage | None = Field(
         None, description="The package name and version, this overwrites any top-level fields."
     )
