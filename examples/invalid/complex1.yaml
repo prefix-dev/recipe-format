@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=schema.json
+outputs:
+  - package:
+      name: my-package
+      version: '0.0.1'
+    build:
+      noarch: python
+      script:
+        - echo hello world
+    testaaaa: # this should fail but doesn't
+      - python:
+          imports:
+            - polarify
