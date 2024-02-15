@@ -32,7 +32,7 @@ T = TypeVar("T")
 ConditionalList = Union[T, "IfStatement[T]", list[Union[T, "IfStatement[T]"]]]
 
 
-class IfStatement(BaseModel, Generic[T]):
+class IfStatement(StrictBaseModel, Generic[T]):
     expr: str = Field(..., alias="if")
     then: T | list[T]
     otherwise: T | list[T] | None = Field(None, alias="else")
