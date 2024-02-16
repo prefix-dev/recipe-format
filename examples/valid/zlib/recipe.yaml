@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../schema.json
+# yaml-language-server: $schema=../../../schema.json
 
 context:
   version: 1.2.13
@@ -29,7 +29,7 @@ outputs:
       run_exports:
         - ${{ pin_subpackage('libzlib', max_pin='x.x') }}
 
-    test:
+    tests:
       - script:
         - if: unix
           then:
@@ -56,9 +56,11 @@ outputs:
         - zlib-wapi ${{ version }} *_${{ build_num }}
       run_exports:
         - ${{ pin_subpackage('libzlib-wapi', max_pin='x.x') }}
-    files:
-      - Library/bin/zlibwapi.dll   # [win]
-    test:
+    source:
+      - if: win
+        then:
+          - path: Library/bin/zlibwapi.dll
+    tests:
       - script:
         - if not exist "%LIBRARY_BIN%\zlibwapi.dll" exit 1
 
@@ -77,8 +79,8 @@ outputs:
       run_exports:
         - ${{ pin_subpackage('libzlib', max_pin='x.x') }}
 
-    test:
-      - extra_requirements: 
+    tests:
+      - requirements: 
           build:
             - ${{ compiler('c') }}
         files:

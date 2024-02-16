@@ -1366,6 +1366,7 @@
       "type": "object"
     },
     "IfStatement": {
+      "additionalProperties": false,
       "properties": {
         "if": {
           "title": "If",
@@ -1404,6 +1405,7 @@
       "type": "object"
     },
     "IfStatement_Union_ScriptTestElement__PythonTestElement__DownstreamTestElement__PackageContentTest__": {
+      "additionalProperties": false,
       "properties": {
         "if": {
           "title": "If",
@@ -1494,6 +1496,7 @@
       "type": "object"
     },
     "IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__BaseGitSource__LocalSource__": {
+      "additionalProperties": false,
       "properties": {
         "if": {
           "title": "If",
@@ -1797,6 +1800,7 @@
       "type": "object"
     },
     "Output": {
+      "additionalProperties": false,
       "properties": {
         "package": {
           "anyOf": [

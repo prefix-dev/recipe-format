@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../schema.json
+# yaml-language-server: $schema=../../../schema.json
 
 schema_version: 1
 
@@ -59,7 +59,7 @@ outputs:
           - if: win
             then: python
 
-    test:
+    tests:
       - script:
           - if: unix
             then:
@@ -134,9 +134,9 @@ outputs:
     build:
       script: ${{ "build_mamba.sh" if unix else "build_mamba.bat" }}
       string: py${{ CONDA_PY }}h${{ PKG_HASH }}_${{ PKG_BUILDNUM }}
-    python:
-      entry_points:
-        - mamba = mamba.mamba:main
+      python:
+        entry_points:
+          - mamba = mamba.mamba:main
     requirements:
       build:
         - if: build_platform != target_platform
