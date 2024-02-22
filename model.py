@@ -179,7 +179,7 @@ class Build(StrictBaseModel):
         None,
         description="The build string to identify build variant. This is usually omitted (can use `${{ hash }}`) variable here)",
     )
-    skip: list[str | bool] | None = Field(
+    skip: str | bool | list[str | bool] | None = Field(
         None,
         description="List of conditions under which to skip the build of the package. If any of these condition returns true the build is skipped.",
     )

@@ -277,6 +277,12 @@
         "skip": {
           "anyOf": [
             {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
               "items": {
                 "anyOf": [
                   {
@@ -2020,6 +2026,12 @@
         },
         "skip": {
           "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
             {
               "items": {
                 "anyOf": [
