@@ -1778,6 +1778,38 @@
           "title": "Path",
           "type": "string"
         },
+        "sha256": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "[a-fA-F0-9]{64}",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The SHA256 hash of the source archive",
+          "title": "Sha256"
+        },
+        "md5": {
+          "anyOf": [
+            {
+              "maxLength": 32,
+              "minLength": 32,
+              "pattern": "[a-fA-F0-9]{32}",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The MD5 hash of the source archive",
+          "title": "Md5"
+        },
         "use_gitignore": {
           "default": true,
           "description": "Whether or not to use the .gitignore file when copying the source.",

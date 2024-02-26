@@ -112,6 +112,8 @@ GitSource = GitRev | GitTag | GitBranch | BaseGitSource
 
 class LocalSource(BaseSource):
     path: str = Field(..., description="A path on the local machine that contains the source.")
+    sha256: SHA256Str | None = Field(None, description="The SHA256 hash of the source archive")
+    md5: MD5Str | None = Field(None, description="The MD5 hash of the source archive")
     use_gitignore: bool = Field(
         default=True,
         description="Whether or not to use the .gitignore file when copying the source.",
