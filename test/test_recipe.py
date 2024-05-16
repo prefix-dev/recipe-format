@@ -1,52 +1,53 @@
 import json
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
+
+import jsonschema
 import pytest
 import yaml
-from jsonschema import validate
-from jsonschema.exceptions import ValidationError
+
+if TYPE_CHECKING:
+    from jsonschema.protocols import Validator
+
+TAnyDict = dict[str, Any]
+
+HERE = Path(__file__).parent
+ROOT = HERE.parent
+EXAMPLES = ROOT / "examples"
+SCHEMA = ROOT / "schema.json"
+UTF8 = {"encoding": "utf-8"}
+INVALID = [p.name for p in (EXAMPLES / "invalid").glob("*.yaml")]
+VALID = [p.name for p in (EXAMPLES / "valid").glob("*") if p.is_dir()]
 
 
-@pytest.fixture(
-    scope="module",
-    params=[
-        "mamba",
-        "xtensor",
-        "zlib"
-    ],
-)
-def valid_recipe(request) -> str:
-    recipe_name = request.param
-    with open(f"examples/valid/{recipe_name}/recipe.yaml") as f:
-        recipe = f.read()
-    recipe_yml = yaml.safe_load(recipe)
-    return recipe_yml
+@pytest.fixture(scope="module", params=VALID)
+def valid_recipe(request: pytest.FixtureRequest) -> TAnyDict:
+    recipe = EXAMPLES / "valid" / f"{request.param}" / "recipe.yaml"
+    return dict(yaml.safe_load(recipe.read_text(**UTF8)))
 
 
-@pytest.fixture(
-    scope="module",
-    params=[
-        "complex1",
-        "simple1",
-    ],
-)
-def invalid_recipe(request) -> str:
-    recipe_name = request.param
-    with open(f"examples/invalid/{recipe_name}.yaml") as f:
-        recipe = f.read()
-    recipe_yml = yaml.safe_load(recipe)
-    return recipe_yml
+@pytest.fixture(scope="module", params=INVALID)
+def invalid_recipe(request: pytest.FixtureRequest) -> TAnyDict:
+    recipe = EXAMPLES / "invalid" / f"{request.param}"
+    return dict(yaml.safe_load(recipe.read_text(**UTF8)))
 
 
-@pytest.fixture()
-def recipe_schema():
-    with open("schema.json", "r") as f:
-        schema = json.load(f)
-    return schema
+@pytest.fixture(scope="module")
+def recipe_schema() -> TAnyDict:
+    return dict(json.loads(SCHEMA.read_text(encoding="utf-8")))
 
 
-def test_recipe_schema_valid(recipe_schema, valid_recipe):
-    validate(instance=valid_recipe, schema=recipe_schema)
+@pytest.fixture(scope="module")
+def validator(recipe_schema: TAnyDict) -> "Validator":
+    validator_cls: "type[Validator]" = jsonschema.validators.validator_for(recipe_schema)
+    return validator_cls(recipe_schema, format_checker=validator_cls.FORMAT_CHECKER)
 
 
-def test_recipe_schema_invalid(recipe_schema, invalid_recipe):
-    with pytest.raises(ValidationError):
-        validate(instance=invalid_recipe, schema=recipe_schema)
+def test_recipe_schema_valid(validator: "Validator", valid_recipe: TAnyDict) -> None:
+    errors = [*validator.iter_errors(valid_recipe)]
+    assert not errors
+
+
+def test_recipe_schema_invalid(validator: "Validator", invalid_recipe: TAnyDict) -> None:
+    errors = [*validator.iter_errors(invalid_recipe)]
+    assert errors

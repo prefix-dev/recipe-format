@@ -1,3 +1,5 @@
+"$schema" = "https://pixi.sh/v0.22.0/schema/manifest/schema.json"
+
 [project]
 name = "recipe-model"
 version = "0.1.0"
@@ -7,15 +9,24 @@ channels = ["conda-forge"]
 platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
 
 [tasks]
-generate = "python model.py"
-fmt = "ruff format model.py"
-lint = "ruff model.py --fix"
-test = "pytest"
+generate = "python model.py > schema.json"
+lint = { depends-on = ["lint-taplo", "lint-ruff", "lint-mypy"] }
+fmt = { depends-on = ["fmt-taplo", "fmt-ruff"] }
+fmt-taplo = "taplo fmt *.toml"
+fmt-ruff = "ruff format model.py test && ruff check --fix-only model.py test"
+lint-ruff = "ruff check --fix"
+lint-mypy = "mypy model.py test/"
+lint-taplo = "taplo lint *.toml"
+test = { cmd = "pytest", depends-on = ["generate"] }
 
 [dependencies]
-python = "3.12.0.*"
-pydantic = "2.5.1.*"
-ruff = "0.1.6.*"
-pytest = "7.4.3.*"
-pyyaml = "6.0.1.*"
-jsonschema = "4.20.0.*"
+jsonschema-with-format = "4.22.*"
+mypy = "1.10.*"
+pydantic = "2.6.*"
+pytest = "8.1.*"
+python = "3.12.*"
+pyyaml = "6.0.*"
+ruff = "0.4.*"
+types-jsonschema = "4.22.*"
+types-pyyaml = "6.0.*"
+taplo = "0.9.*"

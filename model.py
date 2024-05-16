@@ -1,22 +1,36 @@
+"""A canonical schema definition for ``recipe.yaml`` conda package build format."""
+
 from __future__ import annotations
 
 import json
-from typing import Annotated, Any, Generic, Literal, TypeVar, Union
+import sys
+from copy import deepcopy
+from typing import Annotated, Any, ClassVar, Generic, Literal, TypeVar, Union
 
 from pydantic import (
     AnyHttpUrl,
     BaseModel,
     Field,
+    StringConstraints,
     TypeAdapter,
-    conint,
-    constr,
 )
 
-NonEmptyStr = constr(min_length=1)
-PathNoBackslash = constr(pattern=r"^[^\\]+$")
+#: a version for the schema
+VERSION = 1
+#: until proven otherwise, use the oldest compatible schema draft
+SCHEMA_DRAFT = "http://json-schema.org/draft-07/schema#"
+#: the HTML URL of the site
+GH_PAGES = f"https://prefix-dev.gitlab.io/recipe-format/v{VERSION}"
+SCHEMA_URI = f"{GH_PAGES}/schema.json"
+HTML_URL = f"{GH_PAGES}/schema.html"
+
+NonEmptyStr = Annotated[str, StringConstraints(min_length=1)]
+PathNoBackslash = Annotated[str, StringConstraints(pattern=r"^[^\\]+$")]
 Glob = NonEmptyStr
-UnsignedInt = conint(ge=0)
-GitUrl = constr(pattern=r"((git|ssh|http(s)?)|(git@[\w\.]+))(:(\/\/)?)([\w\.@:\/\\-~]+)")
+UnsignedInt = Annotated[int, Field(strict=True, ge=0)]
+GitUrl = Annotated[
+    str, StringConstraints(pattern=r"((git|ssh|http(s)?)|(git@[\w\.]+))(:(\/\/)?)([\w\.@:\/\\-~]+)")
+]
 
 
 class StrictBaseModel(BaseModel):
@@ -61,8 +75,10 @@ class ComplexPackage(StrictBaseModel):
 # Source section  #
 ###################
 
-MD5Str = constr(min_length=32, max_length=32, pattern=r"[a-fA-F0-9]{32}")
-SHA256Str = constr(min_length=64, max_length=64, pattern=r"[a-fA-F0-9]{64}")
+MD5Str = Annotated[str, StringConstraints(min_length=32, max_length=32, pattern=r"[a-fA-F0-9]{32}")]
+SHA256Str = Annotated[
+    str, StringConstraints(min_length=64, max_length=64, pattern=r"[a-fA-F0-9]{64}")
+]
 
 
 class BaseSource(StrictBaseModel):
@@ -169,7 +185,7 @@ class ScriptEnv(StrictBaseModel):
     )
 
 
-JinjaExpr = constr(pattern=r"\$\{\{.*\}\}")
+JinjaExpr = Annotated[str, StringConstraints(pattern=r"\$\{\{.*\}\}")]
 
 
 class Build(StrictBaseModel):
@@ -542,9 +558,10 @@ class Output(StrictBaseModel):
 
     requirements: Requirements | None = Field(None, description="The package dependencies")
 
-    tests: list[
-        TestElement | IfStatement[TestElement] | list[TestElement | IfStatement[TestElement]]
-    ] | None = Field(None, description="Tests to run after packaging")
+    tests: (
+        list[TestElement | IfStatement[TestElement] | list[TestElement | IfStatement[TestElement]]]
+        | None
+    ) = Field(None, description="Tests to run after packaging")
 
     about: About | None = Field(
         None,
@@ -565,8 +582,16 @@ SchemaVersion = Annotated[int, Field(ge=1, le=1)]
 
 
 class BaseRecipe(StrictBaseModel):
+    schema_: str | None = Field(
+        SCHEMA_URI,
+        alias="$schema",
+        title="Schema",
+        description="The schema identifier for the recipe file",
+        json_schema_extra={"format": "uri-reference"},
+    )
+
     schema_version: SchemaVersion = Field(
-        1,
+        VERSION,
         description="The version of the YAML schema for a recipe. If the version is omitted it is assumed to be 1.",
     )
 
@@ -609,5 +634,141 @@ class SimpleRecipe(BaseRecipe):
 Recipe = TypeAdapter(SimpleRecipe | ComplexRecipe)
 
 
+#########################
+# JSON Schema utilities #
+#########################
+
+
+class SchemaJsonEncoder(json.JSONEncoder):
+    """A custom schema encoder for normalizing schema."""
+
+    HEADER_ORDER: ClassVar = [
+        "$schema",
+        "$id",
+        "$ref",
+        "title",
+        "deprecated",
+        "description",
+        "type",
+        "required",
+        "additionalProperties",
+        "default",
+        "items" "properties",
+        "patternProperties",
+        "allOf",
+        "anyOf",
+        "oneOf",
+        "not",
+        "format",
+        "minimum",
+        "exclusiveMinimum",
+        "maximum",
+        "exclusiveMaximum",
+        "minLength",
+        "maxLength",
+        "multipleOf",
+        "pattern",
+    ]
+    FOOTER_ORDER: ClassVar = [
+        "examples",
+        "$defs",
+    ]
+    SORT_NESTED: ClassVar = [
+        "items",
+    ]
+    SORT_NESTED_OBJ: ClassVar = [
+        "properties",
+        "$defs",
+    ]
+    SORT_NESTED_MAYBE_OBJ: ClassVar = [
+        "additionalProperties",
+    ]
+    SORT_NESTED_OBJ_OBJ: ClassVar = [
+        "patternProperties",
+    ]
+    SORT_NESTED_ARR: ClassVar = [
+        "anyOf",
+        "allOf",
+        "oneOf",
+    ]
+
+    def encode(self, obj: Any) -> str:  # noqa: ANN401
+        """Overload the default ``encode`` behavior."""
+        if isinstance(obj, dict):
+            obj = self.normalize_schema(deepcopy(obj))
+
+        return super().encode(obj)
+
+    def normalize_schema(self, obj: dict[str, Any]) -> dict[str, Any]:  # noqa: C901, PLR0912
+        """Recursively normalize and apply an arbitrary sort order to a schema."""
+
+        for nest in self.SORT_NESTED:
+            if nest in obj:
+                obj[nest] = self.normalize_schema(obj[nest])
+
+        for nest in self.SORT_NESTED_OBJ:
+            obj = self.sort_nested(obj, nest)
+
+        for nest in self.SORT_NESTED_OBJ_OBJ:
+            if nest in obj:
+                obj[nest] = {
+                    k: self.normalize_schema(v)
+                    for k, v in sorted(obj[nest].items(), key=lambda kv: kv[0])
+                }
+
+        for nest in self.SORT_NESTED_ARR:
+            if nest in obj:
+                obj[nest] = [self.normalize_schema(item) for item in obj[nest]]
+
+        for nest in self.SORT_NESTED_MAYBE_OBJ:
+            if isinstance(obj.get(nest), dict):
+                obj[nest] = self.normalize_schema(obj[nest])
+
+        header = {}
+        footer = {}
+
+        for key in self.HEADER_ORDER:
+            if key in obj:
+                header[key] = obj.pop(key)
+
+        for key in self.FOOTER_ORDER:
+            if key in obj:
+                footer[key] = obj.pop(key)
+
+        return {**header, **dict(sorted(obj.items())), **footer}
+
+    def sort_nested(self, obj: dict[str, Any], key: str) -> dict[str, Any]:
+        """Sort a key of an object."""
+        if key not in obj or not isinstance(obj[key], dict):
+            return obj
+        obj[key] = {
+            k: self.normalize_schema(v) if isinstance(v, dict) else v
+            for k, v in sorted(obj[key].items(), key=lambda kv: kv[0])
+        }
+        return obj
+
+
+def main() -> int:
+    """Main entrypoint."""
+    raw = Recipe.json_schema()
+    raw.update(
+        {
+            "$id": SCHEMA_URI,
+            "$schema": SCHEMA_DRAFT,
+            "title": "`recipe.yaml` file",
+            "description": (
+                "A description of the build and test process for a conda package: "
+                f"see {HTML_URL}"
+            ),
+        }
+    )
+    print(json.dumps(raw, indent=2, cls=SchemaJsonEncoder))
+    return 0
+
+
+##########################
+# Command Line Interface #
+##########################
+
 if __name__ == "__main__":
-    print(json.dumps(Recipe.json_schema(), indent=2))
+    sys.exit(main())
