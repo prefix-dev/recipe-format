@@ -4,8 +4,6 @@ import yaml
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
-import requests
-
 
 @pytest.fixture(
     scope="module",
