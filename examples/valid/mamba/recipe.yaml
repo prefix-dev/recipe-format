@@ -30,6 +30,7 @@ outputs:
 
     build:
       script: ${{ "build_mamba.sh" if unix else "build_mamba.bat" }}
+      files: "**"
 
     requirements:
       build:
@@ -86,6 +87,12 @@ outputs:
     build:
       script: ${{ "build_mamba.sh" if unix else "build_mamba.bat" }}
       string: py${{ CONDA_PY }}h${{ PKG_HASH }}_${{ PKG_BUILDNUM }}
+      files:
+        include:
+          - include/*.hpp
+        exclude:
+          - foo/*.hpp
+
     requirements:
       build:
         - ${{ compiler('cxx') }}
@@ -134,6 +141,8 @@ outputs:
     build:
       script: ${{ "build_mamba.sh" if unix else "build_mamba.bat" }}
       string: py${{ CONDA_PY }}h${{ PKG_HASH }}_${{ PKG_BUILDNUM }}
+      files:
+        - foo.*
       python:
         entry_points:
           - mamba = mamba.mamba:main
