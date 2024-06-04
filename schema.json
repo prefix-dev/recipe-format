@@ -501,9 +501,16 @@
       "additionalProperties": false,
       "properties": {
         "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
           "description": "The recipe name, this is only used to identify the name of the recipe.",
-          "title": "Name",
-          "type": "string"
+          "title": "Name"
         },
         "version": {
           "anyOf": [
