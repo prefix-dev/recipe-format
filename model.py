@@ -14,7 +14,6 @@ from pydantic import (
 
 NonEmptyStr = constr(min_length=1)
 PathNoBackslash = constr(pattern=r"^[^\\]+$")
-Glob = NonEmptyStr
 UnsignedInt = conint(ge=0)
 GitUrl = constr(pattern=r"((git|ssh|http(s)?)|(git@[\w\.]+))(:(\/\/)?)([\w\.@:\/\\-~]+)")
 
@@ -39,8 +38,24 @@ class IfStatement(StrictBaseModel, Generic[T]):
 
 
 ###################
-# Package section  #
+# Glob section    #
 ###################
+
+SingleGlob = NonEmptyStr
+
+GlobVec = ConditionalList[SingleGlob]
+
+
+class GlobDict(StrictBaseModel):
+    include: GlobVec = Field(..., description="Glob patterns to include")
+    exclude: GlobVec = Field([], description="Glob patterns to exclude")
+
+
+Glob = SingleGlob | GlobVec | GlobDict
+
+####################
+# Package section  #
+####################
 
 
 class SimplePackage(StrictBaseModel):
@@ -225,6 +240,10 @@ class Build(StrictBaseModel):
     prefix_detection: PrefixDetection | None = Field(
         None,
         description="Options that influence how the prefix replacement is done.",
+    )
+
+    files: Glob = Field(
+        None, description="Glob patterns to include or exclude files from the package."
     )
 
 
