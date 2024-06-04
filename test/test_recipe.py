@@ -4,12 +4,15 @@ import yaml
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
+import requests
+
 
 @pytest.fixture(
     scope="module",
     params=[
         "mamba",
         "xtensor",
+        "single-output",
         "zlib"
     ],
 )
@@ -19,7 +22,6 @@ def valid_recipe(request) -> str:
         recipe = f.read()
     recipe_yml = yaml.safe_load(recipe)
     return recipe_yml
-
 
 @pytest.fixture(
     scope="module",
@@ -45,7 +47,6 @@ def recipe_schema():
 
 def test_recipe_schema_valid(recipe_schema, valid_recipe):
     validate(instance=valid_recipe, schema=recipe_schema)
-
 
 def test_recipe_schema_invalid(recipe_schema, invalid_recipe):
     with pytest.raises(ValidationError):
