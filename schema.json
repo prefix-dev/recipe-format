@@ -427,6 +427,40 @@
                 ]
               },
               "type": "array"
+            },
+            {
+              "$ref": "#/$defs/GlobDict"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  },
+                  {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        {
+                          "$ref": "#/$defs/IfStatement"
+                        }
+                      ]
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "$ref": "#/$defs/GlobDict"
+                  }
+                ]
+              },
+              "type": "array"
             }
           ],
           "default": [],
@@ -492,6 +526,37 @@
           ],
           "default": null,
           "description": "Options that influence how the prefix replacement is done."
+        },
+        "files": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "$ref": "#/$defs/GlobDict"
+            }
+          ],
+          "default": null,
+          "description": "Glob patterns to include or exclude files from the package.",
+          "title": "Files"
         }
       },
       "title": "Build",
@@ -875,6 +940,40 @@
                 ]
               },
               "type": "array"
+            },
+            {
+              "$ref": "#/$defs/GlobDict"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  },
+                  {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        {
+                          "$ref": "#/$defs/IfStatement"
+                        }
+                      ]
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "$ref": "#/$defs/GlobDict"
+                  }
+                ]
+              },
+              "type": "array"
             }
           ],
           "default": true,
@@ -903,6 +1002,40 @@
                 ]
               },
               "type": "array"
+            },
+            {
+              "$ref": "#/$defs/GlobDict"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  },
+                  {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        {
+                          "$ref": "#/$defs/IfStatement"
+                        }
+                      ]
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "$ref": "#/$defs/GlobDict"
+                  }
+                ]
+              },
+              "type": "array"
             }
           ],
           "default": [],
@@ -927,6 +1060,40 @@
                   },
                   {
                     "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "$ref": "#/$defs/GlobDict"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  },
+                  {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        {
+                          "$ref": "#/$defs/IfStatement"
+                        }
+                      ]
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "$ref": "#/$defs/GlobDict"
                   }
                 ]
               },
@@ -1061,6 +1228,40 @@
                 ]
               },
               "type": "array"
+            },
+            {
+              "$ref": "#/$defs/GlobDict"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  },
+                  {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        {
+                          "$ref": "#/$defs/IfStatement"
+                        }
+                      ]
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "$ref": "#/$defs/GlobDict"
+                  }
+                ]
+              },
+              "type": "array"
             }
           ],
           "default": [],
@@ -1085,6 +1286,40 @@
                   },
                   {
                     "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "$ref": "#/$defs/GlobDict"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  },
+                  {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        {
+                          "$ref": "#/$defs/IfStatement"
+                        }
+                      ]
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "$ref": "#/$defs/GlobDict"
                   }
                 ]
               },
@@ -1376,6 +1611,71 @@
         "tag"
       ],
       "title": "GitTag",
+      "type": "object"
+    },
+    "GlobDict": {
+      "additionalProperties": false,
+      "properties": {
+        "include": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "description": "Glob patterns to include",
+          "title": "Include"
+        },
+        "exclude": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "Glob patterns to exclude",
+          "title": "Exclude"
+        }
+      },
+      "required": [
+        "include"
+      ],
+      "title": "GlobDict",
       "type": "object"
     },
     "IfStatement": {
@@ -2216,6 +2516,40 @@
                 ]
               },
               "type": "array"
+            },
+            {
+              "$ref": "#/$defs/GlobDict"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  },
+                  {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        {
+                          "$ref": "#/$defs/IfStatement"
+                        }
+                      ]
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "$ref": "#/$defs/GlobDict"
+                  }
+                ]
+              },
+              "type": "array"
             }
           ],
           "default": [],
@@ -2281,6 +2615,37 @@
           ],
           "default": null,
           "description": "Options that influence how the prefix replacement is done."
+        },
+        "files": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "$ref": "#/$defs/GlobDict"
+            }
+          ],
+          "default": null,
+          "description": "Glob patterns to include or exclude files from the package.",
+          "title": "Files"
         },
         "cache_only": {
           "default": false,
@@ -2665,6 +3030,40 @@
                   },
                   {
                     "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "$ref": "#/$defs/GlobDict"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  },
+                  {
+                    "items": {
+                      "anyOf": [
+                        {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        {
+                          "$ref": "#/$defs/IfStatement"
+                        }
+                      ]
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "$ref": "#/$defs/GlobDict"
                   }
                 ]
               },
