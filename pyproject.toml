@@ -10,7 +10,7 @@ maintainers = [
     { name = "Bas Zalmstra", email = "zalmstra.bas@gmail.com" },
     { name = "Julian Hofer", email = "julian.hofer@protonmail.com" },
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = ["pydantic", "pyyaml", "jsonschema"]
 dynamic = ["version"]
 license = { text = "BSD-3-Clause" }

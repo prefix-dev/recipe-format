@@ -29,12 +29,8 @@ python = "3.11.*"
 [feature.py310.dependencies]
 python = "3.10.*"
 
-[feature.py39.dependencies]
-python = "3.9.*"
-
 [environments]
 default = { features = ["py312"], solve-group = "py312" }
 py312 = { features = ["py312"], solve-group = "py312" }
 py311 = ["py311"]
 py310 = ["py310"]
-py39 = ["py39"]

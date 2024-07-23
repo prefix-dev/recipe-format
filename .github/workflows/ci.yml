@@ -18,7 +18,6 @@ jobs:
           - py312
           - py311
           - py310
-          - py39
     steps:
         - uses: actions/checkout@v4
         - uses: prefix-dev/setup-pixi@v0.5.1
