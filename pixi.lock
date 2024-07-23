@@ -3390,7 +3390,7 @@ packages:
   name: rattler-build-recipe-format
   version: 0.9.0
   path: .
-  sha256: 7d321827ba2bfda2793ec29e2040c83a7bc15f48c9cb3f75e6bd08377b5631b3
+  sha256: 8ab5b74c3986dadcdb72b87b524eb2005acafd171b3fc43e084a8dd0a5edbe9c
   requires_dist:
   - jsonschema
   - pydantic
