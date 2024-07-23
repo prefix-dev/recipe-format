@@ -1,8 +1,10 @@
 import json
+
 import pytest
 import yaml
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
+
 from rattler_build_recipe_format.model import Recipe
 
 
