@@ -1028,6 +1028,17 @@ packages:
   - pkg:pypi/colorama?source=conda-forge-mapping
   size: 25170
   timestamp: 1666700778190
+- kind: pypi
+  name: conda-recipe-v2-schema
+  version: 0.9.0
+  path: .
+  sha256: 76d486737148f00d782f491b564f12817ea0f6c87a87b73471eb360ef88630cf
+  requires_dist:
+  - jsonschema
+  - pydantic
+  - pyyaml
+  requires_python: '>=3.10'
+  editable: true
 - kind: conda
   name: exceptiongroup
   version: 1.2.2
@@ -2879,28 +2890,6 @@ packages:
   - pkg:pypi/pyyaml?source=conda-forge-mapping
   size: 167932
   timestamp: 1695374097139
-- kind: pypi
-  name: rattler-build-recipe-format
-  version: 0.9.0
-  path: .
-  sha256: a39582e24aff963033966c8f36c78651a1b77e81931e9ebed7414c2b29045be9
-  requires_dist:
-  - jsonschema
-  - pydantic
-  - pyyaml
-  requires_python: '>=3.10'
-  editable: true
-- kind: pypi
-  name: rattler-build-recipe-format
-  version: 0.9.0
-  path: .
-  sha256: a39582e24aff963033966c8f36c78651a1b77e81931e9ebed7414c2b29045be9
-  requires_dist:
-  - jsonschema
-  - pydantic
-  - pyyaml
-  requires_python: '>=3.10'
-  editable: true
 - kind: conda
   name: readline
   version: '8.2'
