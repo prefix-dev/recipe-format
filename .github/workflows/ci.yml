@@ -28,7 +28,7 @@ jobs:
         - name: run tests
           run: |
            pixi run --environment ${{ matrix.pixi-environment }} tests
-  ci:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
