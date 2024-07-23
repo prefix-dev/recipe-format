@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "rattler-build-recipe-format"
+name = "conda-recipe-v2-schema"
 description = "Model for the recipe used to build conda packages"
 readme = "README.md"
 maintainers = [
@@ -21,7 +21,7 @@ Code = "https://github.com/prefix-dev/recipe-format"
 Issues = "https://github.com/prefix-dev/recipe-format"
 
 [tool.hatch.version]
-path = "rattler_build_recipe_format/__init__.py"
+path = "conda_recipe_v2_schema/__init__.py"
 
 [tool.hatch.build.targets.sdist]
-only-include = ["rattler_build_recipe_format", "tests"]
+only-include = ["conda_recipe_v2_schema", "tests"]

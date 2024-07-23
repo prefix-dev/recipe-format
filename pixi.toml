@@ -1,11 +1,11 @@
 [project]
-name = "rattler-build-recipe-format"
+name = "conda-recipe-v2-schema"
 authors = ["Bas Zalmstra <zalmstra.bas@gmail.com>"]
 channels = ["conda-forge"]
 platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
 
 [pypi-dependencies]
-rattler-build-recipe-format = { path = ".", editable = true }
+conda-recipe-v2-schema = { path = ".", editable = true }
 
 [dependencies]
 pydantic = ">=2.8.2,<3"

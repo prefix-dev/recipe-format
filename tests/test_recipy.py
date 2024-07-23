@@ -5,7 +5,7 @@ import yaml
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
-from rattler_build_recipe_format.model import Recipe
+from conda_recipe_v2_schema.model import Recipe
 
 
 @pytest.fixture(
