@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rattler-build-recipe-format"
+description = "Model for the recipe used to build conda packages"
+readme = "README.md"
+maintainers = [{ name = "Bas Zalmstra", email = "zalmstra.bas@gmail.com" }]
+requires-python = ">=3.9"
+dependencies = ["pydantic", "pyyaml", "jsonschema"]
+dynamic = ["version"]
+license = { text = "BSD-3-Clause" }
+
+[project.urls]
+Home = "https://github.com/prefix-dev/recipe-format"
+Code = "https://github.com/prefix-dev/recipe-format"
+Issues = "https://github.com/prefix-dev/recipe-format"
+
+[tool.hatch.version]
+path = "rattler_build_recipe_format/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+only-include = ["rattler_build_recipe_format", "tests"]
