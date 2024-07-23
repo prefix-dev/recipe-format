@@ -28,7 +28,7 @@ Note: When submitting changes to `model.py` make sure to run following commands 
 ```sh
 pixi run fmt
 pixi run lint
-pixi run generate > schema.json
+pixi run generate
 pixi run test 
 ```
 

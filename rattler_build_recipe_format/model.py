@@ -561,9 +561,10 @@ class Output(StrictBaseModel):
 
     requirements: Requirements | None = Field(None, description="The package dependencies")
 
-    tests: list[
-        TestElement | IfStatement[TestElement] | list[TestElement | IfStatement[TestElement]]
-    ] | None = Field(None, description="Tests to run after packaging")
+    tests: (
+        list[TestElement | IfStatement[TestElement] | list[TestElement | IfStatement[TestElement]]]
+        | None
+    ) = Field(None, description="Tests to run after packaging")
 
     about: About | None = Field(
         None,
@@ -628,5 +629,9 @@ class SimpleRecipe(BaseRecipe):
 Recipe = TypeAdapter(SimpleRecipe | ComplexRecipe)
 
 
-if __name__ == "__main__":
+def main():
     print(json.dumps(Recipe.json_schema(), indent=2))
+
+
+if __name__ == "__main__":
+    main()

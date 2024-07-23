@@ -1,18 +1,16 @@
 import json
+
 import pytest
 import yaml
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
+from rattler_build_recipe_format.model import Recipe
+
 
 @pytest.fixture(
     scope="module",
-    params=[
-        "mamba",
-        "xtensor",
-        "single-output",
-        "zlib"
-    ],
+    params=["mamba", "xtensor", "single-output", "zlib"],
 )
 def valid_recipe(request) -> str:
     recipe_name = request.param
@@ -20,6 +18,7 @@ def valid_recipe(request) -> str:
         recipe = f.read()
     recipe_yml = yaml.safe_load(recipe)
     return recipe_yml
+
 
 @pytest.fixture(
     scope="module",
@@ -46,6 +45,11 @@ def recipe_schema():
 def test_recipe_schema_valid(recipe_schema, valid_recipe):
     validate(instance=valid_recipe, schema=recipe_schema)
 
+
 def test_recipe_schema_invalid(recipe_schema, invalid_recipe):
     with pytest.raises(ValidationError):
         validate(instance=invalid_recipe, schema=recipe_schema)
+
+
+def test_recipe_schema_not_changed(recipe_schema):
+    assert recipe_schema == Recipe.json_schema()
