@@ -1030,13 +1030,11 @@ packages:
   timestamp: 1666700778190
 - kind: pypi
   name: conda-recipe-v2-schema
-  version: 0.9.1
+  version: 0.9.2
   path: .
-  sha256: 76d486737148f00d782f491b564f12817ea0f6c87a87b73471eb360ef88630cf
+  sha256: 04da58e614779b850126318571a9054abe796a21ef931f085b4d64381ed7a4f8
   requires_dist:
-  - jsonschema
   - pydantic
-  - pyyaml
   requires_python: '>=3.10'
   editable: true
 - kind: conda
