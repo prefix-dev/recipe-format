@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, Generic, Literal, Optional, TypeVar, Union, List
-from typing_extensions import Annotated, TypeAlias
+from typing import Any, Dict, Generic, List, Literal, Optional, TypeVar, Union
 
 from pydantic import (
     AnyHttpUrl,
@@ -12,6 +11,7 @@ from pydantic import (
     conint,
     constr,
 )
+from typing_extensions import Annotated, TypeAlias
 
 NonEmptyStr = constr(min_length=1)
 PathNoBackslash = constr(pattern=r"^[^\\]+$")
