@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import json
-from typing import Annotated, Any, Generic, Literal, TypeVar, Union
+from typing import Any, Dict, Generic, Literal, Optional, TypeVar, Union, List
+from typing_extensions import Annotated, TypeAlias
 
 from pydantic import (
     AnyHttpUrl,
@@ -28,13 +29,13 @@ class StrictBaseModel(BaseModel):
 ###########################
 
 T = TypeVar("T")
-ConditionalList = Union[T, "IfStatement[T]", list[Union[T, "IfStatement[T]"]]]
+ConditionalList = Union[T, "IfStatement[T]", List[Union[T, "IfStatement[T]"]]]
 
 
 class IfStatement(StrictBaseModel, Generic[T]):
     expr: str = Field(..., alias="if")
-    then: T | list[T]
-    otherwise: T | list[T] | None = Field(None, alias="else")
+    then: Union[T, List[T]]
+    otherwise: Optional[Union[T, List[T]]] = Field(None, alias="else")
 
 
 ###################
@@ -51,7 +52,7 @@ class GlobDict(StrictBaseModel):
     exclude: GlobVec = Field([], description="Glob patterns to exclude")
 
 
-Glob = SingleGlob | GlobVec | GlobDict
+Glob = Union[SingleGlob, GlobVec, GlobDict]
 
 ####################
 # Package section  #
@@ -64,10 +65,10 @@ class SimplePackage(StrictBaseModel):
 
 
 class ComplexPackage(StrictBaseModel):
-    name: str | None = Field(
+    name: Optional[str] = Field(
         description="The recipe name, this is only used to identify the name of the recipe."
     )
-    version: str | None = Field(
+    version: Optional[str] = Field(
         None, description="The version of each output, this can be overwritten per output"
     )
 
@@ -84,27 +85,27 @@ class BaseSource(StrictBaseModel):
     patches: ConditionalList[PathNoBackslash] = Field(
         [], description="A list of patches to apply after fetching the source"
     )
-    target_directory: NonEmptyStr | None = Field(
+    target_directory: Optional[NonEmptyStr] = Field(
         None, description="The location in the working directory to place the source"
     )
 
 
 class UrlSource(BaseSource):
-    url: NonEmptyStr | list[NonEmptyStr] = Field(
+    url: Union[NonEmptyStr, List[NonEmptyStr]] = Field(
         ...,
         description="Rrl pointing to the source tar.gz|zip|tar.bz2|... (this can be a list of mirrors that point to the same file)",
     )
-    sha256: SHA256Str | None = Field(None, description="The SHA256 hash of the source archive")
-    md5: MD5Str | None = Field(None, description="The MD5 hash of the source archive")
-    file_name: NonEmptyStr | None = Field(
+    sha256: Optional[SHA256Str] = Field(None, description="The SHA256 hash of the source archive")
+    md5: Optional[MD5Str] = Field(None, description="The MD5 hash of the source archive")
+    file_name: Optional[NonEmptyStr] = Field(
         None,
         description="A file name to rename the downloaded file to (does not apply to archives).",
     )
 
 
 class BaseGitSource(BaseSource):
-    git: GitUrl | JinjaExpr = Field(..., description="The url that points to the git repository.")
-    depth: UnsignedInt | None = Field(
+    git: Union[GitUrl, JinjaExpr] = Field(..., description="The url that points to the git repository.")
+    depth: Optional[UnsignedInt] = Field(
         None, description="A value to use when shallow cloning the repository."
     )
     lfs: bool = Field(default=False, description="Should we LFS files be checked out as well")
@@ -122,24 +123,24 @@ class GitBranch(BaseGitSource):
     branch: NonEmptyStr = Field(..., description="Branch to check out")
 
 
-GitSource = GitRev | GitTag | GitBranch | BaseGitSource
+GitSource = Union[GitRev, GitTag, GitBranch, BaseGitSource]
 
 
 class LocalSource(BaseSource):
     path: str = Field(..., description="A path on the local machine that contains the source.")
-    sha256: SHA256Str | None = Field(None, description="The SHA256 hash of the source archive")
-    md5: MD5Str | None = Field(None, description="The MD5 hash of the source archive")
+    sha256: Optional[SHA256Str] = Field(None, description="The SHA256 hash of the source archive")
+    md5: Optional[MD5Str] = Field(None, description="The MD5 hash of the source archive")
     use_gitignore: bool = Field(
         default=True,
         description="Whether or not to use the .gitignore file when copying the source.",
     )
-    file_name: NonEmptyStr | None = Field(
+    file_name: Optional[NonEmptyStr] = Field(
         None,
         description="A file name to rename the file to (does not apply to archives).",
     )
 
 
-Source = UrlSource | GitSource | LocalSource
+Source = Union[UrlSource, GitSource, LocalSource]
 
 ###################
 # Build section   #
@@ -150,21 +151,21 @@ MatchSpec = str
 
 
 class RunExports(StrictBaseModel):
-    weak: ConditionalList[MatchSpec] | None = Field(
+    weak: Optional[ConditionalList[MatchSpec]] = Field(
         None, description="Weak run exports apply from the host env to the run env"
     )
-    strong: ConditionalList[MatchSpec] | None = Field(
+    strong: Optional[ConditionalList[MatchSpec]] = Field(
         None,
         description="Strong run exports apply from the build and host env to the run env",
     )
-    noarch: ConditionalList[MatchSpec] | None = Field(
+    noarch: Optional[ConditionalList[MatchSpec]] = Field(
         None,
         description="Noarch run exports are the only ones looked at when building noarch packages",
     )
-    weak_constraints: ConditionalList[MatchSpec] | None = Field(
+    weak_constraints: Optional[ConditionalList[MatchSpec]] = Field(
         None, description="Weak run constraints add run_constraints from the host env"
     )
-    strong_constraints: ConditionalList[MatchSpec] | None = Field(
+    strong_constraints: Optional[ConditionalList[MatchSpec]] = Field(
         None,
         description="Strong run constraints add run_constraints from the build and host env",
     )
@@ -175,7 +176,7 @@ class ScriptEnv(StrictBaseModel):
         [],
         description="Environments variables to leak into the build environment from the host system. During build time these variables are recorded and stored in the package output. Use `secrets` for environment variables that should not be recorded.",
     )
-    env: dict[str, str] = Field(
+    env: Dict[str, str] = Field(
         {}, description="Environment variables to set in the build environment."
     )
     secrets: ConditionalList[NonEmptyStr] = Field(
@@ -188,29 +189,29 @@ JinjaExpr = constr(pattern=r"\$\{\{.*\}\}")
 
 
 class Build(StrictBaseModel):
-    number: UnsignedInt | JinjaExpr | None = Field(
+    number: Optional[Union[UnsignedInt, JinjaExpr]] = Field(
         0,
         description="Build number to version current build in addition to package version",
     )
-    string: str | JinjaExpr | None = Field(
+    string: Optional[Union[str, JinjaExpr]] = Field(
         None,
         description="The build string to identify build variant. This is usually omitted (can use `${{ hash }}`) variable here)",
     )
-    skip: str | bool | list[str | bool] | None = Field(
+    skip: Optional[Union[str, bool, List[Union[str, bool]]]] = Field(
         None,
         description="List of conditions under which to skip the build of the package. If any of these condition returns true the build is skipped.",
     )
-    noarch: Literal["generic", "python"] | None = Field(
+    noarch: Optional[Literal["generic", "python"]] = Field(
         None,
         description="Can be either 'generic' or 'python'. A noarch 'python' package compiles .pyc files upon installation.",
     )
 
-    script: str | Script | ConditionalList[NonEmptyStr] | None = Field(
+    script: Optional[Union[str, Script, ConditionalList[NonEmptyStr]]] = Field(
         None,
         description="The script to execute to invoke the build. If the string is a single line and ends with `.sh` or `.bat`, then we interpret it as a file.",
     )
 
-    merge_build_and_host_envs: bool | JinjaExpr | None = Field(
+    merge_build_and_host_envs: Optional[Union[bool, JinjaExpr]] = Field(
         default=False,
         description="Merge the build and host environments (used in many R packages on Windows)",
     )
@@ -223,21 +224,21 @@ class Build(StrictBaseModel):
         [],
         description="Do not soft- or hard-link these files but instead always copy them into the environment",
     )
-    variant: Variant | None = Field(
+    variant: Optional[Variant] = Field(
         None, description="Options that influence how the different variants are computed."
     )
-    python: Python | None = Field(None, description="Python specific build configuration")
-    dynamic_linking: DynamicLinking | None = Field(
+    python: Optional[Python] = Field(None, description="Python specific build configuration")
+    dynamic_linking: Optional[DynamicLinking] = Field(
         None,
         description="Configuration to post-process dynamically linked libraries and executables",
     )
 
-    link_options: LinkOptions | None = Field(
+    link_options: Optional[LinkOptions] = Field(
         None,
         description="Options that influence how a package behaves when it is installed or uninstalled.",
     )
 
-    prefix_detection: PrefixDetection | None = Field(
+    prefix_detection: Optional[PrefixDetection] = Field(
         None,
         description="Options that influence how the prefix replacement is done.",
     )
@@ -248,11 +249,11 @@ class Build(StrictBaseModel):
 
 
 class BaseScript(StrictBaseModel):
-    interpreter: NonEmptyStr | None = Field(
+    interpreter: Optional[NonEmptyStr] = Field(
         default=None,
         description="The interpreter to use for the script.\n\nDefaults to `bash` on unix and `cmd.exe` on Windows.",
     )
-    env: dict[NonEmptyStr, str] = Field(
+    env: Dict[NonEmptyStr, str] = Field(
         default={},
         description='the script environment.\n\nYou can use Jinja to pass through environments variables with the `env` object (e.g. `${{ env.get("MYVAR") }}`)',
     )
@@ -263,18 +264,18 @@ class BaseScript(StrictBaseModel):
 
 
 class FileScript(BaseScript):
-    file: PathNoBackslash | JinjaExpr = Field(
+    file: Union[PathNoBackslash, JinjaExpr] = Field(
         description="The file to use as the script. Automatically adds the `bat` or `sh` to the filename on Windows or Unix respectively (if no file extension is given)."
     )
 
 
 class ContentScript(BaseScript):
-    content: str | ConditionalList[str] = Field(
+    content: Union[str, ConditionalList[str]] = Field(
         description="A string or list of strings that is the scripts contents"
     )
 
 
-Script = FileScript | ContentScript
+Script = Union[FileScript, ContentScript]
 
 
 class Variant(StrictBaseModel):
@@ -298,28 +299,28 @@ class Python(StrictBaseModel):
         [],
     )
 
-    use_python_app_entrypoint: bool | JinjaExpr = Field(
+    use_python_app_entrypoint: Union[bool, JinjaExpr] = Field(
         default=False,
         description="Specifies if python.app should be used as the entrypoint on macOS. (macOS only)",
     )
 
-    preserve_egg_dir: bool | JinjaExpr = Field(default=False)
+    preserve_egg_dir: Union[bool, JinjaExpr] = Field(default=False)
 
     skip_pyc_compilation: ConditionalList[Glob] = Field(
         default=[], description="Skip compiling pyc for some files"
     )
 
-    disable_pip: bool | JinjaExpr = Field(default=False)
+    disable_pip: Union[bool, JinjaExpr] = Field(default=False)
 
 
 class PrefixDetection(StrictBaseModel):
-    force_file_type: ForceFileType | None = Field(
+    force_file_type: Optional[ForceFileType]  = Field(
         None, description="force the file type of the given files to be TEXT or BINARY"
     )
-    ignore: bool | JinjaExpr | ConditionalList[PathNoBackslash] = Field(
+    ignore: Union[bool, JinjaExpr, ConditionalList[PathNoBackslash]] = Field(
         default=False, description="Ignore all or specific files for prefix replacement"
     )
-    ignore_binary_files: bool | JinjaExpr | ConditionalList[PathNoBackslash] = Field(
+    ignore_binary_files: Union[bool, JinjaExpr, ConditionalList[PathNoBackslash]] = Field(
         default=False, description="Wether to detect binary files with prefix or not"
     )
 
@@ -333,7 +334,7 @@ class DynamicLinking(StrictBaseModel):
     rpaths: ConditionalList[NonEmptyStr] = Field(
         default=["lib/"], description="linux only, list of rpaths (was rpath)"
     )
-    binary_relocation: bool | JinjaExpr | ConditionalList[Glob] = Field(
+    binary_relocation: Union[bool, JinjaExpr, ConditionalList[Glob]] = Field(
         default=True,
         description="Wether to relocate binaries or not. If this is a list of paths then only the listed paths are relocated",
     )
@@ -365,15 +366,15 @@ class IgnoreRunExports(StrictBaseModel):
 
 
 class LinkOptions(StrictBaseModel):
-    post_link_script: NonEmptyStr | None = Field(
+    post_link_script: Optional[NonEmptyStr] = Field(
         None,
         description="Script to execute after the package has been linked into an environment",
     )
-    pre_unlink_script: NonEmptyStr | None = Field(
+    pre_unlink_script: Optional[NonEmptyStr] = Field(
         None,
         description="Script to execute before uninstalling the package from an environment",
     )
-    pre_link_message: NonEmptyStr | None = Field(None, description="Message to show before linking")
+    pre_link_message: Optional[NonEmptyStr] = Field(None, description="Message to show before linking")
 
 
 #########################
@@ -411,36 +412,36 @@ class Requirements(StrictBaseModel):
 
 
 class TestElementRequires(StrictBaseModel):
-    build: ConditionalList[MatchSpec] | None = Field(
+    build: Optional[ConditionalList[MatchSpec]] = Field(
         None,
         description="extra requirements with build_platform architecture (emulators, ...)",
     )
-    run: ConditionalList[MatchSpec] | None = Field(None, description="extra run dependencies")
+    run: Optional[ConditionalList[MatchSpec]] = Field(None, description="extra run dependencies")
 
 
 class TestElementFiles(StrictBaseModel):
-    source: ConditionalList[NonEmptyStr] | None = Field(
+    source: Optional[ConditionalList[NonEmptyStr]] = Field(
         None, description="extra files from $SRC_DIR"
     )
-    recipe: ConditionalList[NonEmptyStr] | None = Field(
+    recipe: Optional[ConditionalList[NonEmptyStr]] = Field(
         None, description="extra files from $RECIPE_DIR"
     )
 
 
 class ScriptTestElement(StrictBaseModel):
-    script: str | Script | ConditionalList[NonEmptyStr] = Field(
+    script: Union[str, Script, ConditionalList[NonEmptyStr]] = Field(
         None, description="A script to run to perform the test."
     )
-    requirements: TestElementRequires | None = Field(
+    requirements: Optional[TestElementRequires] = Field(
         None, description="Additional dependencies to install before running the test."
     )
-    files: TestElementFiles | None = Field(
+    files: Optional[TestElementFiles] = Field(
         None, description="Additional files to include for the test."
     )
 
 
 class PythonTestElementInner(StrictBaseModel):
-    imports: ConditionalList[NonEmptyStr] = Field(
+    imports: OptionalCondtionalList = Field(
         ...,
         description="A list of Python imports to check after having installed the built package.",
     )
@@ -461,23 +462,24 @@ class DownstreamTestElement(StrictBaseModel):
     )
 
 
+OptionalCondtionalList: TypeAlias = Optional[ConditionalList[NonEmptyStr]]
 class PackageContentTestInner(StrictBaseModel):
-    files: ConditionalList[NonEmptyStr] | None = Field(
+    files: OptionalCondtionalList = Field(
         default=[], description="Files that should be in the package"
     )
-    include: ConditionalList[NonEmptyStr] | None = Field(
+    include: OptionalCondtionalList = Field(
         default=[],
         description="Files that should be in the `include/` folder of the package. This folder is found under `$PREFIX/include` on Unix and `$PREFIX/Library/include` on Windows.",
     )
-    site_packages: ConditionalList[NonEmptyStr] | None = Field(
+    site_packages: OptionalCondtionalList = Field(
         default=[],
         description="Files that should be in the `site-packages/` folder of the package. This folder is found under `$PREFIX/lib/pythonX.Y/site-packages` on Unix and `$PREFIX/Lib/site-packages` on Windows.",
     )
-    bin: ConditionalList[NonEmptyStr] | None = Field(
+    bin: OptionalCondtionalList = Field(
         default=[],
         description="Files that should be in the `bin/` folder of the package. This folder is found under `$PREFIX/bin` on Unix. On Windows this searches for files in `%PREFIX`, `%PREFIX%/bin`, `%PREFIX%/Scripts`, `%PREFIX%/Library/bin`, `%PREFIX/Library/usr/bin` and  `%PREFIX/Library/mingw-w64/bin`.",
     )
-    lib: ConditionalList[NonEmptyStr] | None = Field(
+    lib: OptionalCondtionalList = Field(
         default=[],
         description="Files that should be in the `lib/` folder of the package. This folder is found under `$PREFIX/lib` on Unix and %PREFIX%/Library/lib on Windows.",
     )
@@ -489,7 +491,7 @@ class PackageContentTest(StrictBaseModel):
     )
 
 
-TestElement = ScriptTestElement | PythonTestElement | DownstreamTestElement | PackageContentTest
+TestElement = Union[ScriptTestElement, PythonTestElement, DownstreamTestElement, PackageContentTest]
 
 #########
 # About #
@@ -505,30 +507,30 @@ class DescriptionFile(StrictBaseModel):
 
 class About(StrictBaseModel):
     # URLs
-    homepage: AnyHttpUrl | None = Field(None, description="Url of the homepage of the package.")
-    repository: AnyHttpUrl | None = Field(
+    homepage: Optional[AnyHttpUrl] = Field(None, description="Url of the homepage of the package.")
+    repository: Optional[AnyHttpUrl] = Field(
         None,
         description="Url that points to where the source code is hosted e.g. (github.com)",
     )
-    documentation: AnyHttpUrl | None = Field(
+    documentation: Optional[AnyHttpUrl] = Field(
         None, description="Url that points to where the documentation is hosted."
     )
 
     # License
-    license_: str | None = Field(None, alias="license", description="An license in SPDX format.")
+    license_: Optional[str] = Field(None, alias="license", description="An license in SPDX format.")
     license_file: ConditionalList[PathNoBackslash] | None = Field(
         None, description="Paths to the license files of this package."
     )
-    license_url: str | None = Field(None, description="A url that points to the license file.")
+    license_url: Optional[str] = Field(None, description="A url that points to the license file.")
 
     # Text
-    summary: str | None = Field(None, description="A short description of the package.")
-    description: str | DescriptionFile | None = Field(
+    summary: Optional[str] = Field(None, description="A short description of the package.")
+    description: Optional[Union[str, DescriptionFile]] = Field(
         None,
         description="Extented description of the package or a file (usually a README).",
     )
 
-    prelink_message: str | None = None
+    prelink_message: Optional[str] = None
 
 
 ###########
@@ -548,30 +550,30 @@ class OutputBuild(Build):
 
 
 class Output(StrictBaseModel):
-    package: ComplexPackage | None = Field(
+    package: Optional[ComplexPackage] = Field(
         None, description="The package name and version, this overwrites any top-level fields."
     )
 
-    source: ConditionalList[Source] | None = Field(
+    source: Optional[ConditionalList[Source]] = Field(
         None, description="The source items to be downloaded and used for the build."
     )
-    build: OutputBuild | None = Field(
+    build: Optional[OutputBuild] = Field(
         None, description="Describes how the package should be build."
     )
 
-    requirements: Requirements | None = Field(None, description="The package dependencies")
+    requirements: Optional[Requirements]  = Field(None, description="The package dependencies")
 
     tests: (
-        list[TestElement | IfStatement[TestElement] | list[TestElement | IfStatement[TestElement]]]
+        List[Union[TestElement, IfStatement[TestElement], List[Union[TestElement, IfStatement[TestElement]]]]]
         | None
     ) = Field(None, description="Tests to run after packaging")
 
-    about: About | None = Field(
+    about: Optional[About] = Field(
         None,
         description="A human readable description of the package information. The values here are merged with the top level `about` field.",
     )
 
-    extra: dict[str, Any] | None = Field(
+    extra: Optional[Dict[str, Any]] = Field(
         None,
         description="An set of arbitrary values that are included in the package manifest. The values here are merged with the top level `extras` field.",
     )
@@ -590,26 +592,26 @@ class BaseRecipe(StrictBaseModel):
         description="The version of the YAML schema for a recipe. If the version is omitted it is assumed to be 1.",
     )
 
-    context: dict[str, Any] | None = Field(
+    context: Optional[Dict[str, Any]] = Field(
         None, description="Defines arbitrary key-value pairs for Jinja interpolation"
     )
 
-    source: None | Source | IfStatement[Source] | list[Source | IfStatement[Source]] = Field(
+    source: Optional[Union[Source, IfStatement[Source], List[Union[Source, IfStatement[Source]]]]] = Field(
         None, description="The source items to be downloaded and used for the build."
     )
-    build: Build | None = Field(None, description="Describes how the package should be build.")
+    build: Optional[Build] = Field(None, description="Describes how the package should be build.")
 
-    about: About | None = Field(
+    about: Optional[About] = Field(
         None, description="A human readable description of the package information"
     )
-    extra: dict[str, Any] | None = Field(
+    extra: Optional[Dict[str, Any]] = Field(
         None,
         description="An set of arbitrary values that are included in the package manifest",
     )
 
 
 class ComplexRecipe(BaseRecipe):
-    recipe: ComplexPackage | None = Field(None, description="The package version.")
+    recipe: Optional[ComplexPackage] = Field(None, description="The package version.")
 
     outputs: ConditionalList[Output] = Field(
         ..., description="A list of outputs that are generated for this recipe."
@@ -623,10 +625,10 @@ class SimpleRecipe(BaseRecipe):
         None, description="Tests to run after packaging"
     )
 
-    requirements: Requirements | None = Field(None, description="The package dependencies")
+    requirements: Optional[Requirements] = Field(None, description="The package dependencies")
 
 
-Recipe = TypeAdapter(SimpleRecipe | ComplexRecipe)
+Recipe = TypeAdapter(Union[SimpleRecipe, ComplexRecipe])
 
 
 def main():

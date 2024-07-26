@@ -8,14 +8,13 @@ platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
 conda-recipe-v2-schema = { path = ".", editable = true }
 
 [dependencies]
-pydantic = ">=2.8.2,<3"
 ruff = ">=0.5.2,<0.6"
 pyyaml = ">=6.0.1,<7"
 jsonschema = ">=4.23.0,<5"
 pytest = ">=8.3.1,<9"
 
 [tasks]
-generate = "python model.py > schema.json"
+generate = "python conda_recipe_v2_schema/model.py > new_schema.json"
 fmt = "ruff format ."
 lint = "ruff check . --fix"
 tests = "pytest tests"
@@ -29,8 +28,16 @@ python = "3.11.*"
 [feature.py310.dependencies]
 python = "3.10.*"
 
+[feature.py39.dependencies]
+python = "3.9.*"
+
+[feature.py38.dependencies]
+python = "3.8.*"
+
 [environments]
 default = { features = ["py312"], solve-group = "py312" }
 py312 = { features = ["py312"], solve-group = "py312" }
 py311 = ["py311"]
 py310 = ["py310"]
+py39 = ["py39"]
+py38 = ["py38"]
