@@ -289,7 +289,7 @@ class Variant(StrictBaseModel):
         description="Keys to forcibly ignore for the variant computation (even if they are in the dependencies)",
     )
 
-    down_prioritize_variant: int | JinjaExpr = Field(
+    down_prioritize_variant: Union[int, JinjaExpr] = Field(
         0, description="used to prefer this variant less over other variants"
     )
 
@@ -383,25 +383,25 @@ class LinkOptions(StrictBaseModel):
 
 
 class Requirements(StrictBaseModel):
-    build: ConditionalList[MatchSpec] | None = Field(
+    build: Optional[ConditionalList[MatchSpec]] = Field(
         None,
         description="Dependencies to install on the build platform architecture. Compilers, CMake, everything that needs to execute at build time.",
     )
-    host: ConditionalList[MatchSpec] | None = Field(
+    host: Optional[ConditionalList[MatchSpec]] = Field(
         None,
         description="Dependencies to install on the host platform architecture. All the packages that your build links against.",
     )
-    run: ConditionalList[MatchSpec] | None = Field(
+    run: Optional[ConditionalList[MatchSpec]] = Field(
         None,
         description="Dependencies that should be installed alongside this package. Dependencies in the `host` section with `run_exports` are also automatically added here.",
     )
-    run_constraints: ConditionalList[MatchSpec] | None = Field(
+    run_constraints: Optional[ConditionalList[MatchSpec]] = Field(
         None, description="constraints optional dependencies at runtime."
     )
-    run_exports: ConditionalList[MatchSpec] | RunExports = Field(
+    run_exports: Union[ConditionalList[MatchSpec], RunExports] = Field(
         None, description="The run exports of this package"
     )
-    ignore_run_exports: IgnoreRunExports | None = Field(
+    ignore_run_exports: Optional[IgnoreRunExports] = Field(
         None, description="Ignore run-exports by name or from certain packages"
     )
 
@@ -441,7 +441,7 @@ class ScriptTestElement(StrictBaseModel):
 
 
 class PythonTestElementInner(StrictBaseModel):
-    imports: OptionalCondtionalList = Field(
+    imports: ConditionalList[NonEmptyStr] = Field(
         ...,
         description="A list of Python imports to check after having installed the built package.",
     )
@@ -518,7 +518,7 @@ class About(StrictBaseModel):
 
     # License
     license_: Optional[str] = Field(None, alias="license", description="An license in SPDX format.")
-    license_file: ConditionalList[PathNoBackslash] | None = Field(
+    license_file: Optional[ConditionalList[PathNoBackslash]] = Field(
         None, description="Paths to the license files of this package."
     )
     license_url: Optional[str] = Field(None, description="A url that points to the license file.")
@@ -543,7 +543,7 @@ class OutputBuild(Build):
         default=False,
         description="Do not output a package but use this output as an input to others.",
     )
-    cache_from: ConditionalList[NonEmptyStr] | None = Field(
+    cache_from: Optional[ConditionalList[NonEmptyStr]] = Field(
         None,
         description="Take the output of the specified outputs and copy them in the working directory.",
     )
@@ -564,8 +564,8 @@ class Output(StrictBaseModel):
     requirements: Optional[Requirements]  = Field(None, description="The package dependencies")
 
     tests: (
-        List[Union[TestElement, IfStatement[TestElement], List[Union[TestElement, IfStatement[TestElement]]]]]
-        | None
+        Optional[List[Union[TestElement, IfStatement[TestElement], List[Union[TestElement, IfStatement[TestElement]]]]]]
+    
     ) = Field(None, description="Tests to run after packaging")
 
     about: Optional[About] = Field(
@@ -621,7 +621,7 @@ class ComplexRecipe(BaseRecipe):
 class SimpleRecipe(BaseRecipe):
     package: SimplePackage = Field(..., description="The package name and version.")
 
-    tests: ConditionalList[TestElement] | None = Field(
+    tests: Optional[ConditionalList[TestElement]] = Field(
         None, description="Tests to run after packaging"
     )
 
