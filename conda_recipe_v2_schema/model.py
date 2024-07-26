@@ -104,7 +104,9 @@ class UrlSource(BaseSource):
 
 
 class BaseGitSource(BaseSource):
-    git: Union[GitUrl, JinjaExpr] = Field(..., description="The url that points to the git repository.")
+    git: Union[GitUrl, JinjaExpr] = Field(
+        ..., description="The url that points to the git repository."
+    )
     depth: Optional[UnsignedInt] = Field(
         None, description="A value to use when shallow cloning the repository."
     )
@@ -314,7 +316,7 @@ class Python(StrictBaseModel):
 
 
 class PrefixDetection(StrictBaseModel):
-    force_file_type: Optional[ForceFileType]  = Field(
+    force_file_type: Optional[ForceFileType] = Field(
         None, description="force the file type of the given files to be TEXT or BINARY"
     )
     ignore: Union[bool, JinjaExpr, ConditionalList[PathNoBackslash]] = Field(
@@ -374,7 +376,9 @@ class LinkOptions(StrictBaseModel):
         None,
         description="Script to execute before uninstalling the package from an environment",
     )
-    pre_link_message: Optional[NonEmptyStr] = Field(None, description="Message to show before linking")
+    pre_link_message: Optional[NonEmptyStr] = Field(
+        None, description="Message to show before linking"
+    )
 
 
 #########################
@@ -463,6 +467,8 @@ class DownstreamTestElement(StrictBaseModel):
 
 
 OptionalCondtionalList: TypeAlias = Optional[ConditionalList[NonEmptyStr]]
+
+
 class PackageContentTestInner(StrictBaseModel):
     files: OptionalCondtionalList = Field(
         default=[], description="Files that should be in the package"
@@ -561,12 +567,17 @@ class Output(StrictBaseModel):
         None, description="Describes how the package should be build."
     )
 
-    requirements: Optional[Requirements]  = Field(None, description="The package dependencies")
+    requirements: Optional[Requirements] = Field(None, description="The package dependencies")
 
-    tests: (
-        Optional[List[Union[TestElement, IfStatement[TestElement], List[Union[TestElement, IfStatement[TestElement]]]]]]
-    
-    ) = Field(None, description="Tests to run after packaging")
+    tests: Optional[
+        List[
+            Union[
+                TestElement,
+                IfStatement[TestElement],
+                List[Union[TestElement, IfStatement[TestElement]]],
+            ]
+        ]
+    ] = Field(None, description="Tests to run after packaging")
 
     about: Optional[About] = Field(
         None,
@@ -596,9 +607,9 @@ class BaseRecipe(StrictBaseModel):
         None, description="Defines arbitrary key-value pairs for Jinja interpolation"
     )
 
-    source: Optional[Union[Source, IfStatement[Source], List[Union[Source, IfStatement[Source]]]]] = Field(
-        None, description="The source items to be downloaded and used for the build."
-    )
+    source: Optional[
+        Union[Source, IfStatement[Source], List[Union[Source, IfStatement[Source]]]]
+    ] = Field(None, description="The source items to be downloaded and used for the build.")
     build: Optional[Build] = Field(None, description="Describes how the package should be build.")
 
     about: Optional[About] = Field(
