@@ -14,7 +14,7 @@ jsonschema = ">=4.23.0,<5"
 pytest = ">=8.3.1,<9"
 
 [tasks]
-generate = "python conda_recipe_v2_schema/model.py > new_schema.json"
+generate = "python conda_recipe_v2_schema/model.py > schema.json"
 fmt = "ruff format ."
 lint = "ruff check . --fix"
 tests = "pytest tests"
