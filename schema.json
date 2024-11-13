@@ -3145,46 +3145,14 @@
           "title": "Pip Check",
           "type": "boolean"
         },
-        "requirements": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/PythonTestElementRequires"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Additional dependencies to install before running the test."
-        }
-      },
-      "required": [
-        "imports"
-      ],
-      "title": "PythonTestElementInner",
-      "type": "object"
-    },
-    "PythonTestElementRequires": {
-      "additionalProperties": false,
-      "properties": {
-        "run": {
+        "python_version": {
           "anyOf": [
             {
               "type": "string"
             },
             {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
               "items": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
+                "type": "string"
               },
               "type": "array"
             },
@@ -3193,11 +3161,14 @@
             }
           ],
           "default": null,
-          "description": "extra run dependencies",
-          "title": "Run"
+          "description": "Python version(s) to test against. If not specified, the default python version is used.",
+          "title": "Python Version"
         }
       },
-      "title": "PythonTestElementRequires",
+      "required": [
+        "imports"
+      ],
+      "title": "PythonTestElementInner",
       "type": "object"
     },
     "Requirements": {

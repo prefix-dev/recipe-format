@@ -410,10 +410,6 @@ class Requirements(StrictBaseModel):
 ################
 
 
-class PythonTestElementRequires(StrictBaseModel):
-    run: ConditionalList[MatchSpec] | None = Field(None, description="extra run dependencies")
-
-
 class TestElementRequires(StrictBaseModel):
     build: ConditionalList[MatchSpec] | None = Field(
         None,
@@ -452,8 +448,9 @@ class PythonTestElementInner(StrictBaseModel):
         default=True,
         description="Whether or not to run `pip check` during the Python tests.",
     )
-    requirements: PythonTestElementRequires | None = Field(
-        None, description="Additional dependencies to install before running the test."
+    python_version: str | list[str] | None = Field(
+        None,
+        description="Python version(s) to test against. If not specified, the default python version is used.",
     )
 
 
