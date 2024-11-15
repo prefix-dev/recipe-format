@@ -448,6 +448,10 @@ class PythonTestElementInner(StrictBaseModel):
         default=True,
         description="Whether or not to run `pip check` during the Python tests.",
     )
+    python_version: str | list[str] | None = Field(
+        None,
+        description="Python version(s) to test against. If not specified, the default python version is used.",
+    )
 
 
 class PythonTestElement(StrictBaseModel):

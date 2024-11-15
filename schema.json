@@ -3144,6 +3144,25 @@
           "description": "Whether or not to run `pip check` during the Python tests.",
           "title": "Pip Check",
           "type": "boolean"
+        },
+        "python_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Python version(s) to test against. If not specified, the default python version is used.",
+          "title": "Python Version"
         }
       },
       "required": [
