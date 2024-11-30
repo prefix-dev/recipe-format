@@ -619,10 +619,13 @@ class BaseRecipe(StrictBaseModel):
 
 class Cache(StrictBaseModel):
     source: ConditionalList[Source] | None = Field(
-        None, description="The source items to be downloaded and used for the cache build and subsequent outputs."
+        None,
+        description="The source items to be downloaded and used for the cache build and subsequent outputs.",
     )
 
-    requirements: Requirements | None = Field(None, description="The dependencies needed at cache-build time.")
+    requirements: Requirements | None = Field(
+        None, description="The dependencies needed at cache-build time."
+    )
 
     build: OutputBuild | None = Field(
         None, description="Describes how the package should be build."
