@@ -617,8 +617,24 @@ class BaseRecipe(StrictBaseModel):
     )
 
 
+class Cache(StrictBaseModel):
+    source: ConditionalList[Source] | None = Field(
+        None, description="The source items to be downloaded and used for the cache build and subsequent outputs."
+    )
+
+    requirements: Requirements | None = Field(None, description="The dependencies needed at cache-build time.")
+
+    build: OutputBuild | None = Field(
+        None, description="Describes how the package should be build."
+    )
+
+
 class ComplexRecipe(BaseRecipe):
     recipe: ComplexPackage | None = Field(None, description="The package version.")
+
+    cache: Cache | None = Field(
+        None, description="The cache build that can be used as a common build step for all output."
+    )
 
     outputs: ConditionalList[Output] = Field(
         ..., description="A list of outputs that are generated for this recipe."

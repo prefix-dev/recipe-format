@@ -562,6 +562,96 @@
       "title": "Build",
       "type": "object"
     },
+    "Cache": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UrlSource"
+            },
+            {
+              "$ref": "#/$defs/GitRev"
+            },
+            {
+              "$ref": "#/$defs/GitTag"
+            },
+            {
+              "$ref": "#/$defs/GitBranch"
+            },
+            {
+              "$ref": "#/$defs/BaseGitSource"
+            },
+            {
+              "$ref": "#/$defs/LocalSource"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/UrlSource"
+                  },
+                  {
+                    "$ref": "#/$defs/GitRev"
+                  },
+                  {
+                    "$ref": "#/$defs/GitTag"
+                  },
+                  {
+                    "$ref": "#/$defs/GitBranch"
+                  },
+                  {
+                    "$ref": "#/$defs/BaseGitSource"
+                  },
+                  {
+                    "$ref": "#/$defs/LocalSource"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The source items to be downloaded and used for the cache build and subsequent outputs.",
+          "title": "Source"
+        },
+        "requirements": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Requirements"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The dependencies needed at cache-build time."
+        },
+        "build": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OutputBuild"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Describes how the package should be build."
+        }
+      },
+      "title": "Cache",
+      "type": "object"
+    },
     "ComplexPackage": {
       "additionalProperties": false,
       "properties": {
@@ -728,6 +818,18 @@
           ],
           "default": null,
           "description": "The package version."
+        },
+        "cache": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Cache"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The cache build that can be used as a common build step for all output."
         },
         "outputs": {
           "anyOf": [
