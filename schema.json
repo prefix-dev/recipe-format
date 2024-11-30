@@ -131,7 +131,7 @@
             }
           ],
           "default": null,
-          "description": "Extented description of the package or a file (usually a README).",
+          "description": "Extended description of the package or a file (usually a README).",
           "title": "Description"
         },
         "prelink_message": {
@@ -977,7 +977,7 @@
             }
           ],
           "default": true,
-          "description": "Wether to relocate binaries or not. If this is a list of paths then only the listed paths are relocated",
+          "description": "Whether to relocate binaries or not. If this is a list of paths then only the listed paths are relocated",
           "title": "Binary Relocation"
         },
         "missing_dso_allowlist": {
@@ -2950,7 +2950,7 @@
             }
           ],
           "default": false,
-          "description": "Wether to detect binary files with prefix or not",
+          "description": "Whether to detect binary files with prefix or not",
           "title": "Ignore Binary Files"
         }
       },
@@ -3086,6 +3086,23 @@
           ],
           "default": false,
           "title": "Disable Pip"
+        },
+        "site_packages_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The path to the site-packages folder. This is advertised by Python to install noarch packages in the correct location. Only valid for a Python package.",
+          "title": "Site Packages Path"
         }
       },
       "title": "Python",
@@ -3963,7 +3980,7 @@
               "type": "array"
             }
           ],
-          "description": "Rrl pointing to the source tar.gz|zip|tar.bz2|... (this can be a list of mirrors that point to the same file)",
+          "description": "Url pointing to the source tar.gz|zip|tar.bz2|... (this can be a list of mirrors that point to the same file)",
           "title": "Url"
         },
         "sha256": {

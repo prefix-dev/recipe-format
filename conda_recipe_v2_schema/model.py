@@ -92,7 +92,7 @@ class BaseSource(StrictBaseModel):
 class UrlSource(BaseSource):
     url: NonEmptyStr | list[NonEmptyStr] = Field(
         ...,
-        description="Rrl pointing to the source tar.gz|zip|tar.bz2|... (this can be a list of mirrors that point to the same file)",
+        description="Url pointing to the source tar.gz|zip|tar.bz2|... (this can be a list of mirrors that point to the same file)",
     )
     sha256: SHA256Str | None = Field(None, description="The SHA256 hash of the source archive")
     md5: MD5Str | None = Field(None, description="The MD5 hash of the source archive")
@@ -311,6 +311,11 @@ class Python(StrictBaseModel):
 
     disable_pip: bool | JinjaExpr = Field(default=False)
 
+    site_packages_path: str | JinjaExpr | None = Field(
+        default=None,
+        description="The path to the site-packages folder. This is advertised by Python to install noarch packages in the correct location. Only valid for a Python package.",
+    )
+
 
 class PrefixDetection(StrictBaseModel):
     force_file_type: ForceFileType | None = Field(
@@ -320,7 +325,7 @@ class PrefixDetection(StrictBaseModel):
         default=False, description="Ignore all or specific files for prefix replacement"
     )
     ignore_binary_files: bool | JinjaExpr | ConditionalList[PathNoBackslash] = Field(
-        default=False, description="Wether to detect binary files with prefix or not"
+        default=False, description="Whether to detect binary files with prefix or not"
     )
 
 
@@ -335,7 +340,7 @@ class DynamicLinking(StrictBaseModel):
     )
     binary_relocation: bool | JinjaExpr | ConditionalList[Glob] = Field(
         default=True,
-        description="Wether to relocate binaries or not. If this is a list of paths then only the listed paths are relocated",
+        description="Whether to relocate binaries or not. If this is a list of paths then only the listed paths are relocated",
     )
     missing_dso_allowlist: ConditionalList[Glob] = Field(
         default=[],
@@ -529,7 +534,7 @@ class About(StrictBaseModel):
     summary: str | None = Field(None, description="A short description of the package.")
     description: str | DescriptionFile | None = Field(
         None,
-        description="Extented description of the package or a file (usually a README).",
+        description="Extended description of the package or a file (usually a README).",
     )
 
     prelink_message: str | None = None
