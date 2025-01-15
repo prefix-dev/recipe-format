@@ -2,8 +2,8 @@
 
 This repository contains the [JSON Schema](https://github.com/prefix-dev/recipe-format/blob/main/schema.json) for the new `recipe.yaml` format as described in the following conda CEPs:
 
-- [CEP 13 - A new Recipe format (Part 1)](https://github.com/conda/ceps/blob/main/cep-13.md)
-- [CEP 14 - A new Recipe format (Part 2) - the allowed keys & values](https://github.com/conda/ceps/blob/main/cep-14.md)
+- [CEP 13 - A new Recipe format (Part 1)](https://github.com/conda/ceps/blob/main/cep-0013.md)
+- [CEP 14 - A new Recipe format (Part 2) - the allowed keys & values](https://github.com/conda/ceps/blob/main/cep-0014.md)
 
 ## How to use 
 
