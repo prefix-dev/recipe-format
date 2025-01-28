@@ -316,6 +316,8 @@ class Python(StrictBaseModel):
         description="The path to the site-packages folder. This is advertised by Python to install noarch packages in the correct location. Only valid for a Python package.",
     )
 
+    version_independent: bool | JinjaExpr = Field(default=False)
+
 
 class PrefixDetection(StrictBaseModel):
     force_file_type: ForceFileType | None = Field(
