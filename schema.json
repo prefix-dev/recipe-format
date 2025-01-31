@@ -2196,6 +2196,10 @@
               "type": "string"
             },
             {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            },
+            {
               "type": "null"
             }
           ],
@@ -2209,6 +2213,10 @@
               "maxLength": 32,
               "minLength": 32,
               "pattern": "[a-fA-F0-9]{32}",
+              "type": "string"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
               "type": "string"
             },
             {
@@ -4108,6 +4116,10 @@
               "type": "string"
             },
             {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            },
+            {
               "type": "null"
             }
           ],
@@ -4121,6 +4133,10 @@
               "maxLength": 32,
               "minLength": 32,
               "pattern": "[a-fA-F0-9]{32}",
+              "type": "string"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
               "type": "string"
             },
             {

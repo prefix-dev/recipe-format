@@ -3,6 +3,7 @@
 context:
   version: 1.2.13
   build_number: 5
+  sha256sum: b3a24de97a8fdbc835b9833169501030b8977031bcb54b3b3ac13740f846ab30
 
 recipe:
   name: zlib-split
@@ -10,7 +11,7 @@ recipe:
 
 source:
   url: http://zlib.net/zlib-${{ recipe.version }}.tar.gz
-  sha256: b3a24de97a8fdbc835b9833169501030b8977031bcb54b3b3ac13740f846ab30
+  sha256: ${{ sha256sum }}
 
 outputs:
   - package:
@@ -18,7 +19,7 @@ outputs:
     build:
       script:
         - echo "build libzlib"
-    
+
     requirements:
       build:
         - ${{ compiler('c') }}
@@ -31,20 +32,20 @@ outputs:
 
     tests:
       - script:
-        - if: unix
-          then:
-          - test ! -f ${PREFIX}/lib/libz.a            
-          - test ! -f ${PREFIX}/lib/libz${SHLIB_EXT}  
-          - test ! -f ${PREFIX}/include/zlib.h        
-        - if: win
-          then:
-          - if not exist %LIBRARY_BIN%\zlib.dll exit 1 
-          - if not exist %PREFIX%\zlib.dll exit 1 
+          - if: unix
+            then:
+              - test ! -f ${PREFIX}/lib/libz.a
+              - test ! -f ${PREFIX}/lib/libz${SHLIB_EXT}
+              - test ! -f ${PREFIX}/include/zlib.h
+          - if: win
+            then:
+              - if not exist %LIBRARY_BIN%\zlib.dll exit 1
+              - if not exist %PREFIX%\zlib.dll exit 1
 
   - package:
       name: libzlib-wapi
     build:
-      skip: 
+      skip:
         - not win
     requirements:
       build:
@@ -62,7 +63,7 @@ outputs:
           - path: Library/bin/zlibwapi.dll
     tests:
       - script:
-        - if not exist "%LIBRARY_BIN%\zlibwapi.dll" exit 1
+          - if not exist "%LIBRARY_BIN%\zlibwapi.dll" exit 1
 
   - package:
       name: zlib
@@ -80,7 +81,7 @@ outputs:
         - ${{ pin_subpackage('libzlib', max_pin='x.x') }}
 
     tests:
-      - requirements: 
+      - requirements:
           build:
             - ${{ compiler('c') }}
         files:
