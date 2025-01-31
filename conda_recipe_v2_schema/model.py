@@ -16,6 +16,7 @@ NonEmptyStr = constr(min_length=1)
 PathNoBackslash = constr(pattern=r"^[^\\]+$")
 UnsignedInt = conint(ge=0)
 GitUrl = constr(pattern=r"((git|ssh|http(s)?)|(git@[\w\.]+))(:(\/\/)?)([\w\.@:\/\\-~]+)")
+JinjaExpr = constr(pattern=r"\$\{\{.*\}\}")
 
 
 class StrictBaseModel(BaseModel):
@@ -76,8 +77,8 @@ class ComplexPackage(StrictBaseModel):
 # Source section  #
 ###################
 
-MD5Str = constr(min_length=32, max_length=32, pattern=r"[a-fA-F0-9]{32}")
-SHA256Str = constr(min_length=64, max_length=64, pattern=r"[a-fA-F0-9]{64}")
+MD5Str = constr(min_length=32, max_length=32, pattern=r"[a-fA-F0-9]{32}") | JinjaExpr
+SHA256Str = constr(min_length=64, max_length=64, pattern=r"[a-fA-F0-9]{64}") | JinjaExpr
 
 
 class BaseSource(StrictBaseModel):
@@ -182,9 +183,6 @@ class ScriptEnv(StrictBaseModel):
         [],
         description="Environment variables to leak into the build environment from the host system that contain sensitve information. Use with care because this might make recipes no longer reproducible on other machines.",
     )
-
-
-JinjaExpr = constr(pattern=r"\$\{\{.*\}\}")
 
 
 class Build(StrictBaseModel):
