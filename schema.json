@@ -2246,6 +2246,37 @@
           "default": null,
           "description": "A file name to rename the file to (does not apply to archives).",
           "title": "File Name"
+        },
+        "filter": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "$ref": "#/$defs/GlobDict"
+            }
+          ],
+          "default": null,
+          "description": "Glob patterns to include or exclude files from the package.",
+          "title": "Filter"
         }
       },
       "required": [
