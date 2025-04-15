@@ -138,6 +138,9 @@ class LocalSource(BaseSource):
         None,
         description="A file name to rename the file to (does not apply to archives).",
     )
+    filter: Glob = Field(
+        None, description="Glob patterns to include or exclude files from the package."
+    )
 
 
 Source = UrlSource | GitSource | LocalSource
