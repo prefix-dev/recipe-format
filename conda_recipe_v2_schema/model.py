@@ -6,6 +6,7 @@ from typing import Annotated, Any, Generic, Literal, TypeVar, Union
 from pydantic import (
     AnyHttpUrl,
     BaseModel,
+    ConfigDict,
     Field,
     TypeAdapter,
     conint,
@@ -20,8 +21,7 @@ JinjaExpr = constr(pattern=r"\$\{\{.*\}\}")
 
 
 class StrictBaseModel(BaseModel):
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 ###########################
@@ -81,8 +81,12 @@ MD5Str = constr(min_length=32, max_length=32, pattern=r"[a-fA-F0-9]{32}") | Jinj
 SHA256Str = constr(min_length=64, max_length=64, pattern=r"[a-fA-F0-9]{64}") | JinjaExpr
 
 
+# We will use a type for patches that doesn't allow standalone if statements so they must be inside a list
+PatchesList = Union[PathNoBackslash, list[Union[PathNoBackslash, "IfStatement[PathNoBackslash]"]]]
+
+
 class BaseSource(StrictBaseModel):
-    patches: ConditionalList[PathNoBackslash] = Field(
+    patches: PatchesList = Field(
         [], description="A list of patches to apply after fetching the source"
     )
     target_directory: NonEmptyStr | None = Field(
