@@ -160,9 +160,6 @@
               "type": "string"
             },
             {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
               "items": {
                 "anyOf": [
                   {
@@ -170,7 +167,7 @@
                     "type": "string"
                   },
                   {
-                    "$ref": "#/$defs/IfStatement"
+                    "$ref": "#/$defs/IfStatement_Annotated_str__StringConstraints__"
                   }
                 ]
               },
@@ -1446,9 +1443,6 @@
               "type": "string"
             },
             {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
               "items": {
                 "anyOf": [
                   {
@@ -1456,7 +1450,7 @@
                     "type": "string"
                   },
                   {
-                    "$ref": "#/$defs/IfStatement"
+                    "$ref": "#/$defs/IfStatement_Annotated_str__StringConstraints__"
                   }
                 ]
               },
@@ -1539,9 +1533,6 @@
               "type": "string"
             },
             {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
               "items": {
                 "anyOf": [
                   {
@@ -1549,7 +1540,7 @@
                     "type": "string"
                   },
                   {
-                    "$ref": "#/$defs/IfStatement"
+                    "$ref": "#/$defs/IfStatement_Annotated_str__StringConstraints__"
                   }
                 ]
               },
@@ -1632,9 +1623,6 @@
               "type": "string"
             },
             {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
               "items": {
                 "anyOf": [
                   {
@@ -1642,7 +1630,7 @@
                     "type": "string"
                   },
                   {
-                    "$ref": "#/$defs/IfStatement"
+                    "$ref": "#/$defs/IfStatement_Annotated_str__StringConstraints__"
                   }
                 ]
               },
@@ -1817,6 +1805,57 @@
         "then"
       ],
       "title": "IfStatement",
+      "type": "object"
+    },
+    "IfStatement_Annotated_str__StringConstraints__": {
+      "additionalProperties": false,
+      "properties": {
+        "if": {
+          "title": "If",
+          "type": "string"
+        },
+        "then": {
+          "anyOf": [
+            {
+              "pattern": "^[^\\\\]+$",
+              "type": "string"
+            },
+            {
+              "items": {
+                "pattern": "^[^\\\\]+$",
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "title": "Then"
+        },
+        "else": {
+          "anyOf": [
+            {
+              "pattern": "^[^\\\\]+$",
+              "type": "string"
+            },
+            {
+              "items": {
+                "pattern": "^[^\\\\]+$",
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Else"
+        }
+      },
+      "required": [
+        "if",
+        "then"
+      ],
+      "title": "IfStatement[Annotated[str, StringConstraints]]",
       "type": "object"
     },
     "IfStatement_Union_ScriptTestElement__PythonTestElement__DownstreamTestElement__PackageContentTest__": {
@@ -2147,9 +2186,6 @@
               "type": "string"
             },
             {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
               "items": {
                 "anyOf": [
                   {
@@ -2157,7 +2193,7 @@
                     "type": "string"
                   },
                   {
-                    "$ref": "#/$defs/IfStatement"
+                    "$ref": "#/$defs/IfStatement_Annotated_str__StringConstraints__"
                   }
                 ]
               },
@@ -4086,9 +4122,6 @@
               "type": "string"
             },
             {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
               "items": {
                 "anyOf": [
                   {
@@ -4096,7 +4129,7 @@
                     "type": "string"
                   },
                   {
-                    "$ref": "#/$defs/IfStatement"
+                    "$ref": "#/$defs/IfStatement_Annotated_str__StringConstraints__"
                   }
                 ]
               },
