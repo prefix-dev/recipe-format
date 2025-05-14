@@ -473,6 +473,26 @@ class PythonTestElement(StrictBaseModel):
     python: PythonTestElementInner = Field(..., description="Python specific test configuration")
 
 
+class PerlTestElementInner(StrictBaseModel):
+    uses: ConditionalList[NonEmptyStr] = Field(
+        ..., description="A list of Perl modules to check after having installed the built package."
+    )
+
+
+class PerlTestElement(StrictBaseModel):
+    perl: PerlTestElementInner = Field(..., description="Perl specific test configuration")
+
+
+class RTestElementInner(StrictBaseModel):
+    libraries: ConditionalList[NonEmptyStr] = Field(
+        ..., description="A list of R libraries to check after having installed the built package."
+    )
+
+
+class RTestElement(StrictBaseModel):
+    r: RTestElementInner = Field(..., description="R specific test configuration")
+
+
 class DownstreamTestElement(StrictBaseModel):
     downstream: MatchSpec = Field(
         ...,
@@ -508,7 +528,14 @@ class PackageContentTest(StrictBaseModel):
     )
 
 
-TestElement = ScriptTestElement | PythonTestElement | DownstreamTestElement | PackageContentTest
+TestElement = (
+    ScriptTestElement
+    | PythonTestElement
+    | PerlTestElement
+    | RTestElement
+    | DownstreamTestElement
+    | PackageContentTest
+)
 
 #########
 # About #
