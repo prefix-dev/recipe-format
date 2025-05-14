@@ -90,3 +90,61 @@ def test_patches_invalid_conditional():
     # This should raise a validation error
     with pytest.raises(PydanticValidationError):
         Recipe.validate_python(recipe_dict)
+
+
+def test_perl_test_valid():
+    """Test that recipes with a Perl test pass validation."""
+    recipe_yaml = """
+    package:
+      name: test
+      version: 1.0.0
+    tests:
+      - perl:
+          uses:
+            - Call::Context
+    """
+    recipe_dict = yaml.safe_load(recipe_yaml)
+    Recipe.validate_python(recipe_dict)
+
+
+def test_perl_test_invalid_missing_uses():
+    """Test that a Perl test without uses fails validation."""
+    recipe_yaml = """
+    package:
+      name: test
+      version: 1.0.0
+    tests:
+      - perl: {}
+    """
+    recipe_dict = yaml.safe_load(recipe_yaml)
+    with pytest.raises(PydanticValidationError):
+        Recipe.validate_python(recipe_dict)
+
+
+def test_r_test_valid():
+    """Test that recipes with an R test pass validation."""
+    recipe_yaml = """
+    package:
+      name: test
+      version: 1.0.0
+    tests:
+      - r:
+          libraries:
+            - ggplot2
+    """
+    recipe_dict = yaml.safe_load(recipe_yaml)
+    Recipe.validate_python(recipe_dict)
+
+
+def test_r_test_invalid_missing_libraries():
+    """Test that an R test without libraries fails validation."""
+    recipe_yaml = """
+    package:
+      name: test
+      version: 1.0.0
+    tests:
+      - r: {}
+    """
+    recipe_dict = yaml.safe_load(recipe_yaml)
+    with pytest.raises(PydanticValidationError):
+        Recipe.validate_python(recipe_dict)

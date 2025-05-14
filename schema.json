@@ -1858,7 +1858,7 @@
       "title": "IfStatement[Annotated[str, StringConstraints]]",
       "type": "object"
     },
-    "IfStatement_Union_ScriptTestElement__PythonTestElement__DownstreamTestElement__PackageContentTest__": {
+    "IfStatement_Union_ScriptTestElement__PythonTestElement__PerlTestElement__RTestElement__DownstreamTestElement__PackageContentTest__": {
       "additionalProperties": false,
       "properties": {
         "if": {
@@ -1874,6 +1874,12 @@
               "$ref": "#/$defs/PythonTestElement"
             },
             {
+              "$ref": "#/$defs/PerlTestElement"
+            },
+            {
+              "$ref": "#/$defs/RTestElement"
+            },
+            {
               "$ref": "#/$defs/DownstreamTestElement"
             },
             {
@@ -1887,6 +1893,12 @@
                   },
                   {
                     "$ref": "#/$defs/PythonTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/PerlTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/RTestElement"
                   },
                   {
                     "$ref": "#/$defs/DownstreamTestElement"
@@ -1910,6 +1922,12 @@
               "$ref": "#/$defs/PythonTestElement"
             },
             {
+              "$ref": "#/$defs/PerlTestElement"
+            },
+            {
+              "$ref": "#/$defs/RTestElement"
+            },
+            {
               "$ref": "#/$defs/DownstreamTestElement"
             },
             {
@@ -1923,6 +1941,12 @@
                   },
                   {
                     "$ref": "#/$defs/PythonTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/PerlTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/RTestElement"
                   },
                   {
                     "$ref": "#/$defs/DownstreamTestElement"
@@ -1946,7 +1970,7 @@
         "if",
         "then"
       ],
-      "title": "IfStatement[Union[ScriptTestElement, PythonTestElement, DownstreamTestElement, PackageContentTest]]",
+      "title": "IfStatement[Union[ScriptTestElement, PythonTestElement, PerlTestElement, RTestElement, DownstreamTestElement, PackageContentTest]]",
       "type": "object"
     },
     "IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__BaseGitSource__LocalSource__": {
@@ -2431,13 +2455,19 @@
                     "$ref": "#/$defs/PythonTestElement"
                   },
                   {
+                    "$ref": "#/$defs/PerlTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/RTestElement"
+                  },
+                  {
                     "$ref": "#/$defs/DownstreamTestElement"
                   },
                   {
                     "$ref": "#/$defs/PackageContentTest"
                   },
                   {
-                    "$ref": "#/$defs/IfStatement_Union_ScriptTestElement__PythonTestElement__DownstreamTestElement__PackageContentTest__"
+                    "$ref": "#/$defs/IfStatement_Union_ScriptTestElement__PythonTestElement__PerlTestElement__RTestElement__DownstreamTestElement__PackageContentTest__"
                   },
                   {
                     "items": {
@@ -2449,13 +2479,19 @@
                           "$ref": "#/$defs/PythonTestElement"
                         },
                         {
+                          "$ref": "#/$defs/PerlTestElement"
+                        },
+                        {
+                          "$ref": "#/$defs/RTestElement"
+                        },
+                        {
                           "$ref": "#/$defs/DownstreamTestElement"
                         },
                         {
                           "$ref": "#/$defs/PackageContentTest"
                         },
                         {
-                          "$ref": "#/$defs/IfStatement_Union_ScriptTestElement__PythonTestElement__DownstreamTestElement__PackageContentTest__"
+                          "$ref": "#/$defs/IfStatement_Union_ScriptTestElement__PythonTestElement__PerlTestElement__RTestElement__DownstreamTestElement__PackageContentTest__"
                         }
                       ]
                     },
@@ -3045,6 +3081,61 @@
       "title": "PackageContentTestInner",
       "type": "object"
     },
+    "PerlTestElement": {
+      "additionalProperties": false,
+      "properties": {
+        "perl": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/PerlTestElementInner"
+            }
+          ],
+          "description": "Perl specific test configuration"
+        }
+      },
+      "required": [
+        "perl"
+      ],
+      "title": "PerlTestElement",
+      "type": "object"
+    },
+    "PerlTestElementInner": {
+      "additionalProperties": false,
+      "properties": {
+        "uses": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "description": "A list of Perl modules to check after having installed the built package.",
+          "title": "Uses"
+        }
+      },
+      "required": [
+        "uses"
+      ],
+      "title": "PerlTestElementInner",
+      "type": "object"
+    },
     "PrefixDetection": {
       "additionalProperties": false,
       "properties": {
@@ -3377,6 +3468,61 @@
         "imports"
       ],
       "title": "PythonTestElementInner",
+      "type": "object"
+    },
+    "RTestElement": {
+      "additionalProperties": false,
+      "properties": {
+        "r": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/RTestElementInner"
+            }
+          ],
+          "description": "R specific test configuration"
+        }
+      },
+      "required": [
+        "r"
+      ],
+      "title": "RTestElement",
+      "type": "object"
+    },
+    "RTestElementInner": {
+      "additionalProperties": false,
+      "properties": {
+        "libraries": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "description": "A list of R libraries to check after having installed the built package.",
+          "title": "Libraries"
+        }
+      },
+      "required": [
+        "libraries"
+      ],
+      "title": "RTestElementInner",
       "type": "object"
     },
     "Requirements": {
@@ -3921,6 +4067,12 @@
               "$ref": "#/$defs/PythonTestElement"
             },
             {
+              "$ref": "#/$defs/PerlTestElement"
+            },
+            {
+              "$ref": "#/$defs/RTestElement"
+            },
+            {
               "$ref": "#/$defs/DownstreamTestElement"
             },
             {
@@ -3937,6 +4089,12 @@
                   },
                   {
                     "$ref": "#/$defs/PythonTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/PerlTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/RTestElement"
                   },
                   {
                     "$ref": "#/$defs/DownstreamTestElement"
