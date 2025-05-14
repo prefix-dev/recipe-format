@@ -29,7 +29,7 @@ Note: When submitting changes to `model.py` make sure to run following commands 
 pixi run fmt
 pixi run lint
 pixi run generate
-pixi run test 
+pixi run tests 
 ```
 
 
