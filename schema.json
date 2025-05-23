@@ -105,6 +105,35 @@
           "description": "A url that points to the license file.",
           "title": "License Url"
         },
+        "purls": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Package URLs (purls) for the package.",
+          "title": "Purls"
+        },
         "summary": {
           "anyOf": [
             {
