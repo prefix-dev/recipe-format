@@ -3076,6 +3076,12 @@
           "default": [],
           "description": "Files that should be in the `lib/` folder of the package. This folder is found under `$PREFIX/lib` on Unix and %PREFIX%/Library/lib on Windows.",
           "title": "Lib"
+        },
+        "strict": {
+          "default": false,
+          "description": "When true, the package must not contain any files other than those specified.",
+          "title": "Strict",
+          "type": "boolean"
         }
       },
       "title": "PackageContentTestInner",

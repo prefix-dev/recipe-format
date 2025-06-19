@@ -520,6 +520,10 @@ class PackageContentTestInner(StrictBaseModel):
         default=[],
         description="Files that should be in the `lib/` folder of the package. This folder is found under `$PREFIX/lib` on Unix and %PREFIX%/Library/lib on Windows.",
     )
+    strict: bool = Field(
+        default=False,
+        description="When true, the package must not contain any files other than those specified.",
+    )
 
 
 class PackageContentTest(StrictBaseModel):

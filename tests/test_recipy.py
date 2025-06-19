@@ -148,3 +148,41 @@ def test_r_test_invalid_missing_libraries():
     recipe_dict = yaml.safe_load(recipe_yaml)
     with pytest.raises(PydanticValidationError):
         Recipe.validate_python(recipe_dict)
+
+
+def test_package_contents_strict_valid(recipe_schema):
+    """Recipes with a boolean strict flag should validate successfully."""
+    for strict_val in (True, False):
+        recipe_yaml = f"""
+        package:
+          name: test
+          version: 1.0.0
+        tests:
+          - package_contents:
+              strict: {str(strict_val).lower()}
+              files:
+                - foo.txt
+        """
+        recipe_dict = yaml.safe_load(recipe_yaml)
+
+        Recipe.validate_python(recipe_dict)
+
+        validate(instance=recipe_dict, schema=recipe_schema)
+
+
+def test_package_contents_strict_invalid_type(recipe_schema):
+    """Non-boolean values for strict should fail validation."""
+    recipe_yaml = """
+    package:
+      name: test
+      version: 1.0.0
+    tests:
+      - package_contents:
+          strict: "yes"
+    """
+    recipe_dict = yaml.safe_load(recipe_yaml)
+
+    Recipe.validate_python(recipe_dict)
+
+    with pytest.raises(ValidationError):
+        validate(instance=recipe_dict, schema=recipe_schema)
