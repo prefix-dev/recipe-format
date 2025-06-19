@@ -512,12 +512,9 @@ class FileChecks(StrictBaseModel):
 
 
 class PackageContentTestInner(StrictBaseModel):
-    files: (
-        ConditionalList[NonEmptyStr]
-        | FileChecks
-        | None
-    ) = Field(
-        default=None, description="Files expectations for the whole package. Can be a list of files/globs or an object with exists/not_exists."
+    files: ConditionalList[NonEmptyStr] | FileChecks | None = Field(
+        default=None,
+        description="Files expectations for the whole package. Can be a list of files/globs or an object with exists/not_exists.",
     )
     include: ConditionalList[NonEmptyStr] | None = Field(
         default=[],
