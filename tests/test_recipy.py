@@ -178,11 +178,53 @@ def test_package_contents_strict_invalid_type(recipe_schema):
       version: 1.0.0
     tests:
       - package_contents:
-          strict: "yes"
+          strict: 123
+    """
+    recipe_dict = yaml.safe_load(recipe_yaml)
+
+    with pytest.raises(PydanticValidationError):
+        Recipe.validate_python(recipe_dict)
+
+    with pytest.raises(ValidationError):
+        validate(instance=recipe_dict, schema=recipe_schema)
+
+
+def test_package_contents_exists_and_not_exists_valid(recipe_schema):
+    """Recipes using files.exists / files.not_exists should validate successfully."""
+    recipe_yaml = """
+    package:
+      name: test
+      version: 1.0.0
+    tests:
+      - package_contents:
+          files:
+            exists:
+              - bar.txt
+            not_exists:
+              - secret.key
+              - '*.pem'
     """
     recipe_dict = yaml.safe_load(recipe_yaml)
 
     Recipe.validate_python(recipe_dict)
+    validate(instance=recipe_dict, schema=recipe_schema)
+
+
+def test_package_contents_exists_invalid_type(recipe_schema):
+    """Non-string/non-list values for exists should fail validation."""
+    recipe_yaml = """
+    package:
+      name: test
+      version: 1.0.0
+    tests:
+      - package_contents:
+          files:
+            exists: 123
+    """
+    recipe_dict = yaml.safe_load(recipe_yaml)
+
+    with pytest.raises(PydanticValidationError):
+        Recipe.validate_python(recipe_dict)
 
     with pytest.raises(ValidationError):
         validate(instance=recipe_dict, schema=recipe_schema)
