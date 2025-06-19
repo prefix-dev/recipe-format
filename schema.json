@@ -1227,6 +1227,75 @@
       "title": "DynamicLinking",
       "type": "object"
     },
+    "FileChecks": {
+      "additionalProperties": false,
+      "properties": {
+        "exists": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": [],
+          "description": "Files or glob patterns that must exist anywhere inside the package.",
+          "title": "Exists"
+        },
+        "not_exists": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": [],
+          "description": "Files or glob patterns that must NOT exist anywhere inside the package.",
+          "title": "Not Exists"
+        }
+      },
+      "title": "FileChecks",
+      "type": "object"
+    },
     "FileScript": {
       "additionalProperties": false,
       "properties": {
@@ -2946,11 +3015,14 @@
               "type": "array"
             },
             {
+              "$ref": "#/$defs/FileChecks"
+            },
+            {
               "type": "null"
             }
           ],
-          "default": [],
-          "description": "Files that should be in the package",
+          "default": null,
+          "description": "Files expectations for the whole package. Can be a list of files/globs or an object with exists/not_exists.",
           "title": "Files"
         },
         "include": {
@@ -3076,6 +3148,12 @@
           "default": [],
           "description": "Files that should be in the `lib/` folder of the package. This folder is found under `$PREFIX/lib` on Unix and %PREFIX%/Library/lib on Windows.",
           "title": "Lib"
+        },
+        "strict": {
+          "default": false,
+          "description": "When true, the package must not contain any files other than those specified.",
+          "title": "Strict",
+          "type": "boolean"
         }
       },
       "title": "PackageContentTestInner",

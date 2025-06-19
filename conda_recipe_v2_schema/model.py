@@ -500,9 +500,21 @@ class DownstreamTestElement(StrictBaseModel):
     )
 
 
+class FileChecks(StrictBaseModel):
+    exists: ConditionalList[NonEmptyStr] | None = Field(
+        default=[],
+        description="Files or glob patterns that must exist anywhere inside the package.",
+    )
+    not_exists: ConditionalList[NonEmptyStr] | None = Field(
+        default=[],
+        description="Files or glob patterns that must NOT exist anywhere inside the package.",
+    )
+
+
 class PackageContentTestInner(StrictBaseModel):
-    files: ConditionalList[NonEmptyStr] | None = Field(
-        default=[], description="Files that should be in the package"
+    files: ConditionalList[NonEmptyStr] | FileChecks | None = Field(
+        default=None,
+        description="Files expectations for the whole package. Can be a list of files/globs or an object with exists/not_exists.",
     )
     include: ConditionalList[NonEmptyStr] | None = Field(
         default=[],
@@ -519,6 +531,10 @@ class PackageContentTestInner(StrictBaseModel):
     lib: ConditionalList[NonEmptyStr] | None = Field(
         default=[],
         description="Files that should be in the `lib/` folder of the package. This folder is found under `$PREFIX/lib` on Unix and %PREFIX%/Library/lib on Windows.",
+    )
+    strict: bool = Field(
+        default=False,
+        description="When true, the package must not contain any files other than those specified.",
     )
 
 
