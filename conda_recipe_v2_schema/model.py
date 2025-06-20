@@ -583,6 +583,9 @@ class About(StrictBaseModel):
     )
     license_url: str | None = Field(None, description="A url that points to the license file.")
 
+    # purls
+    purls: ConditionalList[str] | None = Field(None, description="Package URLs (purls) for the package.")
+
     # Text
     summary: str | None = Field(None, description="A short description of the package.")
     description: str | DescriptionFile | None = Field(
