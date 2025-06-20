@@ -92,19 +92,6 @@
           "description": "Paths to the license files of this package.",
           "title": "License File"
         },
-        "license_url": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "A url that points to the license file.",
-          "title": "License Url"
-        },
         "summary": {
           "anyOf": [
             {

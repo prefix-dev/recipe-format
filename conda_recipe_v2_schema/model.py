@@ -581,7 +581,6 @@ class About(StrictBaseModel):
     license_file: ConditionalList[PathNoBackslash] | None = Field(
         None, description="Paths to the license files of this package."
     )
-    license_url: str | None = Field(None, description="A url that points to the license file.")
 
     # Text
     summary: str | None = Field(None, description="A short description of the package.")
