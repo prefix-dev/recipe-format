@@ -500,7 +500,7 @@ class DownstreamTestElement(StrictBaseModel):
     )
 
 
-class FileChecks(StrictBaseModel):
+class FileExistenceCheck(StrictBaseModel):
     exists: ConditionalList[NonEmptyStr] | None = Field(
         default=[],
         description="Files or glob patterns that must exist anywhere inside the package.",
@@ -511,20 +511,24 @@ class FileChecks(StrictBaseModel):
     )
 
 
+# Type alias for file content test fields - can be either simple list or existence check dict
+FileContentTest = ConditionalList[NonEmptyStr] | FileExistenceCheck
+
+
 class PackageContentTestInner(StrictBaseModel):
-    files: ConditionalList[NonEmptyStr] | FileChecks | None = Field(
+    files: FileContentTest | None = Field(
         default=None,
         description="Files expectations for the whole package. Can be a list of files/globs or an object with exists/not_exists.",
     )
-    include: ConditionalList[NonEmptyStr] | None = Field(
+    include: FileContentTest | None = Field(
         default=[],
         description="Files that should be in the `include/` folder of the package. This folder is found under `$PREFIX/include` on Unix and `$PREFIX/Library/include` on Windows.",
     )
-    site_packages: ConditionalList[NonEmptyStr] | None = Field(
+    site_packages: FileContentTest | None = Field(
         default=[],
         description="Files that should be in the `site-packages/` folder of the package. This folder is found under `$PREFIX/lib/pythonX.Y/site-packages` on Unix and `$PREFIX/Lib/site-packages` on Windows.",
     )
-    bin: ConditionalList[NonEmptyStr] | None = Field(
+    bin: FileContentTest | None = Field(
         default=[],
         description="Files that should be in the `bin/` folder of the package. This folder is found under `$PREFIX/bin` on Unix. On Windows this searches for files in `%PREFIX`, `%PREFIX%/bin`, `%PREFIX%/Scripts`, `%PREFIX%/Library/bin`, `%PREFIX/Library/usr/bin` and  `%PREFIX/Library/mingw-w64/bin`.",
     )
