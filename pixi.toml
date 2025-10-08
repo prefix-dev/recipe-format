@@ -9,7 +9,7 @@ conda-recipe-v2-schema = { path = ".", editable = true }
 
 [dependencies]
 pydantic = ">=2.8.2,<3"
-ruff = ">=0.5.2,<0.6"
+ruff = ">=0.14,<0.15"
 pyyaml = ">=6.0.1,<7"
 jsonschema = ">=4.23.0,<5"
 pytest = ">=8.3.1,<9"
@@ -21,13 +21,13 @@ lint = "ruff check . --fix"
 tests = "pytest tests"
 
 [feature.py312.dependencies]
-python = "3.12.*"
+python = "3.14.*"
 
 [feature.py311.dependencies]
-python = "3.11.*"
+python = "3.14.*"
 
 [feature.py310.dependencies]
-python = "3.10.*"
+python = "3.14.*"
 
 [environments]
 default = { features = ["py312"], solve-group = "py312" }
