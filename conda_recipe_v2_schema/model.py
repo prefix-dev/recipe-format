@@ -48,7 +48,7 @@ GlobVec = ConditionalList[SingleGlob]
 
 
 class GlobDict(StrictBaseModel):
-    include: GlobVec = Field(..., description="Glob patterns to include")
+    include: GlobVec = Field([], description="Glob patterns to include")
     exclude: GlobVec = Field([], description="Glob patterns to exclude")
 
 

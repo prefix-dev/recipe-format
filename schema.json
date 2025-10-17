@@ -1786,6 +1786,7 @@
               "type": "array"
             }
           ],
+          "default": [],
           "description": "Glob patterns to include",
           "title": "Include"
         },
@@ -1818,9 +1819,6 @@
           "title": "Exclude"
         }
       },
-      "required": [
-        "include"
-      ],
       "title": "GlobDict",
       "type": "object"
     },
