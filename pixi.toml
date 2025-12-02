@@ -12,7 +12,7 @@ pydantic = ">=2.8.2,<3"
 ruff = ">=0.5.2,<0.6"
 pyyaml = ">=6.0.1,<7"
 jsonschema = ">=4.23.0,<5"
-pytest = ">=8.3.1,<9"
+pytest = ">=9.0.1,<10"
 
 [tasks]
 generate = "python -m conda_recipe_v2_schema.model > schema.json"
