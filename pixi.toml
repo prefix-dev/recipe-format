@@ -9,7 +9,7 @@ conda-recipe-v2-schema = { path = ".", editable = true }
 
 [dependencies]
 pydantic = ">=2.8.2,<3"
-ruff = ">=0.5.2,<0.6"
+ruff = ">=0.14.8,<0.15"
 pyyaml = ">=6.0.1,<7"
 jsonschema = ">=4.23.0,<5"
 pytest = ">=9.0.1,<10"
