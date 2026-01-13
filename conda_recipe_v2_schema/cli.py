@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import functools
 import hashlib
 import sys
 import tempfile
@@ -41,7 +40,7 @@ yaml.representer.SafeRepresenter.add_representer(
 
 
 def get_parser() -> argparse.ArgumentParser:
-    """Builda command line parser."""
+    """Build a command line parser."""
     parser = argparse.ArgumentParser(CLI)
     parser.add_argument("-v", "--version", action="version", version=f"{CLI} {__version__}")
     parser.add_argument(
@@ -64,11 +63,17 @@ def get_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="disable syntax highlighting for YAML findings",
     )
+    parser.add_argument(
+        "-q",
+        "--quiet",
+        action="store_true",
+        help="minimize output",
+    )
     return parser
 
 
-@functools.lru_cache(1)
 def get_validator() -> Draft7Validator:
+    """Get a JSON schema validator for the recipe."""
     schema: dict[str, Any] | None = None
     if SCHEMA.exists():
         schema = yaml.safe_load(SCHEMA.read_text(encoding="utf-8"))
@@ -98,7 +103,7 @@ def check_one_local(path: Path, validator: Draft7Validator) -> Iterator[Any]:
 
 
 def check_one_recipe(path_or_url: str, validator: Draft7Validator, work_dir: Path) -> Iterator[Any]:
-    """Validate on path or URL."""
+    """Validate one path or URL."""
     url = parse.urlparse(path_or_url)
     path: Path | None = None
     if url.scheme in {"file"}:
@@ -132,10 +137,11 @@ def check_recipes(
 
 
 def main(argv: list[str] | None = None):
-    """Get the count of validation errors from the CLI arguments."""
+    """Get the count of validation errors from the CLI arguments and print a reports."""
     kwargs = {**vars(get_parser().parse_args(argv))}
     work_dir = kwargs.pop("work_dir")
     no_pretty = kwargs.pop("no_pretty")
+    quiet = kwargs.pop("quiet")
     if work_dir is None:
         with tempfile.TemporaryDirectory(prefix=f"{CLI}-") as td:
             findings_by_recipe = check_recipes(work_dir=Path(td), **kwargs)
@@ -148,11 +154,14 @@ def main(argv: list[str] | None = None):
         )
         return 1
     count = sum(map(len, findings_by_recipe.values()))
-    if count:
+    if count and not quiet:
         text = yaml.safe_dump(
             {recipe: findings for recipe, findings in findings_by_recipe.items() if findings},
             default_flow_style=False,
         )
         print(text if no_pretty else highlight(text, YamlJinjaLexer(), Terminal256Formatter()))
-    print(f"{CLI}: {count} findings in {len(findings_by_recipe)} recipes", file=sys.stderr)
+    print(
+        f"{'!!! ' if count else ''}{count} findings in {len(findings_by_recipe)} recipes",
+        file=sys.stderr,
+    )
     return count
