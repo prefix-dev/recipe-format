@@ -11,10 +11,17 @@ maintainers = [
     { name = "Julian Hofer", email = "julian.hofer@protonmail.com" },
 ]
 requires-python = ">=3.10"
-dependencies = ["pydantic"]
+dependencies = ["pydantic >=2.8.2,<3"]
 dynamic = ["version"]
 license = { text = "BSD-3-Clause" }
 scripts = {conda-recipe-v2-schema = "conda_recipe_v2_schema.cli:main"}
+
+[project.optional-dependencies]
+cli = [
+    "jsonschema[format] >=4.23.0,<5",
+    "pygments",
+    "pyyaml >=6.0.1,<7",
+]
 
 [project.urls]
 Home = "https://github.com/prefix-dev/recipe-format"

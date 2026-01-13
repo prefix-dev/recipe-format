@@ -17,6 +17,7 @@ from pygments import highlight
 from pygments.formatters import Terminal256Formatter
 from pygments.lexers.templates import YamlJinjaLexer
 
+from . import __version__
 from .model import ComplexRecipe, Recipe, SimpleRecipe
 
 if TYPE_CHECKING:
@@ -42,18 +43,26 @@ yaml.representer.SafeRepresenter.add_representer(
 def get_parser() -> argparse.ArgumentParser:
     """Builda command line parser."""
     parser = argparse.ArgumentParser(CLI)
-    parser.add_argument("recipes", nargs="*", help="a relative path or URL for a `recipe.yaml`")
+    parser.add_argument("-v", "--version", action="version", version=f"{CLI} {__version__}")
     parser.add_argument(
-        "--work-dir", type=Path, help="a work folder to persist remote recipes between runs"
+        "recipes",
+        nargs="*",
+        help="a relative path or URL for a `recipe.yaml`; may be given multiple times",
     )
     parser.add_argument(
-        "--conda-forge",
+        "-w", "--work-dir", type=Path, help="a work folder to persist remote recipes between runs"
+    )
+    parser.add_argument(
         "-c",
+        "--conda-forge",
         action="append",
-        help="names of conda-forge recipes to check (no `-feedstock`)",
+        help="names of conda-forge recipe to check (no `-feedstock`); may be given multiple times",
     )
     parser.add_argument(
-        "--no-pretty", action="store_true", help="disable syntax highlighting for YAML findings"
+        "-u",
+        "--no-pretty",
+        action="store_true",
+        help="disable syntax highlighting for YAML findings",
     )
     return parser
 
