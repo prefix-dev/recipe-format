@@ -1,4 +1,4 @@
-[project]
+[workspace]
 name = "conda-recipe-v2-schema"
 authors = ["Bas Zalmstra <zalmstra.bas@gmail.com>"]
 channels = ["conda-forge"]
@@ -11,7 +11,7 @@ conda-recipe-v2-schema = { path = ".", editable = true }
 pydantic = ">=2.8.2,<3"
 ruff = ">=0.5.2,<0.6"
 pyyaml = ">=6.0.1,<7"
-jsonschema = ">=4.23.0,<5"
+jsonschema-with-format = ">=4.23.0,<5"
 pytest = ">=9.0.1,<10"
 
 [tasks]
