@@ -95,11 +95,11 @@ def check_one_local(path: Path, validator: Draft7Validator) -> Iterator[Any]:
             "schema_path": "/".join(["#", *error.absolute_schema_path, ""]),
             "message": error.message,
         }
-    model_cls = ComplexRecipe if "outputs" in recipe else SimpleRecipe
     try:
+        model_cls = ComplexRecipe if "outputs" in recipe else SimpleRecipe
         model_cls(**recipe)
     except Exception as err:
-        yield {f"{model_cls.__name__}": f"{err}"}
+        yield {"pydantic": f"{err}"}
 
 
 def check_one_recipe(path_or_url: str, validator: Draft7Validator, work_dir: Path) -> Iterator[Any]:
@@ -116,6 +116,8 @@ def check_one_recipe(path_or_url: str, validator: Draft7Validator, work_dir: Pat
                 request.urlretrieve(path_or_url, path)
             except Exception as err:
                 yield {"message": f"Failed to download {path_or_url}: {err}"}
+    elif not url.scheme:
+        path = Path(path_or_url)
 
     if not (path and path.exists()):
         yield {"message": f"Couldn't figure out what to do with {path_or_url}"}
