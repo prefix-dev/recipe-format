@@ -109,7 +109,8 @@ def check_one_recipe(path_or_url: str, validator: Draft7Validator, work_dir: Pat
     if url.scheme in {"file"}:
         path = Path(url.path)
     elif url.scheme in {"http", "https"}:
-        path = work_dir / f"{hashlib.sha256(path_or_url.encode())}/recipe.yaml"
+        sha = hashlib.sha256(path_or_url.encode()).hexdigest()
+        path = work_dir / f"{sha}/recipe.yaml"
         if not path.is_file():
             path.parent.mkdir(parents=True, exist_ok=True)
             try:
