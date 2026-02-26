@@ -11,7 +11,7 @@ from conda_recipe_v2_schema.model import Recipe
 
 @pytest.fixture(
     scope="module",
-    params=["mamba", "xtensor", "single-output", "zlib"],
+    params=["mamba", "xtensor", "single-output", "zlib", "staging"],
 )
 def valid_recipe(request) -> str:
     recipe_name = request.param
@@ -228,3 +228,90 @@ def test_package_contents_exists_invalid_type(recipe_schema):
 
     with pytest.raises(ValidationError):
         validate(instance=recipe_dict, schema=recipe_schema)
+
+
+def test_staging_output_valid():
+    """Test that a recipe with staging outputs passes validation."""
+    recipe_yaml = """
+    recipe:
+      name: test-staging
+      version: "1.0"
+    outputs:
+      - staging:
+          name: my-cache
+        requirements:
+          build:
+            - cmake
+          host:
+            - zlib
+        build:
+          script: build.sh
+      - package:
+          name: my-pkg
+          version: "1.0"
+        inherit: my-cache
+    """
+    recipe_dict = yaml.safe_load(recipe_yaml)
+    Recipe.validate_python(recipe_dict)
+
+
+def test_staging_inherit_short_form():
+    """Test that short form inherit (string) passes validation."""
+    recipe_yaml = """
+    recipe:
+      name: test-inherit
+      version: "1.0"
+    outputs:
+      - staging:
+          name: build-cache
+        build:
+          script: build.sh
+      - package:
+          name: my-pkg
+          version: "1.0"
+        inherit: build-cache
+    """
+    recipe_dict = yaml.safe_load(recipe_yaml)
+    Recipe.validate_python(recipe_dict)
+
+
+def test_staging_inherit_long_form():
+    """Test that long form inherit (object with from and run_exports) passes validation."""
+    recipe_yaml = """
+    recipe:
+      name: test-inherit
+      version: "1.0"
+    outputs:
+      - staging:
+          name: build-cache
+        build:
+          script: build.sh
+      - package:
+          name: my-pkg
+          version: "1.0"
+        inherit:
+          from: build-cache
+          run_exports: false
+    """
+    recipe_dict = yaml.safe_load(recipe_yaml)
+    Recipe.validate_python(recipe_dict)
+
+
+def test_staging_output_invalid_run_requirements():
+    """Test that staging outputs with run requirements fail validation."""
+    recipe_yaml = """
+    recipe:
+      name: test-staging
+      version: "1.0"
+    outputs:
+      - staging:
+          name: my-cache
+        requirements:
+          build:
+            - cmake
+          run:
+            - zlib
+    """
+    recipe_dict = yaml.safe_load(recipe_yaml)
+    with pytest.raises(PydanticValidationError):
+        Recipe.validate_python(recipe_dict)
