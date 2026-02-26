@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=../../../schema.json
+
+schema_version: 1
+
+context:
+  version: "1.0.0"
+
+recipe:
+  name: my-package
+  version: ${{ version }}
+
+source:
+  url: https://example.com/source-${{ version }}.tar.gz
+  sha256: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+
+outputs:
+  - staging:
+      name: my-staging-cache
+    source:
+      - url: https://example.com/extra-source.tar.gz
+        sha256: abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890
+    requirements:
+      build:
+        - ${{ compiler('c') }}
+        - cmake
+        - ninja
+      host:
+        - zlib
+    build:
+      script: build_shared.sh
+
+  - package:
+      name: my-lib
+      version: ${{ version }}
+    inherit: my-staging-cache
+    build:
+      script: install_lib.sh
+    requirements:
+      host:
+        - zlib
+      run:
+        - zlib
+
+  - package:
+      name: my-tools
+      version: ${{ version }}
+    inherit:
+      from: my-staging-cache
+      run_exports: false
+    build:
+      script: install_tools.sh
+    requirements:
+      host:
+        - zlib
+      run:
+        - zlib
+        - ${{ pin_subpackage('my-lib', exact=True) }}

@@ -379,6 +379,20 @@ class IgnoreRunExports(StrictBaseModel):
     )
 
 
+class StagingRequirements(StrictBaseModel):
+    build: ConditionalList[MatchSpec] | None = Field(
+        None,
+        description="Dependencies to install on the build platform architecture for the staging build.",
+    )
+    host: ConditionalList[MatchSpec] | None = Field(
+        None,
+        description="Dependencies to install on the host platform architecture for the staging build.",
+    )
+    ignore_run_exports: IgnoreRunExports | None = Field(
+        None, description="Ignore run-exports by name or from certain packages"
+    )
+
+
 class LinkOptions(StrictBaseModel):
     post_link_script: NonEmptyStr | None = Field(
         None,
@@ -604,17 +618,62 @@ class About(StrictBaseModel):
 class OutputBuild(Build):
     cache_only: bool = Field(
         default=False,
+        deprecated="Use staging outputs instead.",
         description="Do not output a package but use this output as an input to others.",
     )
     cache_from: ConditionalList[NonEmptyStr] | None = Field(
         None,
+        deprecated="Use staging outputs instead.",
         description="Take the output of the specified outputs and copy them in the working directory.",
+    )
+
+
+class StagingBuild(StrictBaseModel):
+    script: str | Script | ConditionalList[NonEmptyStr] | None = Field(
+        None,
+        description="The script to execute to invoke the staging build.",
+    )
+
+
+class StagingMeta(StrictBaseModel):
+    name: NonEmptyStr = Field(..., description="Unique name for this staging cache.")
+
+
+class StagingOutput(StrictBaseModel):
+    staging: StagingMeta = Field(
+        ..., description="Marks this output as a staging output with the given name."
+    )
+    source: ConditionalList[Source] | None = Field(
+        None, description="The source items to be downloaded and used for the staging build."
+    )
+    requirements: StagingRequirements | None = Field(
+        None, description="The dependencies needed for the staging build."
+    )
+    build: StagingBuild | None = Field(
+        None, description="Build configuration for the staging output."
+    )
+
+
+class CacheInherit(StrictBaseModel):
+    from_: NonEmptyStr = Field(
+        ...,
+        alias="from",
+        description="Name of the staging cache to inherit from.",
+    )
+    run_exports: bool = Field(
+        default=True,
+        description="Whether to inherit run_exports from the staging cache.",
     )
 
 
 class Output(StrictBaseModel):
     package: ComplexPackage | None = Field(
         None, description="The package name and version, this overwrites any top-level fields."
+    )
+
+    inherit: NonEmptyStr | CacheInherit | None = Field(
+        None,
+        description="Name of the staging cache to inherit from, or an object with `from` and `run_exports` options.",
     )
 
     source: ConditionalList[Source] | None = Field(
@@ -692,10 +751,12 @@ class ComplexRecipe(BaseRecipe):
     recipe: ComplexPackage | None = Field(None, description="The package version.")
 
     cache: Cache | None = Field(
-        None, description="The cache build that can be used as a common build step for all output."
+        None,
+        deprecated="Use staging outputs instead.",
+        description="The cache build that can be used as a common build step for all output.",
     )
 
-    outputs: ConditionalList[Output] = Field(
+    outputs: ConditionalList[Output | StagingOutput] = Field(
         ..., description="A list of outputs that are generated for this recipe."
     )
 
