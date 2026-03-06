@@ -541,6 +541,22 @@
           "default": null,
           "description": "Glob patterns to include or exclude files from the package.",
           "title": "Files"
+        },
+        "post_process": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/PostProcess"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "A list of post-processing steps. Each entry applies a regex replacement on the selected files. Files must be valid UTF-8 text. Regex uses Rust `regex` crate semantics and `replace_all` behavior.",
+          "title": "Post Process"
         }
       },
       "title": "Build",
@@ -2960,6 +2976,22 @@
           "description": "Glob patterns to include or exclude files from the package.",
           "title": "Files"
         },
+        "post_process": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/PostProcess"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "A list of post-processing steps. Each entry applies a regex replacement on the selected files. Files must be valid UTF-8 text. Regex uses Rust `regex` crate semantics and `replace_all` behavior.",
+          "title": "Post Process"
+        },
         "cache_only": {
           "default": false,
           "deprecated": true,
@@ -3254,6 +3286,38 @@
         "uses"
       ],
       "title": "PerlTestElementInner",
+      "type": "object"
+    },
+    "PostProcess": {
+      "additionalProperties": false,
+      "properties": {
+        "files": {
+          "description": "List of glob patterns selecting files to process. Files must be valid UTF-8 text.",
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Files",
+          "type": "array"
+        },
+        "regex": {
+          "description": "Regular expression pattern to match (uses Rust `regex` crate semantics).",
+          "minLength": 1,
+          "title": "Regex",
+          "type": "string"
+        },
+        "replacement": {
+          "description": "Replacement string applied using `replace_all` behavior.",
+          "title": "Replacement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "files",
+        "regex",
+        "replacement"
+      ],
+      "title": "PostProcess",
       "type": "object"
     },
     "PrefixDetection": {

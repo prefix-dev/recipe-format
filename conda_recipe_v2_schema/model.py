@@ -192,6 +192,21 @@ class ScriptEnv(StrictBaseModel):
     )
 
 
+class PostProcess(StrictBaseModel):
+    files: list[NonEmptyStr] = Field(
+        ...,
+        description="List of glob patterns selecting files to process. Files must be valid UTF-8 text.",
+    )
+    regex: NonEmptyStr = Field(
+        ...,
+        description="Regular expression pattern to match (uses Rust `regex` crate semantics).",
+    )
+    replacement: str = Field(
+        ...,
+        description="Replacement string applied using `replace_all` behavior.",
+    )
+
+
 class Build(StrictBaseModel):
     number: UnsignedInt | JinjaExpr | None = Field(
         0,
@@ -249,6 +264,11 @@ class Build(StrictBaseModel):
 
     files: Glob = Field(
         None, description="Glob patterns to include or exclude files from the package."
+    )
+
+    post_process: list[PostProcess] | None = Field(
+        None,
+        description="A list of post-processing steps. Each entry applies a regex replacement on the selected files. Files must be valid UTF-8 text. Regex uses Rust `regex` crate semantics and `replace_all` behavior.",
     )
 
 
