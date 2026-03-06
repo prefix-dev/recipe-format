@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=../../../schema.json
+
+# Example recipe demonstrating the build.post_process feature.
+# post_process applies regex replacements on files in the package
+# after the build step. Files must be valid UTF-8 text.
+# Regex uses Rust `regex` crate semantics with `replace_all` behavior.
+
+package:
+  name: post-process-example
+  version: "1.0.0"
+
+build:
+  number: 0
+  post_process:
+    - files:
+        - "bin/*"
+      regex: "/old/path"
+      replacement: "/new/path"
+    - files:
+        - "**/*.cmake"
+        - "**/*.pc"
+      regex: "/home/builder"
+      replacement: "$PREFIX"
