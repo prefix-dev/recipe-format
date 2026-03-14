@@ -3555,6 +3555,7 @@
               "type": "array"
             }
           ],
+          "default": null,
           "description": "A list of Python imports to check after having installed the built package.",
           "title": "Imports"
         },
@@ -3584,9 +3585,6 @@
           "title": "Python Version"
         }
       },
-      "required": [
-        "imports"
-      ],
       "title": "PythonTestElementInner",
       "type": "object"
     },

@@ -470,7 +470,7 @@ class ScriptTestElement(StrictBaseModel):
 
 class PythonTestElementInner(StrictBaseModel):
     imports: ConditionalList[NonEmptyStr] = Field(
-        ...,
+        None,
         description="A list of Python imports to check after having installed the built package.",
     )
     pip_check: bool = Field(
