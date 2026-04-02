@@ -124,14 +124,11 @@
               "type": "string"
             },
             {
-              "$ref": "#/$defs/DescriptionFile"
-            },
-            {
               "type": "null"
             }
           ],
           "default": null,
-          "description": "Extended description of the package or a file (usually a README).",
+          "description": "Extended description of the package.",
           "title": "Description"
         },
         "prelink_message": {
@@ -558,18 +555,6 @@
           "default": null,
           "description": "Configuration to post-process dynamically linked libraries and executables"
         },
-        "link_options": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/LinkOptions"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Options that influence how a package behaves when it is installed or uninstalled."
-        },
         "prefix_detection": {
           "anyOf": [
             {
@@ -720,7 +705,7 @@
         "build": {
           "anyOf": [
             {
-              "$ref": "#/$defs/OutputBuild"
+              "$ref": "#/$defs/Build"
             },
             {
               "type": "null"
@@ -1136,22 +1121,6 @@
         "content"
       ],
       "title": "ContentScript",
-      "type": "object"
-    },
-    "DescriptionFile": {
-      "additionalProperties": false,
-      "properties": {
-        "file": {
-          "description": "Path in the source directory that contains the packages description. E.g. README.md",
-          "pattern": "^[^\\\\]+$",
-          "title": "File",
-          "type": "string"
-        }
-      },
-      "required": [
-        "file"
-      ],
-      "title": "DescriptionFile",
       "type": "object"
     },
     "DownstreamTestElement": {
@@ -2517,55 +2486,6 @@
       "title": "IgnoreRunExports",
       "type": "object"
     },
-    "LinkOptions": {
-      "additionalProperties": false,
-      "properties": {
-        "post_link_script": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Script to execute after the package has been linked into an environment",
-          "title": "Post Link Script"
-        },
-        "pre_unlink_script": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Script to execute before uninstalling the package from an environment",
-          "title": "Pre Unlink Script"
-        },
-        "pre_link_message": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Message to show before linking",
-          "title": "Pre Link Message"
-        }
-      },
-      "title": "LinkOptions",
-      "type": "object"
-    },
     "LocalSource": {
       "additionalProperties": false,
       "properties": {
@@ -2805,7 +2725,7 @@
         "build": {
           "anyOf": [
             {
-              "$ref": "#/$defs/OutputBuild"
+              "$ref": "#/$defs/Build"
             },
             {
               "type": "null"
@@ -2909,413 +2829,9 @@
           ],
           "default": null,
           "description": "A human readable description of the package information. The values here are merged with the top level `about` field."
-        },
-        "extra": {
-          "anyOf": [
-            {
-              "type": "object"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "An set of arbitrary values that are included in the package manifest. The values here are merged with the top level `extras` field.",
-          "title": "Extra"
         }
       },
       "title": "Output",
-      "type": "object"
-    },
-    "OutputBuild": {
-      "additionalProperties": false,
-      "properties": {
-        "number": {
-          "anyOf": [
-            {
-              "minimum": 0,
-              "type": "integer"
-            },
-            {
-              "pattern": "\\$\\{\\{.*\\}\\}",
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": 0,
-          "description": "Build number to version current build in addition to package version",
-          "title": "Number"
-        },
-        "string": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "pattern": "\\$\\{\\{.*\\}\\}",
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "The build string to identify build variant. This is usually omitted (can use `${{ hash }}`) variable here)",
-          "title": "String"
-        },
-        "skip": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "boolean"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "boolean"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "List of conditions under which to skip the build of the package. If any of these condition returns true the build is skipped.",
-          "title": "Skip"
-        },
-        "noarch": {
-          "anyOf": [
-            {
-              "enum": [
-                "generic",
-                "python"
-              ],
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Can be either 'generic' or 'python'. A noarch 'python' package compiles .pyc files upon installation.",
-          "title": "Noarch"
-        },
-        "script": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/FileScript"
-            },
-            {
-              "$ref": "#/$defs/ContentScript"
-            },
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "The script to execute to invoke the build. If the string is a single line and ends with `.sh` or `.bat`, then we interpret it as a file.",
-          "title": "Script"
-        },
-        "merge_build_and_host_envs": {
-          "anyOf": [
-            {
-              "type": "boolean"
-            },
-            {
-              "pattern": "\\$\\{\\{.*\\}\\}",
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": false,
-          "description": "Merge the build and host environments (used in many R packages on Windows)",
-          "title": "Merge Build And Host Envs"
-        },
-        "always_include_files": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": [],
-          "description": "Files to be included even if they are present in the PREFIX before building.",
-          "title": "Always Include Files"
-        },
-        "always_copy_files": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
-              "$ref": "#/$defs/GlobDict"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  },
-                  {
-                    "items": {
-                      "anyOf": [
-                        {
-                          "minLength": 1,
-                          "type": "string"
-                        },
-                        {
-                          "$ref": "#/$defs/IfStatement"
-                        }
-                      ]
-                    },
-                    "type": "array"
-                  },
-                  {
-                    "$ref": "#/$defs/GlobDict"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": [],
-          "description": "Do not soft- or hard-link these files but instead always copy them into the environment",
-          "title": "Always Copy Files"
-        },
-        "variant": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/Variant"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Options that influence how the different variants are computed."
-        },
-        "python": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/Python"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Python specific build configuration"
-        },
-        "dynamic_linking": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/DynamicLinking"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Configuration to post-process dynamically linked libraries and executables"
-        },
-        "link_options": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/LinkOptions"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Options that influence how a package behaves when it is installed or uninstalled."
-        },
-        "prefix_detection": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/PrefixDetection"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Options that influence how the prefix replacement is done."
-        },
-        "files": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
-              "$ref": "#/$defs/GlobDict"
-            }
-          ],
-          "default": null,
-          "description": "Glob patterns to include or exclude files from the package.",
-          "title": "Files"
-        },
-        "post_process": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/PostProcess"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "$ref": "#/$defs/PostProcess"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            }
-          ],
-          "default": [],
-          "description": "Post-processing operations using regex replacements on files.",
-          "title": "Post Process"
-        },
-        "cache_only": {
-          "default": false,
-          "deprecated": true,
-          "description": "Do not output a package but use this output as an input to others.",
-          "title": "Cache Only",
-          "type": "boolean"
-        },
-        "cache_from": {
-          "anyOf": [
-            {
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "deprecated": true,
-          "description": "Take the output of the specified outputs and copy them in the working directory.",
-          "title": "Cache From"
-        }
-      },
-      "title": "OutputBuild",
       "type": "object"
     },
     "PackageContentTest": {
@@ -3841,19 +3357,6 @@
           "default": [],
           "description": "Skip compiling pyc for some files",
           "title": "Skip Pyc Compilation"
-        },
-        "disable_pip": {
-          "anyOf": [
-            {
-              "type": "boolean"
-            },
-            {
-              "pattern": "\\$\\{\\{.*\\}\\}",
-              "type": "string"
-            }
-          ],
-          "default": false,
-          "title": "Disable Pip"
         },
         "site_packages_path": {
           "anyOf": [

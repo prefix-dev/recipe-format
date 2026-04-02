@@ -201,20 +201,6 @@ class RunExports(StrictBaseModel):
     )
 
 
-class ScriptEnv(StrictBaseModel):
-    passthrough: ConditionalList[NonEmptyStr] = Field(
-        [],
-        description="Environments variables to leak into the build environment from the host system. During build time these variables are recorded and stored in the package output. Use `secrets` for environment variables that should not be recorded.",
-    )
-    env: dict[str, str] = Field(
-        {}, description="Environment variables to set in the build environment."
-    )
-    secrets: ConditionalList[NonEmptyStr] = Field(
-        [],
-        description="Environment variables to leak into the build environment from the host system that contain sensitve information. Use with care because this might make recipes no longer reproducible on other machines.",
-    )
-
-
 class PostProcess(StrictBaseModel):
     files: ConditionalList[NonEmptyStr] = Field(
         ..., description="Files to apply post-processing to"
@@ -266,11 +252,6 @@ class Build(StrictBaseModel):
     dynamic_linking: DynamicLinking | None = Field(
         None,
         description="Configuration to post-process dynamically linked libraries and executables",
-    )
-
-    link_options: LinkOptions | None = Field(
-        None,
-        description="Options that influence how a package behaves when it is installed or uninstalled.",
     )
 
     prefix_detection: PrefixDetection | None = Field(
@@ -354,8 +335,6 @@ class Python(StrictBaseModel):
         default=[], description="Skip compiling pyc for some files"
     )
 
-    disable_pip: bool | JinjaExpr = Field(default=False)
-
     site_packages_path: str | JinjaExpr | None = Field(
         default=None,
         description="The path to the site-packages folder. This is advertised by Python to install noarch packages in the correct location. Only valid for a Python package.",
@@ -431,18 +410,6 @@ class StagingRequirements(StrictBaseModel):
     ignore_run_exports: IgnoreRunExports | None = Field(
         None, description="Ignore run-exports by name or from certain packages"
     )
-
-
-class LinkOptions(StrictBaseModel):
-    post_link_script: NonEmptyStr | None = Field(
-        None,
-        description="Script to execute after the package has been linked into an environment",
-    )
-    pre_unlink_script: NonEmptyStr | None = Field(
-        None,
-        description="Script to execute before uninstalling the package from an environment",
-    )
-    pre_link_message: NonEmptyStr | None = Field(None, description="Message to show before linking")
 
 
 #########################
@@ -627,13 +594,6 @@ TestElement = (
 #########
 
 
-class DescriptionFile(StrictBaseModel):
-    file: PathNoBackslash = Field(
-        ...,
-        description="Path in the source directory that contains the packages description. E.g. README.md",
-    )
-
-
 class About(StrictBaseModel):
     # URLs
     homepage: AnyHttpUrl | None = Field(None, description="Url of the homepage of the package.")
@@ -656,9 +616,9 @@ class About(StrictBaseModel):
 
     # Text
     summary: str | None = Field(None, description="A short description of the package.")
-    description: str | DescriptionFile | None = Field(
+    description: str | None = Field(
         None,
-        description="Extended description of the package or a file (usually a README).",
+        description="Extended description of the package.",
     )
 
     prelink_message: str | None = None
@@ -667,19 +627,6 @@ class About(StrictBaseModel):
 ###########
 # Outputs #
 ###########
-
-
-class OutputBuild(Build):
-    cache_only: bool = Field(
-        default=False,
-        deprecated="Use staging outputs instead.",
-        description="Do not output a package but use this output as an input to others.",
-    )
-    cache_from: ConditionalList[NonEmptyStr] | None = Field(
-        None,
-        deprecated="Use staging outputs instead.",
-        description="Take the output of the specified outputs and copy them in the working directory.",
-    )
 
 
 class StagingBuild(StrictBaseModel):
@@ -733,7 +680,7 @@ class Output(StrictBaseModel):
     source: ConditionalList[Source] | None = Field(
         None, description="The source items to be downloaded and used for the build."
     )
-    build: OutputBuild | None = Field(
+    build: Build | None = Field(
         None, description="Describes how the package should be build."
     )
 
@@ -747,11 +694,6 @@ class Output(StrictBaseModel):
     about: About | None = Field(
         None,
         description="A human readable description of the package information. The values here are merged with the top level `about` field.",
-    )
-
-    extra: dict[str, Any] | None = Field(
-        None,
-        description="An set of arbitrary values that are included in the package manifest. The values here are merged with the top level `extras` field.",
     )
 
 
@@ -796,7 +738,7 @@ class Cache(StrictBaseModel):
         None, description="The dependencies needed at cache-build time."
     )
 
-    build: OutputBuild | None = Field(
+    build: Build | None = Field(
         None, description="Describes how the package should be build."
     )
 
