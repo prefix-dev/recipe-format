@@ -94,6 +94,17 @@ class BaseSource(StrictBaseModel):
     )
 
 
+class AttestationConfig(StrictBaseModel):
+    bundle_url: NonEmptyStr | None = Field(
+        default=None,
+        description="URL to download the attestation bundle from (e.g., .sigstore.json file). Auto-derived for PyPI sources if not specified.",
+    )
+    publishers: list[NonEmptyStr] = Field(
+        default=[],
+        description="Publisher identities to verify (e.g., 'github:owner/repo'). All specified publishers must match.",
+    )
+
+
 class UrlSource(BaseSource):
     url: NonEmptyStr | list[NonEmptyStr] = Field(
         ...,
@@ -105,6 +116,10 @@ class UrlSource(BaseSource):
         None,
         description="A file name to rename the downloaded file to (does not apply to archives).",
     )
+    attestation: AttestationConfig | None = Field(
+        default=None,
+        description="Optional attestation verification configuration.",
+    )
 
 
 class BaseGitSource(BaseSource):
@@ -113,6 +128,14 @@ class BaseGitSource(BaseSource):
         None, description="A value to use when shallow cloning the repository."
     )
     lfs: bool = Field(default=False, description="Should we LFS files be checked out as well")
+    submodules: bool | None = Field(
+        default=None,
+        description="Whether to recursively initialize and update submodules.",
+    )
+    expected_commit: NonEmptyStr | None = Field(
+        default=None,
+        description="An expected commit hash to verify after checkout.",
+    )
 
 
 class GitRev(BaseGitSource):
@@ -178,18 +201,12 @@ class RunExports(StrictBaseModel):
     )
 
 
-class ScriptEnv(StrictBaseModel):
-    passthrough: ConditionalList[NonEmptyStr] = Field(
-        [],
-        description="Environments variables to leak into the build environment from the host system. During build time these variables are recorded and stored in the package output. Use `secrets` for environment variables that should not be recorded.",
+class PostProcess(StrictBaseModel):
+    files: ConditionalList[NonEmptyStr] = Field(
+        ..., description="Files to apply post-processing to"
     )
-    env: dict[str, str] = Field(
-        {}, description="Environment variables to set in the build environment."
-    )
-    secrets: ConditionalList[NonEmptyStr] = Field(
-        [],
-        description="Environment variables to leak into the build environment from the host system that contain sensitve information. Use with care because this might make recipes no longer reproducible on other machines.",
-    )
+    regex: str | JinjaExpr = Field(..., description="Regular expression pattern to match")
+    replacement: str | JinjaExpr = Field(..., description="Replacement string")
 
 
 class Build(StrictBaseModel):
@@ -237,11 +254,6 @@ class Build(StrictBaseModel):
         description="Configuration to post-process dynamically linked libraries and executables",
     )
 
-    link_options: LinkOptions | None = Field(
-        None,
-        description="Options that influence how a package behaves when it is installed or uninstalled.",
-    )
-
     prefix_detection: PrefixDetection | None = Field(
         None,
         description="Options that influence how the prefix replacement is done.",
@@ -249,6 +261,11 @@ class Build(StrictBaseModel):
 
     files: Glob = Field(
         None, description="Glob patterns to include or exclude files from the package."
+    )
+
+    post_process: ConditionalList[PostProcess] = Field(
+        [],
+        description="Post-processing operations using regex replacements on files.",
     )
 
 
@@ -264,6 +281,10 @@ class BaseScript(StrictBaseModel):
     secrets: ConditionalList[NonEmptyStr] = Field(
         default=[],
         description="Secrets that are set as environment variables but never shown in the logs or the environment.",
+    )
+    cwd: NonEmptyStr | None = Field(
+        default=None,
+        description="The working directory to use when executing the script.",
     )
 
 
@@ -314,8 +335,6 @@ class Python(StrictBaseModel):
         default=[], description="Skip compiling pyc for some files"
     )
 
-    disable_pip: bool | JinjaExpr = Field(default=False)
-
     site_packages_path: str | JinjaExpr | None = Field(
         default=None,
         description="The path to the site-packages folder. This is advertised by Python to install noarch packages in the correct location. Only valid for a Python package.",
@@ -334,7 +353,7 @@ class PrefixDetection(StrictBaseModel):
     ignore: bool | JinjaExpr | ConditionalList[PathNoBackslash] = Field(
         default=False, description="Ignore all or specific files for prefix replacement"
     )
-    ignore_binary_files: bool | JinjaExpr | ConditionalList[PathNoBackslash] = Field(
+    ignore_binary_files: bool | JinjaExpr = Field(
         default=False, description="Whether to detect binary files with prefix or not"
     )
 
@@ -391,18 +410,6 @@ class StagingRequirements(StrictBaseModel):
     ignore_run_exports: IgnoreRunExports | None = Field(
         None, description="Ignore run-exports by name or from certain packages"
     )
-
-
-class LinkOptions(StrictBaseModel):
-    post_link_script: NonEmptyStr | None = Field(
-        None,
-        description="Script to execute after the package has been linked into an environment",
-    )
-    pre_unlink_script: NonEmptyStr | None = Field(
-        None,
-        description="Script to execute before uninstalling the package from an environment",
-    )
-    pre_link_message: NonEmptyStr | None = Field(None, description="Message to show before linking")
 
 
 #########################
@@ -507,6 +514,16 @@ class RTestElement(StrictBaseModel):
     r: RTestElementInner = Field(..., description="R specific test configuration")
 
 
+class RubyTestElementInner(StrictBaseModel):
+    requires: ConditionalList[NonEmptyStr] = Field(
+        ..., description="A list of Ruby modules to check after having installed the built package."
+    )
+
+
+class RubyTestElement(StrictBaseModel):
+    ruby: RubyTestElementInner = Field(..., description="Ruby specific test configuration")
+
+
 class DownstreamTestElement(StrictBaseModel):
     downstream: MatchSpec = Field(
         ...,
@@ -567,6 +584,7 @@ TestElement = (
     | PythonTestElement
     | PerlTestElement
     | RTestElement
+    | RubyTestElement
     | DownstreamTestElement
     | PackageContentTest
 )
@@ -574,13 +592,6 @@ TestElement = (
 #########
 # About #
 #########
-
-
-class DescriptionFile(StrictBaseModel):
-    file: PathNoBackslash = Field(
-        ...,
-        description="Path in the source directory that contains the packages description. E.g. README.md",
-    )
 
 
 class About(StrictBaseModel):
@@ -599,12 +610,15 @@ class About(StrictBaseModel):
     license_file: ConditionalList[PathNoBackslash] | None = Field(
         None, description="Paths to the license files of this package."
     )
+    license_family: str | None = Field(
+        None, description="The license family (deprecated, but still used in some recipes)."
+    )
 
     # Text
     summary: str | None = Field(None, description="A short description of the package.")
-    description: str | DescriptionFile | None = Field(
+    description: str | None = Field(
         None,
-        description="Extended description of the package or a file (usually a README).",
+        description="Extended description of the package.",
     )
 
     prelink_message: str | None = None
@@ -613,19 +627,6 @@ class About(StrictBaseModel):
 ###########
 # Outputs #
 ###########
-
-
-class OutputBuild(Build):
-    cache_only: bool = Field(
-        default=False,
-        deprecated="Use staging outputs instead.",
-        description="Do not output a package but use this output as an input to others.",
-    )
-    cache_from: ConditionalList[NonEmptyStr] | None = Field(
-        None,
-        deprecated="Use staging outputs instead.",
-        description="Take the output of the specified outputs and copy them in the working directory.",
-    )
 
 
 class StagingBuild(StrictBaseModel):
@@ -679,9 +680,7 @@ class Output(StrictBaseModel):
     source: ConditionalList[Source] | None = Field(
         None, description="The source items to be downloaded and used for the build."
     )
-    build: OutputBuild | None = Field(
-        None, description="Describes how the package should be build."
-    )
+    build: Build | None = Field(None, description="Describes how the package should be build.")
 
     requirements: Requirements | None = Field(None, description="The package dependencies")
 
@@ -693,11 +692,6 @@ class Output(StrictBaseModel):
     about: About | None = Field(
         None,
         description="A human readable description of the package information. The values here are merged with the top level `about` field.",
-    )
-
-    extra: dict[str, Any] | None = Field(
-        None,
-        description="An set of arbitrary values that are included in the package manifest. The values here are merged with the top level `extras` field.",
     )
 
 
@@ -742,9 +736,7 @@ class Cache(StrictBaseModel):
         None, description="The dependencies needed at cache-build time."
     )
 
-    build: OutputBuild | None = Field(
-        None, description="Describes how the package should be build."
-    )
+    build: Build | None = Field(None, description="Describes how the package should be build.")
 
 
 class ComplexRecipe(BaseRecipe):
@@ -758,6 +750,10 @@ class ComplexRecipe(BaseRecipe):
 
     outputs: ConditionalList[Output | StagingOutput] = Field(
         ..., description="A list of outputs that are generated for this recipe."
+    )
+
+    tests: ConditionalList[TestElement] | None = Field(
+        None, description="Top-level tests that are inherited by outputs"
     )
 
 
