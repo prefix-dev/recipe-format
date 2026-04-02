@@ -94,6 +94,17 @@ class BaseSource(StrictBaseModel):
     )
 
 
+class AttestationConfig(StrictBaseModel):
+    bundle_url: NonEmptyStr | None = Field(
+        default=None,
+        description="URL to download the attestation bundle from (e.g., .sigstore.json file). Auto-derived for PyPI sources if not specified.",
+    )
+    publishers: list[NonEmptyStr] = Field(
+        default=[],
+        description="Publisher identities to verify (e.g., 'github:owner/repo'). All specified publishers must match.",
+    )
+
+
 class UrlSource(BaseSource):
     url: NonEmptyStr | list[NonEmptyStr] = Field(
         ...,
@@ -105,6 +116,10 @@ class UrlSource(BaseSource):
         None,
         description="A file name to rename the downloaded file to (does not apply to archives).",
     )
+    attestation: AttestationConfig | None = Field(
+        default=None,
+        description="Optional attestation verification configuration.",
+    )
 
 
 class BaseGitSource(BaseSource):
@@ -113,6 +128,14 @@ class BaseGitSource(BaseSource):
         None, description="A value to use when shallow cloning the repository."
     )
     lfs: bool = Field(default=False, description="Should we LFS files be checked out as well")
+    submodules: bool | None = Field(
+        default=None,
+        description="Whether to recursively initialize and update submodules.",
+    )
+    expected_commit: NonEmptyStr | None = Field(
+        default=None,
+        description="An expected commit hash to verify after checkout.",
+    )
 
 
 class GitRev(BaseGitSource):
@@ -192,6 +215,14 @@ class ScriptEnv(StrictBaseModel):
     )
 
 
+class PostProcess(StrictBaseModel):
+    files: ConditionalList[NonEmptyStr] = Field(
+        ..., description="Files to apply post-processing to"
+    )
+    regex: str | JinjaExpr = Field(..., description="Regular expression pattern to match")
+    replacement: str | JinjaExpr = Field(..., description="Replacement string")
+
+
 class Build(StrictBaseModel):
     number: UnsignedInt | JinjaExpr | None = Field(
         0,
@@ -251,6 +282,11 @@ class Build(StrictBaseModel):
         None, description="Glob patterns to include or exclude files from the package."
     )
 
+    post_process: ConditionalList[PostProcess] = Field(
+        [],
+        description="Post-processing operations using regex replacements on files.",
+    )
+
 
 class BaseScript(StrictBaseModel):
     interpreter: NonEmptyStr | None = Field(
@@ -264,6 +300,10 @@ class BaseScript(StrictBaseModel):
     secrets: ConditionalList[NonEmptyStr] = Field(
         default=[],
         description="Secrets that are set as environment variables but never shown in the logs or the environment.",
+    )
+    cwd: NonEmptyStr | None = Field(
+        default=None,
+        description="The working directory to use when executing the script.",
     )
 
 
@@ -507,6 +547,16 @@ class RTestElement(StrictBaseModel):
     r: RTestElementInner = Field(..., description="R specific test configuration")
 
 
+class RubyTestElementInner(StrictBaseModel):
+    requires: ConditionalList[NonEmptyStr] = Field(
+        ..., description="A list of Ruby modules to check after having installed the built package."
+    )
+
+
+class RubyTestElement(StrictBaseModel):
+    ruby: RubyTestElementInner = Field(..., description="Ruby specific test configuration")
+
+
 class DownstreamTestElement(StrictBaseModel):
     downstream: MatchSpec = Field(
         ...,
@@ -567,6 +617,7 @@ TestElement = (
     | PythonTestElement
     | PerlTestElement
     | RTestElement
+    | RubyTestElement
     | DownstreamTestElement
     | PackageContentTest
 )
@@ -598,6 +649,9 @@ class About(StrictBaseModel):
     license_: str | None = Field(None, alias="license", description="An license in SPDX format.")
     license_file: ConditionalList[PathNoBackslash] | None = Field(
         None, description="Paths to the license files of this package."
+    )
+    license_family: str | None = Field(
+        None, description="The license family (deprecated, but still used in some recipes)."
     )
 
     # Text
@@ -758,6 +812,10 @@ class ComplexRecipe(BaseRecipe):
 
     outputs: ConditionalList[Output | StagingOutput] = Field(
         ..., description="A list of outputs that are generated for this recipe."
+    )
+
+    tests: ConditionalList[TestElement] | None = Field(
+        None, description="Top-level tests that are inherited by outputs"
     )
 
 

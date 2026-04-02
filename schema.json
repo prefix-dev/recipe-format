@@ -92,6 +92,19 @@
           "description": "Paths to the license files of this package.",
           "title": "License File"
         },
+        "license_family": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The license family (deprecated, but still used in some recipes).",
+          "title": "License Family"
+        },
         "summary": {
           "anyOf": [
             {
@@ -135,6 +148,37 @@
         }
       },
       "title": "About",
+      "type": "object"
+    },
+    "AttestationConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "bundle_url": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "URL to download the attestation bundle from (e.g., .sigstore.json file). Auto-derived for PyPI sources if not specified.",
+          "title": "Bundle Url"
+        },
+        "publishers": {
+          "default": [],
+          "description": "Publisher identities to verify (e.g., 'github:owner/repo'). All specified publishers must match.",
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Publishers",
+          "type": "array"
+        }
+      },
+      "title": "AttestationConfig",
       "type": "object"
     },
     "BaseGitSource": {
@@ -212,6 +256,33 @@
           "description": "Should we LFS files be checked out as well",
           "title": "Lfs",
           "type": "boolean"
+        },
+        "submodules": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Whether to recursively initialize and update submodules.",
+          "title": "Submodules"
+        },
+        "expected_commit": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "An expected commit hash to verify after checkout.",
+          "title": "Expected Commit"
         }
       },
       "required": [
@@ -541,6 +612,32 @@
           "default": null,
           "description": "Glob patterns to include or exclude files from the package.",
           "title": "Files"
+        },
+        "post_process": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PostProcess"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/PostProcess"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "Post-processing operations using regex replacements on files.",
+          "title": "Post Process"
         }
       },
       "title": "Build",
@@ -868,6 +965,71 @@
           ],
           "description": "A list of outputs that are generated for this recipe.",
           "title": "Outputs"
+        },
+        "tests": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ScriptTestElement"
+            },
+            {
+              "$ref": "#/$defs/PythonTestElement"
+            },
+            {
+              "$ref": "#/$defs/PerlTestElement"
+            },
+            {
+              "$ref": "#/$defs/RTestElement"
+            },
+            {
+              "$ref": "#/$defs/RubyTestElement"
+            },
+            {
+              "$ref": "#/$defs/DownstreamTestElement"
+            },
+            {
+              "$ref": "#/$defs/PackageContentTest"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/ScriptTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/PythonTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/PerlTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/RTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/RubyTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/DownstreamTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/PackageContentTest"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Top-level tests that are inherited by outputs",
+          "title": "Tests"
         }
       },
       "required": [
@@ -929,6 +1091,20 @@
           "default": [],
           "description": "Secrets that are set as environment variables but never shown in the logs or the environment.",
           "title": "Secrets"
+        },
+        "cwd": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The working directory to use when executing the script.",
+          "title": "Cwd"
         },
         "content": {
           "anyOf": [
@@ -1366,6 +1542,20 @@
           "description": "Secrets that are set as environment variables but never shown in the logs or the environment.",
           "title": "Secrets"
         },
+        "cwd": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The working directory to use when executing the script.",
+          "title": "Cwd"
+        },
         "file": {
           "anyOf": [
             {
@@ -1594,6 +1784,33 @@
           "title": "Lfs",
           "type": "boolean"
         },
+        "submodules": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Whether to recursively initialize and update submodules.",
+          "title": "Submodules"
+        },
+        "expected_commit": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "An expected commit hash to verify after checkout.",
+          "title": "Expected Commit"
+        },
         "branch": {
           "description": "Branch to check out",
           "minLength": 1,
@@ -1684,6 +1901,33 @@
           "title": "Lfs",
           "type": "boolean"
         },
+        "submodules": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Whether to recursively initialize and update submodules.",
+          "title": "Submodules"
+        },
+        "expected_commit": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "An expected commit hash to verify after checkout.",
+          "title": "Expected Commit"
+        },
         "rev": {
           "description": "Revision to checkout to (hash or ref)",
           "minLength": 1,
@@ -1773,6 +2017,33 @@
           "description": "Should we LFS files be checked out as well",
           "title": "Lfs",
           "type": "boolean"
+        },
+        "submodules": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Whether to recursively initialize and update submodules.",
+          "title": "Submodules"
+        },
+        "expected_commit": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "An expected commit hash to verify after checkout.",
+          "title": "Expected Commit"
         },
         "tag": {
           "description": "Tag to checkout",
@@ -1941,7 +2212,7 @@
       "title": "IfStatement[Annotated[str, StringConstraints]]",
       "type": "object"
     },
-    "IfStatement_Union_ScriptTestElement__PythonTestElement__PerlTestElement__RTestElement__DownstreamTestElement__PackageContentTest__": {
+    "IfStatement_Union_ScriptTestElement__PythonTestElement__PerlTestElement__RTestElement__RubyTestElement__DownstreamTestElement__PackageContentTest__": {
       "additionalProperties": false,
       "properties": {
         "if": {
@@ -1963,6 +2234,9 @@
               "$ref": "#/$defs/RTestElement"
             },
             {
+              "$ref": "#/$defs/RubyTestElement"
+            },
+            {
               "$ref": "#/$defs/DownstreamTestElement"
             },
             {
@@ -1982,6 +2256,9 @@
                   },
                   {
                     "$ref": "#/$defs/RTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/RubyTestElement"
                   },
                   {
                     "$ref": "#/$defs/DownstreamTestElement"
@@ -2011,6 +2288,9 @@
               "$ref": "#/$defs/RTestElement"
             },
             {
+              "$ref": "#/$defs/RubyTestElement"
+            },
+            {
               "$ref": "#/$defs/DownstreamTestElement"
             },
             {
@@ -2030,6 +2310,9 @@
                   },
                   {
                     "$ref": "#/$defs/RTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/RubyTestElement"
                   },
                   {
                     "$ref": "#/$defs/DownstreamTestElement"
@@ -2053,7 +2336,7 @@
         "if",
         "then"
       ],
-      "title": "IfStatement[Union[ScriptTestElement, PythonTestElement, PerlTestElement, RTestElement, DownstreamTestElement, PackageContentTest]]",
+      "title": "IfStatement[Union[ScriptTestElement, PythonTestElement, PerlTestElement, RTestElement, RubyTestElement, DownstreamTestElement, PackageContentTest]]",
       "type": "object"
     },
     "IfStatement_Union_UrlSource__GitRev__GitTag__GitBranch__BaseGitSource__LocalSource__": {
@@ -2561,13 +2844,16 @@
                     "$ref": "#/$defs/RTestElement"
                   },
                   {
+                    "$ref": "#/$defs/RubyTestElement"
+                  },
+                  {
                     "$ref": "#/$defs/DownstreamTestElement"
                   },
                   {
                     "$ref": "#/$defs/PackageContentTest"
                   },
                   {
-                    "$ref": "#/$defs/IfStatement_Union_ScriptTestElement__PythonTestElement__PerlTestElement__RTestElement__DownstreamTestElement__PackageContentTest__"
+                    "$ref": "#/$defs/IfStatement_Union_ScriptTestElement__PythonTestElement__PerlTestElement__RTestElement__RubyTestElement__DownstreamTestElement__PackageContentTest__"
                   },
                   {
                     "items": {
@@ -2585,13 +2871,16 @@
                           "$ref": "#/$defs/RTestElement"
                         },
                         {
+                          "$ref": "#/$defs/RubyTestElement"
+                        },
+                        {
                           "$ref": "#/$defs/DownstreamTestElement"
                         },
                         {
                           "$ref": "#/$defs/PackageContentTest"
                         },
                         {
-                          "$ref": "#/$defs/IfStatement_Union_ScriptTestElement__PythonTestElement__PerlTestElement__RTestElement__DownstreamTestElement__PackageContentTest__"
+                          "$ref": "#/$defs/IfStatement_Union_ScriptTestElement__PythonTestElement__PerlTestElement__RTestElement__RubyTestElement__DownstreamTestElement__PackageContentTest__"
                         }
                       ]
                     },
@@ -2960,6 +3249,32 @@
           "description": "Glob patterns to include or exclude files from the package.",
           "title": "Files"
         },
+        "post_process": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PostProcess"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/PostProcess"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "default": [],
+          "description": "Post-processing operations using regex replacements on files.",
+          "title": "Post Process"
+        },
         "cache_only": {
           "default": false,
           "deprecated": true,
@@ -3254,6 +3569,71 @@
         "uses"
       ],
       "title": "PerlTestElementInner",
+      "type": "object"
+    },
+    "PostProcess": {
+      "additionalProperties": false,
+      "properties": {
+        "files": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "description": "Files to apply post-processing to",
+          "title": "Files"
+        },
+        "regex": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            }
+          ],
+          "description": "Regular expression pattern to match",
+          "title": "Regex"
+        },
+        "replacement": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "pattern": "\\$\\{\\{.*\\}\\}",
+              "type": "string"
+            }
+          ],
+          "description": "Replacement string",
+          "title": "Replacement"
+        }
+      },
+      "required": [
+        "files",
+        "regex",
+        "replacement"
+      ],
+      "title": "PostProcess",
       "type": "object"
     },
     "PrefixDetection": {
@@ -3807,6 +4187,61 @@
       "title": "Requirements",
       "type": "object"
     },
+    "RubyTestElement": {
+      "additionalProperties": false,
+      "properties": {
+        "ruby": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/RubyTestElementInner"
+            }
+          ],
+          "description": "Ruby specific test configuration"
+        }
+      },
+      "required": [
+        "ruby"
+      ],
+      "title": "RubyTestElement",
+      "type": "object"
+    },
+    "RubyTestElementInner": {
+      "additionalProperties": false,
+      "properties": {
+        "requires": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "description": "A list of Ruby modules to check after having installed the built package.",
+          "title": "Requires"
+        }
+      },
+      "required": [
+        "requires"
+      ],
+      "title": "RubyTestElementInner",
+      "type": "object"
+    },
     "RunExports": {
       "additionalProperties": false,
       "properties": {
@@ -4191,6 +4626,9 @@
               "$ref": "#/$defs/RTestElement"
             },
             {
+              "$ref": "#/$defs/RubyTestElement"
+            },
+            {
               "$ref": "#/$defs/DownstreamTestElement"
             },
             {
@@ -4213,6 +4651,9 @@
                   },
                   {
                     "$ref": "#/$defs/RTestElement"
+                  },
+                  {
+                    "$ref": "#/$defs/RubyTestElement"
                   },
                   {
                     "$ref": "#/$defs/DownstreamTestElement"
@@ -4741,6 +5182,18 @@
           "default": null,
           "description": "A file name to rename the downloaded file to (does not apply to archives).",
           "title": "File Name"
+        },
+        "attestation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AttestationConfig"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional attestation verification configuration."
         }
       },
       "required": [
