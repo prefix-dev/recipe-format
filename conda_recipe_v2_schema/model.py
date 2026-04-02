@@ -353,7 +353,7 @@ class PrefixDetection(StrictBaseModel):
     ignore: bool | JinjaExpr | ConditionalList[PathNoBackslash] = Field(
         default=False, description="Ignore all or specific files for prefix replacement"
     )
-    ignore_binary_files: bool | JinjaExpr | ConditionalList[PathNoBackslash] = Field(
+    ignore_binary_files: bool | JinjaExpr = Field(
         default=False, description="Whether to detect binary files with prefix or not"
     )
 
@@ -680,9 +680,7 @@ class Output(StrictBaseModel):
     source: ConditionalList[Source] | None = Field(
         None, description="The source items to be downloaded and used for the build."
     )
-    build: Build | None = Field(
-        None, description="Describes how the package should be build."
-    )
+    build: Build | None = Field(None, description="Describes how the package should be build.")
 
     requirements: Requirements | None = Field(None, description="The package dependencies")
 
@@ -738,9 +736,7 @@ class Cache(StrictBaseModel):
         None, description="The dependencies needed at cache-build time."
     )
 
-    build: Build | None = Field(
-        None, description="Describes how the package should be build."
-    )
+    build: Build | None = Field(None, description="Describes how the package should be build.")
 
 
 class ComplexRecipe(BaseRecipe):

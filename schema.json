@@ -3210,27 +3210,6 @@
             {
               "pattern": "\\$\\{\\{.*\\}\\}",
               "type": "string"
-            },
-            {
-              "pattern": "^[^\\\\]+$",
-              "type": "string"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "pattern": "^[^\\\\]+$",
-                    "type": "string"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
             }
           ],
           "default": false,
