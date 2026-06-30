@@ -92,6 +92,10 @@ class BaseSource(StrictBaseModel):
     target_directory: NonEmptyStr | None = Field(
         None, description="The location in the working directory to place the source"
     )
+    filter: Glob = Field(
+        None,
+        description="Glob patterns to include or exclude files from the extracted source.",
+    )
 
 
 class AttestationConfig(StrictBaseModel):
@@ -164,9 +168,6 @@ class LocalSource(BaseSource):
     file_name: NonEmptyStr | None = Field(
         None,
         description="A file name to rename the file to (does not apply to archives).",
-    )
-    filter: Glob = Field(
-        None, description="Glob patterns to include or exclude files from the package."
     )
 
 
