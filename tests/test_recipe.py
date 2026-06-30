@@ -11,7 +11,7 @@ from conda_recipe_v2_schema.model import Recipe
 
 @pytest.fixture(
     scope="module",
-    params=["mamba", "xtensor", "single-output", "zlib", "staging"],
+    params=["mamba", "xtensor", "single-output", "zlib", "staging", "post-process"],
 )
 def valid_recipe(request) -> str:
     recipe_name = request.param
