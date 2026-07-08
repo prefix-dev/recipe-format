@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import json
-from typing import Annotated, Any, Generic, Literal, TypeVar, Union
+import sys
+from typing import Annotated, Any, ClassVar, Generic, Literal, TypeVar, Union
 
 from pydantic import (
     AnyHttpUrl,
@@ -13,6 +14,19 @@ from pydantic import (
     constr,
 )
 
+SCHEMA_DRAFT = "http://json-schema.org/draft-07/schema#"
+SCHEMA_URI = (
+    "https://raw.githubusercontent.com/prefix-dev/recipe-format/refs/heads/main/schema.json"
+)
+SCHEMA_HTML = "https://github.com/prefix-dev/recipe-format"
+
+SCHEMA_HEADER = {
+    "$id": SCHEMA_URI,
+    "$schema": SCHEMA_DRAFT,
+    "title": "conda recipe file",
+}
+
+
 NonEmptyStr = constr(min_length=1)
 PathNoBackslash = constr(pattern=r"^[^\\]+$")
 UnsignedInt = conint(ge=0)
@@ -21,7 +35,7 @@ JinjaExpr = constr(pattern=r"\$\{\{.*\}\}")
 
 
 class StrictBaseModel(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config: ClassVar[ConfigDict] = ConfigDict(extra="forbid")
 
 
 ###########################
@@ -704,6 +718,14 @@ SchemaVersion = Annotated[int, Field(ge=1, le=1)]
 
 
 class BaseRecipe(StrictBaseModel):
+    schema_: str | None = Field(
+        SCHEMA_URI,
+        alias="$schema",
+        title="Schema",
+        description="An identifier for the schema used to validate this recipe",
+        json_schema_extra={"format": "uri-reference"},
+    )
+
     schema_version: SchemaVersion = Field(
         1,
         description="The version of the YAML schema for a recipe. If the version is omitted it is assumed to be 1.",
@@ -771,9 +793,16 @@ class SimpleRecipe(BaseRecipe):
 Recipe = TypeAdapter(SimpleRecipe | ComplexRecipe)
 
 
-def main():
-    print(json.dumps(Recipe.json_schema(), indent=2))
+def top_level_schema() -> dict[str, Any]:
+    schema = Recipe.json_schema()
+    any_of = schema.pop("anyOf")
+    return {**SCHEMA_HEADER, "oneOf": any_of, **schema}
+
+
+def main() -> int:
+    print(json.dumps(top_level_schema(), indent=2))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

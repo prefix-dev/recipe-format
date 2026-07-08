@@ -6,7 +6,7 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 from pydantic import ValidationError as PydanticValidationError
 
-from conda_recipe_v2_schema.model import Recipe
+from conda_recipe_v2_schema.model import Recipe, top_level_schema
 
 
 @pytest.fixture(
@@ -25,6 +25,7 @@ def valid_recipe(request) -> str:
     scope="module",
     params=[
         "complex1",
+        "dollarschema",
         "simple1",
     ],
 )
@@ -53,7 +54,7 @@ def test_recipe_schema_invalid(recipe_schema, invalid_recipe):
 
 
 def test_recipe_schema_not_changed(recipe_schema):
-    assert recipe_schema == Recipe.json_schema()
+    assert recipe_schema == top_level_schema()
 
 
 def test_patches_valid_conditional():
