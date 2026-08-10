@@ -629,6 +629,9 @@ class About(StrictBaseModel):
         None, description="The license family (deprecated, but still used in some recipes)."
     )
 
+    # purls
+    purls: ConditionalList[str] | None = Field(None, description="Package URLs (purls) for the package.")
+
     # Text
     summary: str | None = Field(None, description="A short description of the package.")
     description: str | None = Field(
