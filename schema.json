@@ -3579,11 +3579,23 @@
         "python_version": {
           "anyOf": [
             {
+              "minLength": 1,
               "type": "string"
             },
             {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
               "items": {
-                "type": "string"
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
               },
               "type": "array"
             },
