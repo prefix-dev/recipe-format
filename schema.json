@@ -3773,6 +3773,45 @@
           "description": "constraints optional dependencies at runtime.",
           "title": "Run Constraints"
         },
+        "extras": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "patternProperties": {
+                "^[a-z0-9_.+-]{1,64}$": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/$defs/IfStatement"
+                    },
+                    {
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "$ref": "#/$defs/IfStatement"
+                          }
+                        ]
+                      },
+                      "type": "array"
+                    }
+                  ]
+                }
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional dependency groups (CEP 44). Maps a group name to additional dependencies that are only installed when the group is selected via the `extras` MatchSpec keyword (e.g. `mypkg[extras=[group-name]]`).",
+          "title": "Extras"
+        },
         "run_exports": {
           "anyOf": [
             {

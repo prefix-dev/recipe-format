@@ -1,0 +1,47 @@
+context:
+  version: "0.0.15"
+  python_min: "3.13"
+
+package:
+  name: pixi-browse
+  version: ${{ version }}
+
+source:
+  url: https://pypi.org/packages/source/p/pixi-browse/pixi_browse-${{ version }}.tar.gz
+  sha256: 883f4f4e2ab8f07c8e04ebca8ad77a5bae82ba37cc085e85d6fa07d6871c8230
+
+build:
+  number: 0
+  noarch: python
+  python:
+    entry_points:
+      - pixi-browse = pixi_browse.__main__:cli
+  script: python -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python ${{ python_min }}.*
+    - pip
+    - hatchling
+  run:
+    - python >=${{ python_min }}
+    - textual >=8.2.8,<9
+    - py-rattler >=0.26.0,<0.27
+    - typer >=0.27.2,<0.28
+    - pyyaml >=6.0.3,<7
+  run_constraints:
+    - textual-diff-view >=0.1.5,<0.2
+  extras:
+    diff:
+      - textual-diff-view >=0.1.5,<0.2
+
+tests:
+  - python:
+      imports:
+        - pixi_browse
+
+about:
+  homepage: https://github.com/pavelzw/pixi-browse
+  repository: https://github.com/pavelzw/pixi-browse
+  summary: A TUI to browse conda packages
+  license: BSD-3-Clause
