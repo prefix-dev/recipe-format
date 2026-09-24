@@ -11,7 +11,7 @@ from conda_recipe_v2_schema.model import Recipe, top_level_schema
 
 @pytest.fixture(
     scope="module",
-    params=["mamba", "xtensor", "single-output", "zlib", "staging", "post-process"],
+    params=["mamba", "xtensor", "single-output", "zlib", "staging", "post-process", "extras"],
 )
 def valid_recipe(request) -> str:
     recipe_name = request.param
@@ -55,6 +55,49 @@ def test_recipe_schema_invalid(recipe_schema, invalid_recipe):
 
 def test_recipe_schema_not_changed(recipe_schema):
     assert recipe_schema == top_level_schema()
+
+
+def test_requirements_extras_valid(recipe_schema):
+    """Recipes with requirements.extras pass validation (CEP 44)."""
+    recipe_yaml = """
+    package:
+      name: test
+      version: 1.0.0
+    requirements:
+      run:
+        - main-dependency
+      extras:
+        diff:
+          - textual-diff-view >=0.1.5,<0.2
+        "full-extra.v2":
+          - extra-dependency >=2
+          - if: unix
+            then: posix-only-dependency
+    """
+    recipe_dict = yaml.safe_load(recipe_yaml)
+
+    Recipe.validate_python(recipe_dict)
+    validate(instance=recipe_dict, schema=recipe_schema)
+
+
+def test_requirements_extras_invalid_group_name(recipe_schema):
+    """Extras group names must match the CEP 44 grammar `[a-z0-9_.+-]{1,64}`."""
+    recipe_yaml = """
+    package:
+      name: test
+      version: 1.0.0
+    requirements:
+      extras:
+        Invalid_Name:
+          - extra-dependency
+    """
+    recipe_dict = yaml.safe_load(recipe_yaml)
+
+    with pytest.raises(PydanticValidationError):
+        Recipe.validate_python(recipe_dict)
+
+    with pytest.raises(ValidationError):
+        validate(instance=recipe_dict, schema=recipe_schema)
 
 
 def test_patches_valid_conditional():

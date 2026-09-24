@@ -432,6 +432,15 @@ class StagingRequirements(StrictBaseModel):
 #########################
 
 
+# Name of an optional dependency group (extras) as defined by CEP 44.
+ExtrasGroupName = constr(pattern=r"^[a-z0-9_.+-]{1,64}$")
+
+Extras = Annotated[
+    dict[ExtrasGroupName, ConditionalList[MatchSpec]],
+    Field(json_schema_extra={"additionalProperties": False}),
+]
+
+
 class Requirements(StrictBaseModel):
     build: ConditionalList[MatchSpec] | None = Field(
         None,
@@ -447,6 +456,10 @@ class Requirements(StrictBaseModel):
     )
     run_constraints: ConditionalList[MatchSpec] | None = Field(
         None, description="constraints optional dependencies at runtime."
+    )
+    extras: Extras | None = Field(
+        None,
+        description="Optional dependency groups (CEP 44). Maps a group name to additional dependencies that are only installed when the group is selected via the `extras` MatchSpec keyword (e.g. `mypkg[extras=[group-name]]`).",
     )
     run_exports: ConditionalList[MatchSpec] | RunExports = Field(
         None, description="The run exports of this package"
