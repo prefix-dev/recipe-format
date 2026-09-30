@@ -116,6 +116,35 @@
           "description": "The license family (deprecated, but still used in some recipes).",
           "title": "License Family"
         },
+        "purls": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Package URLs (purls) for the package.",
+          "title": "Purls"
+        },
         "summary": {
           "anyOf": [
             {
