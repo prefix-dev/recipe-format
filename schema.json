@@ -141,18 +141,6 @@
           "default": null,
           "description": "Extended description of the package.",
           "title": "Description"
-        },
-        "prelink_message": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Prelink Message"
         }
       },
       "title": "About",
@@ -172,15 +160,22 @@
             }
           ],
           "default": null,
-          "description": "URL to download the attestation bundle from (e.g., .sigstore.json file). Auto-derived for PyPI sources if not specified.",
+          "description": "URL to download the attestation bundle from (e.g. a `.sigstore.json` file). Discovered automatically for PyPI sources and GitHub release assets if not specified.",
           "title": "Bundle Url"
         },
         "publishers": {
           "default": [],
-          "description": "Publisher identities to verify (e.g., 'github:owner/repo'). All specified publishers must match.",
+          "description": "Publisher identities to verify, either as a string (`github:owner/repo`, `github:owner(id)/repo(id)@refs/tags/v1.0`) or as a mapping. All specified publishers must match.",
           "items": {
-            "minLength": 1,
-            "type": "string"
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "$ref": "#/$defs/DetailedPublisher"
+              }
+            ]
           },
           "title": "Publishers",
           "type": "array"
@@ -269,7 +264,7 @@
               "type": "string"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             }
           ],
@@ -340,7 +335,7 @@
               "type": "integer"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             },
             {
@@ -357,7 +352,7 @@
               "type": "string"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             },
             {
@@ -414,6 +409,37 @@
           "description": "Can be either 'generic' or 'python'. A noarch 'python' package compiles .pyc files upon installation.",
           "title": "Noarch"
         },
+        "flags": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Package variant flags (repodata v3, beta). Written into the `flags` array of `index.json`.",
+          "title": "Flags"
+        },
         "script": {
           "anyOf": [
             {
@@ -451,8 +477,24 @@
             }
           ],
           "default": null,
-          "description": "The script to execute to invoke the build. If the string is a single line and ends with `.sh` or `.bat`, then we interpret it as a file.",
+          "description": "The script to execute to invoke the build. If the string is a single line and ends with `.sh` or `.bat`, then we interpret it as a file. Mutually exclusive with `steps`.",
           "title": "Script"
+        },
+        "steps": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Step"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Explicit build steps (experimental, alternative to `script`). Each step runs in its own scope. Mutually exclusive with `script`; an empty list disables default `build.sh`/`build.bat` discovery.",
+          "title": "Steps"
         },
         "merge_build_and_host_envs": {
           "anyOf": [
@@ -460,7 +502,7 @@
               "type": "boolean"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             },
             {
@@ -670,96 +712,6 @@
       "title": "Build",
       "type": "object"
     },
-    "Cache": {
-      "additionalProperties": false,
-      "properties": {
-        "source": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/UrlSource"
-            },
-            {
-              "$ref": "#/$defs/GitRev"
-            },
-            {
-              "$ref": "#/$defs/GitTag"
-            },
-            {
-              "$ref": "#/$defs/GitBranch"
-            },
-            {
-              "$ref": "#/$defs/BaseGitSource"
-            },
-            {
-              "$ref": "#/$defs/LocalSource"
-            },
-            {
-              "$ref": "#/$defs/IfStatement"
-            },
-            {
-              "items": {
-                "anyOf": [
-                  {
-                    "$ref": "#/$defs/UrlSource"
-                  },
-                  {
-                    "$ref": "#/$defs/GitRev"
-                  },
-                  {
-                    "$ref": "#/$defs/GitTag"
-                  },
-                  {
-                    "$ref": "#/$defs/GitBranch"
-                  },
-                  {
-                    "$ref": "#/$defs/BaseGitSource"
-                  },
-                  {
-                    "$ref": "#/$defs/LocalSource"
-                  },
-                  {
-                    "$ref": "#/$defs/IfStatement"
-                  }
-                ]
-              },
-              "type": "array"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "The source items to be downloaded and used for the cache build and subsequent outputs.",
-          "title": "Source"
-        },
-        "requirements": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/Requirements"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "The dependencies needed at cache-build time."
-        },
-        "build": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/Build"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Describes how the package should be build."
-        }
-      },
-      "title": "Cache",
-      "type": "object"
-    },
     "CacheInherit": {
       "additionalProperties": false,
       "properties": {
@@ -794,6 +746,7 @@
               "type": "null"
             }
           ],
+          "default": null,
           "description": "The recipe name, this is only used to identify the name of the recipe.",
           "title": "Name"
         },
@@ -811,9 +764,6 @@
           "title": "Version"
         }
       },
-      "required": [
-        "name"
-      ],
       "title": "ComplexPackage",
       "type": "object"
     },
@@ -962,19 +912,6 @@
           ],
           "default": null,
           "description": "The package version."
-        },
-        "cache": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/Cache"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "deprecated": true,
-          "description": "The cache build that can be used as a common build step for all output."
         },
         "outputs": {
           "anyOf": [
@@ -1167,16 +1104,116 @@
                 ]
               },
               "type": "array"
+            },
+            {
+              "type": "null"
             }
           ],
-          "description": "A string or list of strings that is the scripts contents",
+          "default": null,
+          "description": "A string or list of strings that is the scripts contents. If omitted, the default `build.sh`/`build.bat` is used.",
           "title": "Content"
         }
       },
-      "required": [
-        "content"
-      ],
       "title": "ContentScript",
+      "type": "object"
+    },
+    "DetailedPublisher": {
+      "additionalProperties": false,
+      "properties": {
+        "github": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "`owner/repo` on GitHub. Exactly one of `github` or `gitlab` must be set.",
+          "title": "Github"
+        },
+        "gitlab": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "`owner/repo` on GitLab. Exactly one of `github` or `gitlab` must be set.",
+          "title": "Gitlab"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Git ref the signing workflow must have run on (e.g. `refs/tags/v1.0`).",
+          "title": "Ref"
+        },
+        "repository_id": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Immutable numeric ID of the repository.",
+          "title": "Repository Id"
+        },
+        "owner_id": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Immutable numeric ID of the repository owner (user or organization).",
+          "title": "Owner Id"
+        },
+        "environment": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Deployment environment the signing workflow ran in (e.g. `release`).",
+          "title": "Environment"
+        }
+      },
+      "title": "DetailedPublisher",
       "type": "object"
     },
     "DownstreamTestElement": {
@@ -1233,7 +1270,7 @@
               "type": "boolean"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             },
             {
@@ -1588,7 +1625,7 @@
               "type": "string"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             }
           ],
@@ -1813,7 +1850,7 @@
               "type": "string"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             }
           ],
@@ -1961,7 +1998,7 @@
               "type": "string"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             }
           ],
@@ -2109,7 +2146,7 @@
               "type": "string"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             }
           ],
@@ -2722,7 +2759,7 @@
               "type": "string"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             },
             {
@@ -2742,7 +2779,7 @@
               "type": "string"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             },
             {
@@ -3272,7 +3309,7 @@
               "type": "string"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             }
           ],
@@ -3285,7 +3322,7 @@
               "type": "string"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             }
           ],
@@ -3322,7 +3359,7 @@
               "type": "boolean"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             },
             {
@@ -3357,7 +3394,7 @@
               "type": "boolean"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             }
           ],
@@ -3403,26 +3440,13 @@
               "type": "boolean"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             }
           ],
           "default": false,
           "description": "Specifies if python.app should be used as the entrypoint on macOS. (macOS only)",
           "title": "Use Python App Entrypoint"
-        },
-        "preserve_egg_dir": {
-          "anyOf": [
-            {
-              "type": "boolean"
-            },
-            {
-              "pattern": "\\$\\{\\{.*\\}\\}",
-              "type": "string"
-            }
-          ],
-          "default": false,
-          "title": "Preserve Egg Dir"
         },
         "skip_pyc_compilation": {
           "anyOf": [
@@ -3492,7 +3516,7 @@
               "type": "string"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             },
             {
@@ -3509,7 +3533,7 @@
               "type": "boolean"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             }
           ],
@@ -4431,8 +4455,24 @@
             }
           ],
           "default": null,
-          "description": "The script to execute to invoke the staging build.",
+          "description": "The script to execute to invoke the staging build. Mutually exclusive with `steps`.",
           "title": "Script"
+        },
+        "steps": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Step"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Explicit build steps for the staging build (experimental). Mutually exclusive with `script`.",
+          "title": "Steps"
         }
       },
       "title": "StagingBuild",
@@ -4630,6 +4670,92 @@
         }
       },
       "title": "StagingRequirements",
+      "type": "object"
+    },
+    "Step": {
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/IfStatement"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/$defs/IfStatement"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "description": "The command, multiline string, or list of commands to run.",
+          "title": "Run"
+        },
+        "if": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Selector expression that decides whether this step runs (e.g. `unix` or `target_platform == \"linux-64\"`). Do not wrap it in `${{ }}`.",
+          "title": "If"
+        },
+        "interpreter": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The interpreter to use for this step.",
+          "title": "Interpreter"
+        },
+        "cwd": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Working directory for this step. Relative paths are resolved against the host prefix.",
+          "title": "Cwd"
+        },
+        "env": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "description": "Environment variables scoped to this step.",
+          "title": "Env",
+          "type": "object"
+        }
+      },
+      "required": [
+        "run"
+      ],
+      "title": "Step",
       "type": "object"
     },
     "TestElementFiles": {
@@ -4865,7 +4991,7 @@
               "type": "string"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             },
             {
@@ -4885,7 +5011,7 @@
               "type": "string"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             },
             {
@@ -4910,17 +5036,25 @@
           "description": "A file name to rename the downloaded file to (does not apply to archives).",
           "title": "File Name"
         },
-        "attestation": {
+        "attestations": {
           "anyOf": [
             {
               "$ref": "#/$defs/AttestationConfig"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/AttestationConfig"
+              },
+              "minItems": 1,
+              "type": "array"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "description": "Optional attestation verification configuration."
+          "description": "Sigstore attestations to verify for the downloaded source. Either one attestation or a list of attestations that must all verify.",
+          "title": "Attestations"
         }
       },
       "required": [
@@ -4994,7 +5128,7 @@
               "type": "integer"
             },
             {
-              "pattern": "\\$\\{\\{.*\\}\\}",
+              "pattern": "\\$\\{\\{[\\s\\S]*\\}\\}",
               "type": "string"
             }
           ],

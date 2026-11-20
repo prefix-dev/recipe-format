@@ -31,7 +31,7 @@ NonEmptyStr = constr(min_length=1)
 PathNoBackslash = constr(pattern=r"^[^\\]+$")
 UnsignedInt = conint(ge=0)
 GitUrl = constr(pattern=r"((git|ssh|http(s)?)|(git@[\w\.]+))(:(\/\/)?)([\w\.@:\/\\-~]+)")
-JinjaExpr = constr(pattern=r"\$\{\{.*\}\}")
+JinjaExpr = constr(pattern=r"\$\{\{[\s\S]*\}\}")
 
 
 class StrictBaseModel(BaseModel):
@@ -80,7 +80,8 @@ class SimplePackage(StrictBaseModel):
 
 class ComplexPackage(StrictBaseModel):
     name: str | None = Field(
-        description="The recipe name, this is only used to identify the name of the recipe."
+        None,
+        description="The recipe name, this is only used to identify the name of the recipe.",
     )
     version: str | None = Field(
         None, description="The version of each output, this can be overwritten per output"
@@ -112,14 +113,39 @@ class BaseSource(StrictBaseModel):
     )
 
 
+class DetailedPublisher(StrictBaseModel):
+    github: NonEmptyStr | None = Field(
+        None, description="`owner/repo` on GitHub. Exactly one of `github` or `gitlab` must be set."
+    )
+    gitlab: NonEmptyStr | None = Field(
+        None, description="`owner/repo` on GitLab. Exactly one of `github` or `gitlab` must be set."
+    )
+    ref: NonEmptyStr | None = Field(
+        None,
+        description="Git ref the signing workflow must have run on (e.g. `refs/tags/v1.0`).",
+    )
+    repository_id: UnsignedInt | NonEmptyStr | None = Field(
+        None, description="Immutable numeric ID of the repository."
+    )
+    owner_id: UnsignedInt | NonEmptyStr | None = Field(
+        None, description="Immutable numeric ID of the repository owner (user or organization)."
+    )
+    environment: NonEmptyStr | None = Field(
+        None, description="Deployment environment the signing workflow ran in (e.g. `release`)."
+    )
+
+
+Publisher = NonEmptyStr | DetailedPublisher
+
+
 class AttestationConfig(StrictBaseModel):
     bundle_url: NonEmptyStr | None = Field(
         default=None,
-        description="URL to download the attestation bundle from (e.g., .sigstore.json file). Auto-derived for PyPI sources if not specified.",
+        description="URL to download the attestation bundle from (e.g. a `.sigstore.json` file). Discovered automatically for PyPI sources and GitHub release assets if not specified.",
     )
-    publishers: list[NonEmptyStr] = Field(
+    publishers: list[Publisher] = Field(
         default=[],
-        description="Publisher identities to verify (e.g., 'github:owner/repo'). All specified publishers must match.",
+        description="Publisher identities to verify, either as a string (`github:owner/repo`, `github:owner(id)/repo(id)@refs/tags/v1.0`) or as a mapping. All specified publishers must match.",
     )
 
 
@@ -134,9 +160,11 @@ class UrlSource(BaseSource):
         None,
         description="A file name to rename the downloaded file to (does not apply to archives).",
     )
-    attestation: AttestationConfig | None = Field(
+    attestations: (
+        AttestationConfig | Annotated[list[AttestationConfig], Field(min_length=1)] | None
+    ) = Field(
         default=None,
-        description="Optional attestation verification configuration.",
+        description="Sigstore attestations to verify for the downloaded source. Either one attestation or a list of attestations that must all verify.",
     )
 
 
@@ -241,10 +269,18 @@ class Build(StrictBaseModel):
         None,
         description="Can be either 'generic' or 'python'. A noarch 'python' package compiles .pyc files upon installation.",
     )
+    flags: ConditionalList[NonEmptyStr] | None = Field(
+        None,
+        description="Package variant flags (repodata v3, beta). Written into the `flags` array of `index.json`.",
+    )
 
     script: str | Script | ConditionalList[NonEmptyStr] | None = Field(
         None,
-        description="The script to execute to invoke the build. If the string is a single line and ends with `.sh` or `.bat`, then we interpret it as a file.",
+        description="The script to execute to invoke the build. If the string is a single line and ends with `.sh` or `.bat`, then we interpret it as a file. Mutually exclusive with `steps`.",
+    )
+    steps: list[Step] | None = Field(
+        None,
+        description="Explicit build steps (experimental, alternative to `script`). Each step runs in its own scope. Mutually exclusive with `script`; an empty list disables default `build.sh`/`build.bat` discovery.",
     )
 
     merge_build_and_host_envs: bool | JinjaExpr | None = Field(
@@ -310,12 +346,34 @@ class FileScript(BaseScript):
 
 
 class ContentScript(BaseScript):
-    content: str | ConditionalList[str] = Field(
-        description="A string or list of strings that is the scripts contents"
+    content: str | ConditionalList[str] | None = Field(
+        None,
+        description="A string or list of strings that is the scripts contents. If omitted, the default `build.sh`/`build.bat` is used.",
     )
 
 
 Script = FileScript | ContentScript
+
+
+class Step(StrictBaseModel):
+    run: str | ConditionalList[str] = Field(
+        ..., description="The command, multiline string, or list of commands to run."
+    )
+    if_: NonEmptyStr | None = Field(
+        None,
+        alias="if",
+        description='Selector expression that decides whether this step runs (e.g. `unix` or `target_platform == "linux-64"`). Do not wrap it in `${{ }}`.',
+    )
+    interpreter: NonEmptyStr | None = Field(
+        None, description="The interpreter to use for this step."
+    )
+    cwd: NonEmptyStr | None = Field(
+        None,
+        description="Working directory for this step. Relative paths are resolved against the host prefix.",
+    )
+    env: dict[NonEmptyStr, str] = Field(
+        default={}, description="Environment variables scoped to this step."
+    )
 
 
 class Variant(StrictBaseModel):
@@ -343,8 +401,6 @@ class Python(StrictBaseModel):
         default=False,
         description="Specifies if python.app should be used as the entrypoint on macOS. (macOS only)",
     )
-
-    preserve_egg_dir: bool | JinjaExpr = Field(default=False)
 
     skip_pyc_compilation: ConditionalList[Glob] = Field(
         default=[], description="Skip compiling pyc for some files"
@@ -649,8 +705,6 @@ class About(StrictBaseModel):
         description="Extended description of the package.",
     )
 
-    prelink_message: str | None = None
-
 
 ###########
 # Outputs #
@@ -660,7 +714,11 @@ class About(StrictBaseModel):
 class StagingBuild(StrictBaseModel):
     script: str | Script | ConditionalList[NonEmptyStr] | None = Field(
         None,
-        description="The script to execute to invoke the staging build.",
+        description="The script to execute to invoke the staging build. Mutually exclusive with `steps`.",
+    )
+    steps: list[Step] | None = Field(
+        None,
+        description="Explicit build steps for the staging build (experimental). Mutually exclusive with `script`.",
     )
 
 
@@ -762,27 +820,8 @@ class BaseRecipe(StrictBaseModel):
     )
 
 
-class Cache(StrictBaseModel):
-    source: ConditionalList[Source] | None = Field(
-        None,
-        description="The source items to be downloaded and used for the cache build and subsequent outputs.",
-    )
-
-    requirements: Requirements | None = Field(
-        None, description="The dependencies needed at cache-build time."
-    )
-
-    build: Build | None = Field(None, description="Describes how the package should be build.")
-
-
 class ComplexRecipe(BaseRecipe):
     recipe: ComplexPackage | None = Field(None, description="The package version.")
-
-    cache: Cache | None = Field(
-        None,
-        deprecated="Use staging outputs instead.",
-        description="The cache build that can be used as a common build step for all output.",
-    )
 
     outputs: ConditionalList[Output | StagingOutput] = Field(
         ..., description="A list of outputs that are generated for this recipe."
