@@ -359,3 +359,149 @@ def test_staging_output_invalid_run_requirements():
     recipe_dict = yaml.safe_load(recipe_yaml)
     with pytest.raises(PydanticValidationError):
         Recipe.validate_python(recipe_dict)
+
+
+def _valid(recipe_schema, recipe_yaml):
+    recipe_dict = yaml.safe_load(recipe_yaml)
+    Recipe.validate_python(recipe_dict)
+    validate(instance=recipe_dict, schema=recipe_schema)
+
+
+def _invalid(recipe_schema, recipe_yaml):
+    recipe_dict = yaml.safe_load(recipe_yaml)
+    with pytest.raises(PydanticValidationError):
+        Recipe.validate_python(recipe_dict)
+    with pytest.raises(ValidationError):
+        validate(instance=recipe_dict, schema=recipe_schema)
+
+
+def test_attestations_single_and_list(recipe_schema):
+    """`attestations` takes one mapping or a list; publishers can be strings or mappings."""
+    _valid(
+        recipe_schema,
+        """
+    package:
+      name: flask
+      version: 3.1.1
+    source:
+      url: https://pypi.io/packages/source/f/flask/flask-3.1.1.tar.gz
+      sha256: 284c7b8f2f58cb737f0cf1c30fd7eaf0ccfcde196099d24ecede3fc2005aa59e
+      attestations:
+        publishers:
+          - github:pallets(16748505)/flask(596892)@refs/tags/3.1.1
+    """,
+    )
+    _valid(
+        recipe_schema,
+        """
+    package:
+      name: uv
+      version: 0.12.1
+    source:
+      url: https://github.com/astral-sh/uv/releases/download/0.12.1/source.tar.gz
+      attestations:
+        - publishers:
+            - github: astral-sh/uv
+              ref: refs/tags/0.12.1
+              repository_id: 632123311
+              owner_id: 115962839
+              environment: release
+        - bundle_url: https://example.com/source.tar.gz.sigstore.json
+          publishers:
+            - github:astral-sh/uv
+    """,
+    )
+
+
+def test_attestation_singular_key_rejected(recipe_schema):
+    """The experimental `attestation` key was renamed to `attestations`."""
+    _invalid(
+        recipe_schema,
+        """
+    package:
+      name: flask
+      version: 3.1.1
+    source:
+      url: https://pypi.io/packages/source/f/flask/flask-3.1.1.tar.gz
+      attestation:
+        publishers:
+          - github:pallets/flask
+    """,
+    )
+
+
+def test_attestations_empty_list_rejected(recipe_schema):
+    _invalid(
+        recipe_schema,
+        """
+    package:
+      name: flask
+      version: 3.1.1
+    source:
+      url: https://pypi.io/packages/source/f/flask/flask-3.1.1.tar.gz
+      attestations: []
+    """,
+    )
+
+
+def test_build_steps_and_flags(recipe_schema):
+    _valid(
+        recipe_schema,
+        """
+    package:
+      name: test
+      version: 1.0.0
+    build:
+      flags:
+        - cuda
+        - if: unix
+          then: blas:openblas
+      steps:
+        - if: unix
+          run: |
+            mkdir -p "$PREFIX/bin"
+        - run:
+            - python -m pip install .
+          cwd: src
+          interpreter: bash
+          env:
+            FOO: bar
+    """,
+    )
+
+
+def test_build_step_requires_run(recipe_schema):
+    _invalid(
+        recipe_schema,
+        """
+    package:
+      name: test
+      version: 1.0.0
+    build:
+      steps:
+        - if: unix
+    """,
+    )
+
+
+def test_script_env_without_content_and_multiline_jinja(recipe_schema):
+    _valid(
+        recipe_schema,
+        """
+    recipe:
+      version: 1.0.0
+    build:
+      variant:
+        down_prioritize_variant: |
+          ${{
+            (1 if with_cuda else 0)
+          + (1 if scalar == "complex" else 0) }}
+    outputs:
+      - package:
+          name: test
+        build:
+          script:
+            env:
+              BUILD_VERSION: 1.0.0
+    """,
+    )
